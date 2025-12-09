@@ -8,19 +8,7 @@ steps:
   - name: 'gcr.io/cloud-builders/docker'
     args: ['push', 'gcr.io/$PROJECT_ID/present-health-dpc']
 
-  # Apply database migrations
-  - name: 'gcr.io/google-appengine/exec-wrapper'
-    args:
-      - '-i'
-      - 'gcr.io/$PROJECT_ID/present-health-dpc'
-      - '-s'
-      - 'present-health-dpc-2025:us-central1:present-health-db'
-      - '--'
-      - 'sh'
-      - '-c'
-      - 'DATABASE_URL="postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db" npx prisma db push --accept-data-loss'
-    env:
-      - 'DATABASE_URL=postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db'
+
 
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
