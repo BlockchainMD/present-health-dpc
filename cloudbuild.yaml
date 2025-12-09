@@ -1,0 +1,47 @@
+
+steps:
+  # Build the container image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/$PROJECT_ID/present-health-dpc', '.']
+
+  # Push the container image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/present-health-dpc']
+
+  # Apply database migrations
+  - name: 'gcr.io/google-appengine/exec-wrapper'
+    args:
+      - '-i'
+      - 'gcr.io/$PROJECT_ID/present-health-dpc'
+      - '-s'
+      - 'present-health-dpc-2025:us-central1:present-health-db'
+      - '--'
+      - 'npx'
+      - 'prisma'
+      - 'db'
+      - 'push'
+      - '--accept-data-loss'
+    env:
+      - 'DATABASE_URL=postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db'
+
+  # Deploy container image to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'present-health-dpc'
+      - '--image'
+      - 'gcr.io/$PROJECT_ID/present-health-dpc'
+      - '--region'
+      - 'us-central1'
+      - '--platform'
+      - 'managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars'
+      - 'DATABASE_URL=postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db'
+      - '--add-cloudsql-instances'
+      - 'present-health-dpc-2025:us-central1:present-health-db'
+
+images:
+  - 'gcr.io/$PROJECT_ID/present-health-dpc'
