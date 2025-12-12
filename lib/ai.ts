@@ -1,8 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini
-// Note: This requires GEMINI_API_KEY in .env
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// Initialize Gemini lazily inside the function
+// const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function generateArticleContent(topic: string): Promise<{ title: string; content: string }> {
     if (!process.env.GEMINI_API_KEY) {
@@ -23,6 +22,8 @@ We offer direct access to care that can help you manage this.
       `
         };
     }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
     try {
         const model = genAI.getGenerativeModel({
