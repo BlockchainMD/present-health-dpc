@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server';
 import { fetchTrends } from '@/lib/trends';
-import { generateArticleContent } from '@/lib/ai';
 import { prisma } from '@/lib/prisma';
 
 export async function POST() {
     try {
+        // Dynamically import AI module to prevent build-time initialization errors
+        const { generateArticleContent } = await import('@/lib/ai');
+
         // 1. Fetch Trends
         const trends = await fetchTrends();
 
