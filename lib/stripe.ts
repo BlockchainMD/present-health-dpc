@@ -25,4 +25,7 @@ export const stripe = {
     get subscriptions() {
         return getStripe().subscriptions;
     },
+    get webhooks() {
+        return getStripe().webhooks;
+    },
 };
