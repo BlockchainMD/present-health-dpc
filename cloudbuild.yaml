@@ -31,3 +31,6 @@ steps:
 
 images:
   - 'gcr.io/$PROJECT_ID/present-health-dpc'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
