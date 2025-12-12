@@ -2,7 +2,7 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/present-health-dpc', '.']
+    args: ['build', '--build-arg', 'DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy', '-t', 'gcr.io/$PROJECT_ID/present-health-dpc', '.']
 
   # Push the container image to Container Registry
   - name: 'gcr.io/cloud-builders/docker'
