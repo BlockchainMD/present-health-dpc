@@ -57,8 +57,8 @@ export function Footer() {
                         &copy; {new Date().getFullYear()} Present Health. All rights reserved.
                     </p>
                     <p className="text-xs text-muted-foreground max-w-md text-center md:text-right">
-                        Present Health is a Direct Primary Care practice, not health insurance.
-                        We do not bill insurance. Membership fees may be HSA/FSA eligible.
+                        Present Health is a Direct Primary Care practice, not insurance. We do not bill insurance. <br />
+                        *Membership fees may be HSA/FSA eligible starting 2026, subject to IRS rules and limits. Consult a tax professional.
                     </p>
                 </div>
             </div>

@@ -1,109 +1,96 @@
+"use client";
+
+import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
-import Link from "next/link";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { useState } from "react";
 
 export function PricingCards() {
+    const [isAnnual, setIsAnnual] = useState(false);
+
     return (
-        <section className="py-12">
-            <div className="container px-4 md:px-6 mx-auto">
+        <section id="pricing" className="py-20 bg-background">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="text-center max-w-3xl mx-auto mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+                        Simple membership. No insurance billing. Cancel anytime.
+                    </h2>
+
+                    <div className="flex items-center justify-center gap-4 mt-8">
+                        <Label htmlFor="annual-mode" className={!isAnnual ? "font-bold" : "text-muted-foreground"}>Monthly</Label>
+                        <Switch id="annual-mode" checked={isAnnual} onCheckedChange={setIsAnnual} />
+                        <Label htmlFor="annual-mode" className={isAnnual ? "font-bold" : "text-muted-foreground"}>
+                            Annual <span className="text-xs text-primary font-normal">(Save 1 month)</span>
+                        </Label>
+                    </div>
+                </div>
+
                 <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    {/* Individual Tier */}
-                    <Card className="flex flex-col border-border/50 shadow-sm hover:shadow-md transition-shadow">
+                    {/* Individual Plan */}
+                    <Card className="flex flex-col border-border shadow-sm hover:shadow-md transition-shadow">
                         <CardHeader>
-                            <CardTitle className="text-2xl font-bold text-primary">Individual</CardTitle>
+                            <CardTitle className="text-2xl">Individual</CardTitle>
                             <CardDescription>For the solo health optimizer.</CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="mb-6">
-                                <span className="text-4xl font-bold text-foreground">$129</span>
-                                <span className="text-muted-foreground">/mo</span>
-                                <p className="text-sm text-primary font-medium mt-1">HSA/FSA Eligible</p>
+                                <span className="text-4xl font-bold">${isAnnual ? 1419 : 129}</span>
+                                <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
                             </div>
-                            <ul className="space-y-3 text-sm text-muted-foreground">
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Unlimited virtual visits
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Direct text/email with your doctor
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Care coordination & referrals
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Annual wellness planning
-                                </li>
+                            <ul className="space-y-3">
+                                {["Unlimited virtual visits", "Direct messaging", "Care coordination", "Annual prevention plan"].map((feature) => (
+                                    <li key={feature} className="flex items-center gap-3 text-sm">
+                                        <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                                        {feature}
+                                    </li>
+                                ))}
                             </ul>
                         </CardContent>
-                        <CardFooter>
+                        <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full" asChild>
-                                <Link href="/register?plan=individual">
-                                    Choose Individual
+                                <Link href={`/register?plan=individual&billing=${isAnnual ? 'annual' : 'monthly'}`}>
+                                    Get Started
                                 </Link>
                             </Button>
+                            <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
                         </CardFooter>
                     </Card>
 
-                    {/* Family Tier */}
-                    <Card className="flex flex-col border-primary shadow-lg relative overflow-hidden">
+                    {/* Family Plan */}
+                    <Card className="flex flex-col border-primary shadow-md relative overflow-hidden">
                         <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
                             BEST VALUE
                         </div>
                         <CardHeader>
-                            <CardTitle className="text-2xl font-bold text-primary">Family</CardTitle>
-                            <CardDescription>Comprehensive care for the whole house.</CardDescription>
+                            <CardTitle className="text-2xl">Family</CardTitle>
+                            <CardDescription>Includes partner + children (up to 5 total).</CardDescription>
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="mb-6">
-                                <span className="text-4xl font-bold text-foreground">$279</span>
-                                <span className="text-muted-foreground">/mo</span>
-                                <p className="text-sm text-primary font-medium mt-1">HSA/FSA Eligible</p>
+                                <span className="text-4xl font-bold">${isAnnual ? 3069 : 279}</span>
+                                <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
                             </div>
-                            <ul className="space-y-3 text-sm text-muted-foreground">
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Includes partner + children (up to 5 total)
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Unlimited virtual visits for all
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Pediatric triage & guidance
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                                    Family health strategy
-                                </li>
+                            <ul className="space-y-3">
+                                {["Unlimited virtual visits for all", "Pediatric triage", "Family prevention strategy", "Coordination"].map((feature) => (
+                                    <li key={feature} className="flex items-center gap-3 text-sm">
+                                        <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                                        {feature}
+                                    </li>
+                                ))}
                             </ul>
                         </CardContent>
-                        <CardFooter>
-                            <Button className="w-full" asChild>
-                                <Link href="/register?plan=family">
-                                    Choose Family
+                        <CardFooter className="flex flex-col gap-4">
+                            <Button className="w-full" variant="default" asChild>
+                                <Link href={`/register?plan=family&billing=${isAnnual ? 'annual' : 'monthly'}`}>
+                                    Get Started
                                 </Link>
                             </Button>
+                            <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
                         </CardFooter>
                     </Card>
-                </div>
-
-                <div className="mt-8 text-center max-w-2xl mx-auto">
-                    <p className="text-xs text-muted-foreground">
-                        *To maximize your HSA benefits and maintain IRS compliance, labs and prescriptions are billed at-cost separately.
-                        This structure ensures your membership fee remains 100% tax-deductible under the new 2026 rules.
-                    </p>
                 </div>
             </div>
         </section>

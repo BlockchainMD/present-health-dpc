@@ -78,8 +78,8 @@ export function Header() {
                         </Link>
                     ))}
                     <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        <Link href="https://app.presenthealth.com/register">
-                            Become a Member
+                        <Link href="/pricing">
+                            Join / See Pricing
                         </Link>
                     </Button>
                 </nav>
@@ -115,8 +115,8 @@ export function Header() {
                                 ))}
                                 <SheetClose asChild>
                                     <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                                        <Link href="https://app.presenthealth.com/register">
-                                            Become a Member
+                                        <Link href="/pricing">
+                                            Join / See Pricing
                                         </Link>
                                     </Button>
                                 </SheetClose>

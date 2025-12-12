@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Present Health | Virtual Direct Primary Care",
-  description: "The first virtual practice designed for the 2026 HSA era. Direct access to your doctor, paid entirely with pre-tax dollars.",
+  title: "Present Health | Virtual Direct Primary Care (HSA-Friendly 2026)",
+  description: "Membership primary care with direct doctor access, same/next-day virtual visits, prevention planning, and transparent pricing. HSA-friendly starting 2026 (limits apply).",
 };
 
 import { Header } from "@/components/layout/Header";

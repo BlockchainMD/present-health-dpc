@@ -19,3 +19,17 @@ model Article {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String?
+  
+  stripeCustomerId       String?
+  stripeSubscriptionId   String?
+  subscriptionStatus     String? // active, past_due, canceled, incomplete
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
