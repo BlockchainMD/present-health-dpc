@@ -18,7 +18,7 @@ function RegisterForm() {
     const [error, setError] = useState("");
 
     const planName = plan === 'family' ? 'Family Plan' : 'Individual Plan';
-    const price = plan === 'family' ? '$279/mo' : '$129/mo';
+    const price = plan === 'family' ? '$299/mo' : '$149/mo';
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();

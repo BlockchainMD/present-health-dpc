@@ -53,7 +53,7 @@ function HeroV2() {
           </div>
 
           <p className="text-sm text-muted-foreground mb-8">
-            Plans start at <strong>$129/mo</strong> (Individual) and <strong>$279/mo</strong> (Family).
+            Plans start at <strong>$149/mo</strong> (Individual) and <strong>$299/mo</strong> (Family).
           </p>
 
           {/* Text link for HSA info */}
@@ -260,7 +260,7 @@ function HsaInfoV2() {
               </div>
               <div className="flex gap-3">
                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">2</div>
-                <p className="text-sm text-emerald-900/80">Join Present Health ($129 Individual / $279 Family), within the 2026 monthly limits.</p>
+                <p className="text-sm text-emerald-900/80">Join Present Health ($149 Individual / $299 Family), within the 2026 monthly limits.</p>
               </div>
               <div className="flex gap-3">
                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">3</div>
@@ -316,7 +316,7 @@ function PricingCardsV2() {
             </CardHeader>
             <CardContent className="flex-1">
               <div className="mb-6">
-                <span className="text-4xl font-bold">${isAnnual ? 1419 : 129}</span>
+                <span className="text-4xl font-bold">${isAnnual ? 1639 : 149}</span>
                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
               </div>
               <ul className="space-y-3">
@@ -350,7 +350,7 @@ function PricingCardsV2() {
             </CardHeader>
             <CardContent className="flex-1">
               <div className="mb-6">
-                <span className="text-4xl font-bold">${isAnnual ? 3069 : 279}</span>
+                <span className="text-4xl font-bold">${isAnnual ? 3289 : 299}</span>
                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
               </div>
               <ul className="space-y-3">
@@ -484,7 +484,7 @@ function FinalCTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg" variant="secondary" className="text-lg px-8 h-12">
             <Link href="/register?plan=individual">
-              Join Now – $129/mo
+              Join Now – $149/mo
               <ArrowRight className="ml-2 h-5 w-5" />
             </Link>
           </Button>

@@ -37,7 +37,7 @@ export function PricingCards() {
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="mb-6">
-                                <span className="text-4xl font-bold">${isAnnual ? 1419 : 129}</span>
+                                <span className="text-4xl font-bold">${isAnnual ? 1639 : 149}</span>
                                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
                             </div>
                             <ul className="space-y-3">
@@ -70,7 +70,7 @@ export function PricingCards() {
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="mb-6">
-                                <span className="text-4xl font-bold">${isAnnual ? 3069 : 279}</span>
+                                <span className="text-4xl font-bold">${isAnnual ? 3289 : 299}</span>
                                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
                             </div>
                             <ul className="space-y-3">

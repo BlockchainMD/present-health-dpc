@@ -24,7 +24,7 @@ export async function POST(req: Request) {
         // Ideally, you should create Products/Prices in your Stripe Dashboard and use those IDs.
         // Since we don't have them, we will use 'price_data' to create them inline for this MVP.
 
-        const unitAmount = plan === 'family' ? 27900 : 12900;
+        const unitAmount = plan === 'family' ? 29900 : 14900;
         const productName = plan === 'family' ? 'Family Plan' : 'Individual Plan';
 
         const checkoutSession = await stripe.checkout.sessions.create({
