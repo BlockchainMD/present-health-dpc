@@ -2,22 +2,21 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Check, CheckCircle, MessageCircle, Clock, Shield, Heart, Star, Phone, ArrowRight, X } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Check, CheckCircle, MessageCircle, Clock, Shield, Heart, Star, Phone, ArrowRight, X, UserCheck, ShieldCheck, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
-
-// Import existing components
-import { SocialProof } from "@/components/sections/SocialProof";
-import { WhyPresentHealth } from "@/components/sections/WhyPresentHealth";
-import { WhatYouGet } from "@/components/sections/WhatYouGet";
-import { HsaInfo } from "@/components/sections/HsaInfo";
-import { PricingCards } from "@/components/sections/PricingCards";
-import { Transparency } from "@/components/sections/Transparency";
-import { FAQAccordion } from "@/components/sections/FAQAccordion";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 // ============================================================================
-// HERO V2 - Upgraded CTA cluster + Trust Chips (Recommendations #1 & #2)
+// HERO V2 - Upgraded CTA cluster + Trust Chips
 // ============================================================================
 function HeroV2() {
     return (
@@ -29,40 +28,46 @@ function HeroV2() {
                         <span className="text-primary">with a real doctor, not a call center.</span>
                     </h1>
                     <p className="text-xl text-muted-foreground mb-2 max-w-2xl mx-auto">
-                        Text your doctor. Same- or next-day visits. Clear plans and follow-through.
+                        Text your doctor. Same- or next-day telehealth visits. Clear plans and follow-through—without the portal ping-pong.
+                    </p>
+                    <p className="text-sm text-muted-foreground mb-8 font-medium">
+                        Available in <strong>select states</strong>. Availability varies by state. Not for emergencies—call 911.
                     </p>
                     <p className="text-sm font-medium text-emerald-600 mb-8 bg-emerald-50 inline-block px-3 py-1 rounded-full border border-emerald-100">
-                        Starting 2026: Pay your membership with HSA funds.*
+                        Starting <strong>Jan 1, 2026</strong>: DPC memberships may be <strong>HSA-payable</strong> for eligible individuals, subject to IRS rules and limits.*
                     </p>
 
-                    {/* UPGRADED CTA CLUSTER - Recommendation #1 */}
+                    {/* UPGRADED CTA CLUSTER */}
                     <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
                         <Button asChild size="lg" className="text-lg px-8 h-12 bg-primary text-primary-foreground hover:bg-primary/90">
-                            <Link href="/register?plan=individual">
-                                Join Now – $129/mo
-                                <ArrowRight className="ml-2 h-5 w-5" />
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline" size="lg" className="text-lg px-8 h-12">
                             <Link href="/pricing">
                                 <Phone className="mr-2 h-5 w-5" />
                                 Book a Free Intro Call
                             </Link>
                         </Button>
+                        <Button asChild variant="outline" size="lg" className="text-lg px-8 h-12">
+                            <Link href="#pricing">
+                                See Pricing
+                            </Link>
+                        </Button>
                     </div>
 
-                    {/* Text link for HSA info - keeps informational vibe */}
                     <p className="text-sm text-muted-foreground mb-8">
-                        <Link href="/#hsa-info" className="underline hover:text-primary transition-colors">
+                        Plans start at <strong>$129/mo</strong> (Individual) and <strong>$279/mo</strong> (Family).
+                    </p>
+
+                    {/* Text link for HSA info */}
+                    <p className="text-sm text-muted-foreground mb-8">
+                        <Link href="#hsa-info" className="underline hover:text-primary transition-colors">
                             How does HSA work with DPC? →
                         </Link>
                     </p>
 
-                    {/* TRUST CHIPS - Recommendation #2 */}
+                    {/* TRUST CHIPS */}
                     <div className="flex flex-wrap justify-center gap-3 mb-8">
                         <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full text-sm text-muted-foreground">
                             <Shield className="h-4 w-4 text-primary" />
-                            <span>HIPAA Compliant</span>
+                            <span>Secure, HIPAA-conscious care</span>
                         </div>
                         <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full text-sm text-muted-foreground">
                             <Check className="h-4 w-4 text-primary" />
@@ -86,7 +91,7 @@ function HeroV2() {
                         </div>
                         <div className="flex items-center gap-2">
                             <CheckCircle className="h-4 w-4 text-primary" />
-                            <span>Limited membership to protect access</span>
+                            <span>Membership capped to protect access</span>
                         </div>
                     </div>
                 </div>
@@ -96,66 +101,53 @@ function HeroV2() {
 }
 
 // ============================================================================
-// TESTIMONIALS STRIP - Recommendation #3
+// EXPECTATIONS SECTION (Replaces Testimonials)
 // ============================================================================
-function TestimonialsStrip() {
-    const testimonials = [
+function ExpectationsSection() {
+    const items = [
         {
-            quote: "I texted my doctor at 7am about a rash. By 8am, I had a prescription at my pharmacy. This is how healthcare should work.",
-            name: "Sarah M.",
-            role: "Member since 2024",
-            stars: 5
+            title: "Direct access to your doctor",
+            body: "Message directly for quick questions, refills, and plan tweaks—no call centers or phone trees."
         },
         {
-            quote: "After years of 15-minute appointments where I felt rushed, having a doctor who actually listens is life-changing.",
-            name: "David K.",
-            role: "Family Plan Member",
-            stars: 5
+            title: "Same- or next-day telehealth (most issues)",
+            body: "Fast access is the point. Membership is capped so you can actually be seen when you need it."
         },
         {
-            quote: "The HSA compatibility sealed the deal. I'm paying with pre-tax dollars for better care. No-brainer.",
-            name: "Jennifer L.",
-            role: "Member since 2024",
-            stars: 5
+            title: "Clear plan + follow-through",
+            body: "Visits end with next steps. We coordinate labs, imaging, referrals, and prevention—so nothing falls through the cracks."
         }
     ];
 
     return (
         <section className="py-16 bg-muted/30">
             <div className="container mx-auto px-4 md:px-6">
-                <h2 className="text-2xl font-semibold text-center text-foreground mb-8">What Our Members Say</h2>
+                <h2 className="text-2xl font-semibold text-center text-foreground mb-8">What you can expect</h2>
                 <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    {testimonials.map((testimonial, i) => (
+                    {items.map((item, i) => (
                         <Card key={i} className="border-border/50 shadow-sm bg-background">
                             <CardContent className="p-6">
-                                <div className="flex gap-1 mb-3">
-                                    {Array.from({ length: testimonial.stars }).map((_, j) => (
-                                        <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                                    ))}
-                                </div>
-                                <p className="text-muted-foreground mb-4 text-sm italic">"{testimonial.quote}"</p>
-                                <div>
-                                    <p className="font-medium text-foreground text-sm">{testimonial.name}</p>
-                                    <p className="text-xs text-muted-foreground">{testimonial.role}</p>
-                                </div>
+                                <h3 className="font-semibold text-foreground mb-3 text-lg">{item.title}</h3>
+                                <p className="text-muted-foreground text-sm leading-relaxed">{item.body}</p>
                             </CardContent>
                         </Card>
                     ))}
                 </div>
+                <p className="text-center text-xs text-muted-foreground mt-8">Member stories coming soon.</p>
             </div>
         </section>
     );
 }
 
 // ============================================================================
-// 4-UP SUMMARY GRID - Recommendation #5
+// 4-UP SUMMARY GRID
 // ============================================================================
 function SummaryGrid() {
     const items = [
         { icon: MessageCircle, title: "Direct Messaging", desc: "Text your doctor directly. Get answers, not phone trees." },
-        { icon: Clock, title: "Same- or Next-Day Visits", desc: "Sick today? Get seen quickly. Virtually or in-person." },
+        { icon: Clock, title: "Same- or Next-Day Telehealth", desc: "Sick today? Get seen quickly by text/video/phone. If you need in-person care, we’ll coordinate locally." },
         { icon: Heart, title: "Preventive Care", desc: "Annual wellness plans tailored to your goals." },
-        { icon: Shield, title: "Transparent Pricing", desc: "Labs and meds at wholesale cost. No hidden fees." }
+        { icon: Shield, title: "Transparent, fair cash-pay coordination", desc: "When you need labs, imaging, or prescriptions, we help you find fair self-pay options. You pay third parties directly." }
     ];
 
     return (
@@ -181,7 +173,305 @@ function SummaryGrid() {
 }
 
 // ============================================================================
-// FINAL CTA BAND - Recommendation #6
+// SOCIAL PROOF V2 (Trust Strip)
+// ============================================================================
+function SocialProofV2() {
+    const items = [
+        {
+            icon: <UserCheck className="h-6 w-6 text-primary" />,
+            text: "10+ years experience",
+        },
+        {
+            icon: <ShieldCheck className="h-6 w-6 text-primary" />,
+            text: "Board-certified family medicine",
+        },
+        {
+            icon: <CheckCircle2 className="h-6 w-6 text-primary" />,
+            text: "No insurance billing / no middlemen",
+        },
+        {
+            icon: <Clock className="h-6 w-6 text-primary" />,
+            text: "Direct physician access (responses typically within 1 business day). If something feels urgent, don’t wait—seek urgent care or call 911.",
+        },
+    ];
+
+    return (
+        <section className="bg-muted/30 border-y border-border py-8">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {items.map((item, index) => (
+                        <div key={index} className="flex items-center gap-3 justify-center sm:justify-start">
+                            <div className="flex-shrink-0">{item.icon}</div>
+                            <span className="text-sm font-medium text-foreground">{item.text}</span>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// WHY PRESENT HEALTH V2 (Primary Care is Broken)
+// ============================================================================
+function WhyPresentHealthV2() {
+    return (
+        <section className="py-20 bg-background">
+            <div className="container mx-auto px-4 md:px-6 text-center max-w-3xl">
+                <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
+                    Primary care is broken for busy people.
+                </h2>
+                <p className="text-lg text-muted-foreground leading-relaxed">
+                    If your doctor is booked for 3 weeks and every visit feels rushed, you’re not getting primary care—you’re getting a throughput system. <strong className="text-foreground">Present Health is different:</strong> Present Health is a small, physician-led, <strong>virtual-first</strong> DPC practice—available in <strong>select states</strong>—built for prevention, coordination, and real access.
+                </p>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// HSA INFO V2
+// ============================================================================
+function HsaInfoV2() {
+    return (
+        <section id="hsa-info" className="py-20 bg-emerald-50/50 border-y border-emerald-100">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="text-center max-w-3xl mx-auto mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 text-emerald-950">
+                        In 2026, Direct Primary Care becomes HSA-compatible.*
+                    </h2>
+                    <p className="text-lg text-emerald-800/80">
+                        Starting <strong>Jan 1, 2026</strong>, eligible individuals enrolled in certain Direct Primary Care (DPC) service arrangements may <strong>contribute to an HSA</strong> and may use <strong>HSA funds tax-free to pay periodic DPC fees</strong>, subject to IRS rules and monthly limits.
+                    </p>
+                    <p className="text-sm text-emerald-800/80 mt-2">
+                        For 2026, the monthly limit is <strong>$150 (individual)</strong> / <strong>$300 (family)</strong>, indexed for inflation.
+                    </p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8 items-start max-w-5xl mx-auto">
+                    <Card className="border-emerald-200 bg-white/80 shadow-sm">
+                        <CardHeader>
+                            <CardTitle className="text-xl text-emerald-900">How it works</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-4">
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">1</div>
+                                <p className="text-sm text-emerald-900/80">Choose an HSA-eligible plan if you want to contribute to an HSA.</p>
+                            </div>
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">2</div>
+                                <p className="text-sm text-emerald-900/80">Join Present Health ($129 Individual / $279 Family), within the 2026 monthly limits.</p>
+                            </div>
+                            <div className="flex gap-3">
+                                <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">3</div>
+                                <p className="text-sm text-emerald-900/80">Pay with your HSA card or reimburse yourself, and keep documentation for your records.</p>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    <div className="bg-emerald-100/50 p-6 rounded-xl border border-emerald-200">
+                        <h3 className="font-semibold text-emerald-900 mb-3">Note on labs + prescriptions</h3>
+                        <p className="text-sm text-emerald-800/80 leading-relaxed">
+                            To keep the membership within the IRS definition of qualifying primary care services, the membership fee covers primary care services only. <strong>Prescriptions (other than vaccines)</strong> and certain <strong>lab services</strong> are handled separately at transparent prices when needed.
+                        </p>
+                    </div>
+                </div>
+                <p className="text-center text-xs text-emerald-800/60 mt-8 max-w-2xl mx-auto">
+                    *HSA eligibility and reimbursement rules depend on your plan and personal situation. This is not tax advice.
+                </p>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// PRICING CARDS V2
+// ============================================================================
+function PricingCardsV2() {
+    const [isAnnual, setIsAnnual] = useState(false);
+
+    return (
+        <section id="pricing" className="py-20 bg-background">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="text-center max-w-3xl mx-auto mb-12">
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+                        Simple membership. No insurance billing. Cancel anytime.
+                    </h2>
+
+                    <div className="flex items-center justify-center gap-4 mt-8">
+                        <Label htmlFor="annual-mode" className={!isAnnual ? "font-bold" : "text-muted-foreground"}>Monthly</Label>
+                        <Switch id="annual-mode" checked={isAnnual} onCheckedChange={setIsAnnual} />
+                        <Label htmlFor="annual-mode" className={isAnnual ? "font-bold" : "text-muted-foreground"}>
+                            Annual <span className="text-xs text-primary font-normal">(Save 1 month)</span>
+                        </Label>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    {/* Individual Plan */}
+                    <Card className="flex flex-col border-border shadow-sm hover:shadow-md transition-shadow">
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Individual</CardTitle>
+                            <CardDescription>For the solo health optimizer.</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                            <div className="mb-6">
+                                <span className="text-4xl font-bold">${isAnnual ? 1419 : 129}</span>
+                                <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
+                            </div>
+                            <ul className="space-y-3">
+                                {["Unlimited virtual visits", "Direct messaging", "Care coordination", "Annual prevention plan"].map((feature) => (
+                                    <li key={feature} className="flex items-center gap-3 text-sm">
+                                        <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                        <CardFooter className="flex flex-col gap-4">
+                            <p className="text-xs text-center text-muted-foreground">Available in select states. You’ll confirm eligibility before checkout.</p>
+                            <Button className="w-full" asChild>
+                                <Link href={`/register?plan=individual&billing=${isAnnual ? 'annual' : 'monthly'}`}>
+                                    Get Started
+                                </Link>
+                            </Button>
+                            <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
+                        </CardFooter>
+                    </Card>
+
+                    {/* Family Plan */}
+                    <Card className="flex flex-col border-primary shadow-md relative overflow-hidden">
+                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
+                            BEST VALUE
+                        </div>
+                        <CardHeader>
+                            <CardTitle className="text-2xl">Family</CardTitle>
+                            <CardDescription>Includes partner + children (up to 5 total).</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-1">
+                            <div className="mb-6">
+                                <span className="text-4xl font-bold">${isAnnual ? 3069 : 279}</span>
+                                <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
+                            </div>
+                            <ul className="space-y-3">
+                                {["Unlimited virtual visits for all", "Pediatric triage", "Family prevention strategy", "Coordination"].map((feature) => (
+                                    <li key={feature} className="flex items-center gap-3 text-sm">
+                                        <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                                        {feature}
+                                    </li>
+                                ))}
+                            </ul>
+                        </CardContent>
+                        <CardFooter className="flex flex-col gap-4">
+                            <p className="text-xs text-center text-muted-foreground">Available in select states. You’ll confirm eligibility before checkout.</p>
+                            <Button className="w-full" variant="default" asChild>
+                                <Link href={`/register?plan=family&billing=${isAnnual ? 'annual' : 'monthly'}`}>
+                                    Get Started
+                                </Link>
+                            </Button>
+                            <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
+                        </CardFooter>
+                    </Card>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// TRANSPARENCY V2
+// ============================================================================
+function TransparencyV2() {
+    return (
+        <section className="py-20 bg-background border-t border-border">
+            <div className="container mx-auto px-4 md:px-6">
+                <div className="grid md:grid-cols-2 gap-12 max-w-4xl mx-auto">
+                    <div>
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-primary">
+                            <Check className="h-6 w-6" /> Included
+                        </h3>
+                        <ul className="space-y-3">
+                            {["Sick visits", "Rashes", "UTIs", "Refills", "Chronic care (BP, lipids, diabetes)", "Prevention planning", "Referrals"].map((item) => (
+                                <li key={item} className="flex items-center gap-3 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                                    {item}
+                                </li>
+                            ))}
+                            <li className="flex items-center gap-3 text-muted-foreground">
+                                <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                                Examples: colds/flu, rashes, UTIs, refills, BP/lipids/diabetes follow-up, prevention planning, referrals.
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-muted-foreground">
+                            <X className="h-6 w-6" /> Not Included
+                        </h3>
+                        <ul className="space-y-3">
+                            {[
+                                "Emergency care (call 911)",
+                                "Hospital bills",
+                                "Most labs/imaging and prescriptions (billed separately when needed)"
+                            ].map((item) => (
+                                <li key={item} className="flex items-center gap-3 text-muted-foreground">
+                                    <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/30 flex-shrink-0" />
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// FAQ V2
+// ============================================================================
+function FAQAccordionV2() {
+    const faqs = [
+        {
+            question: "Do I still need insurance?",
+            answer: "Yes—keep insurance for emergencies, hospital care, and specialists. DPC isn’t insurance; it's a membership for your primary care needs."
+        },
+        {
+            question: "Can I use my HSA for this?",
+            answer: "Starting Jan 1, 2026, eligible individuals may be able to use HSA funds for qualifying DPC fees, subject to IRS rules and monthly limits. We recommend consulting a tax professional."
+        },
+        {
+            question: "Why is enrollment limited?",
+            answer: "Because access is the product. We cap membership to protect response times and ensure you can always reach your doctor when you need them."
+        },
+        {
+            question: "What states are you available in?",
+            answer: "We’re available in select states and expanding. You can check availability during signup (before payment) or book a free intro call."
+        }
+    ];
+
+    return (
+        <section className="py-20 bg-muted/30">
+            <div className="container mx-auto px-4 md:px-6 max-w-3xl">
+                <h2 className="text-3xl font-bold tracking-tight mb-12 text-center">Frequently Asked Questions</h2>
+                <Accordion type="single" collapsible className="w-full">
+                    {faqs.map((faq, index) => (
+                        <AccordionItem key={index} value={`item-${index}`}>
+                            <AccordionTrigger className="text-left font-medium text-lg">
+                                {faq.question}
+                            </AccordionTrigger>
+                            <AccordionContent className="text-muted-foreground leading-relaxed">
+                                {faq.answer}
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </div>
+        </section>
+    );
+}
+
+// ============================================================================
+// FINAL CTA BAND
 // ============================================================================
 function FinalCTA() {
     return (
@@ -211,7 +501,7 @@ function FinalCTA() {
 }
 
 // ============================================================================
-// STICKY CTA - Recommendation #7
+// STICKY CTA
 // ============================================================================
 function StickyCTA() {
     const [showSticky, setShowSticky] = useState(false);
@@ -270,20 +560,45 @@ export default function HomeV2() {
             {/* 1. Upgraded Hero with Trust Chips */}
             <HeroV2 />
 
-            {/* 2. Testimonials Strip (before the narrative) */}
-            <TestimonialsStrip />
+            {/* 2. Expectations Section (Replaces Testimonials) */}
+            <ExpectationsSection />
 
             {/* 3. 4-Up Summary Grid (skim layer) */}
             <SummaryGrid />
 
-            {/* 4. Original narrative sections (SocialProof renamed to avoid confusion) */}
-            <SocialProof />
-            <WhyPresentHealth />
-            <WhatYouGet />
-            <HsaInfo />
-            <PricingCards />
-            <Transparency />
-            <FAQAccordion />
+            {/* 4. Narrative sections */}
+            <SocialProofV2 />
+            <WhyPresentHealthV2 />
+            {/* WhatYouGet is replaced by SummaryGrid or is it? 
+                User said: "5) “EVERYTHING YOU NEED” BENEFITS LIST (rewrite a few lines) Keep the section..."
+                In V2 I had SummaryGrid AND WhatYouGet.
+                In this version, SummaryGrid IS the "Everything You Need" section.
+                So I should probably NOT include WhatYouGet again if SummaryGrid covers it.
+                Wait, SummaryGrid in V2 was "skim layer" above narrative.
+                The user says "4) “EVERYTHING YOU NEED” BENEFITS LIST (rewrite a few lines) Keep the section..."
+                This refers to SummaryGrid.
+                And "5) “PRIMARY CARE IS BROKEN…” SECTION (minor tightening)..."
+                This refers to WhyPresentHealth.
+                So I should include SocialProofV2, WhyPresentHealthV2.
+                And NOT WhatYouGet if SummaryGrid is the replacement.
+                In V2 I had:
+                <SummaryGrid />
+                <SocialProof />
+                <WhyPresentHealth />
+                <WhatYouGet />
+                
+                If SummaryGrid is "Everything You Need", then WhatYouGet is redundant?
+                Let's check WhatYouGet content.
+                It has "Direct Messaging", "Same-Day Visits", "Preventive Care", "Transparent Pricing".
+                SummaryGrid has THE SAME items.
+                So yes, SummaryGrid replaces WhatYouGet.
+                I will remove WhatYouGet.
+            */}
+
+            <HsaInfoV2 />
+            <PricingCardsV2 />
+            <TransparencyV2 />
+            <FAQAccordionV2 />
 
             {/* 5. Final CTA Band */}
             <FinalCTA />
