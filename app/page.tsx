@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Check, CheckCircle, MessageCircle, Clock, Shield, Heart, Star, Phone, ArrowRight, X, UserCheck, ShieldCheck, CheckCircle2 } from "lucide-react";
@@ -20,78 +21,61 @@ import {
 // ============================================================================
 function HeroV2() {
   return (
-    <section className="relative pt-20 pb-32 overflow-hidden bg-background">
-      <div className="container mx-auto px-4 md:px-6 relative z-10 text-center">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
-            Virtual Primary Care — <br className="hidden md:block" />
-            <span className="text-primary">with a real doctor, not a call center.</span>
-          </h1>
-          <p className="text-xl text-muted-foreground mb-2 max-w-2xl mx-auto">
-            Text your doctor. Same- or next-day telehealth visits. Clear plans and follow-through—without the portal ping-pong.
-          </p>
-          <p className="text-sm text-muted-foreground mb-8 font-medium">
-            Available in <strong>select states</strong>. Availability varies by state. Not for emergencies—call 911.
-          </p>
-          <p className="text-sm font-medium text-emerald-600 mb-8 bg-emerald-50 inline-block px-3 py-1 rounded-full border border-emerald-100">
-            Starting <strong>Jan 1, 2026</strong>: DPC memberships may be <strong>HSA-payable</strong> for eligible individuals, subject to IRS rules and limits.*
-          </p>
+    <section className="relative pt-12 pb-20 md:pt-20 md:pb-32 overflow-hidden bg-background">
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="text-center lg:text-left">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-6">
+              Virtual Primary Care — <br className="hidden md:block" />
+              <span className="text-primary">with a real doctor, not a call center.</span>
+            </h1>
+            <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto lg:mx-0">
+              Text your doctor. Same- or next-day telehealth visits. Clear plans and follow-through—without the portal ping-pong.
+            </p>
 
-          {/* UPGRADED CTA CLUSTER */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
-            <Button asChild size="lg" className="text-lg px-8 h-12 bg-primary text-primary-foreground hover:bg-primary/90">
-              <Link href="/pricing">
-                <Phone className="mr-2 h-5 w-5" />
-                Book a Free Intro Call
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg" className="text-lg px-8 h-12">
-              <Link href="#pricing">
-                See Pricing
-              </Link>
-            </Button>
-          </div>
-
-          <p className="text-sm text-muted-foreground mb-8">
-            Plans start at <strong>$149/mo</strong> (Individual) and <strong>$299/mo</strong> (Family).
-          </p>
-
-          {/* Text link for HSA info */}
-          <p className="text-sm text-muted-foreground mb-8">
-            <Link href="#hsa-info" className="underline hover:text-primary transition-colors">
-              How does HSA work with DPC? →
-            </Link>
-          </p>
-
-          {/* TRUST CHIPS */}
-          <div className="flex flex-wrap justify-center gap-3 mb-8">
-            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full text-sm text-muted-foreground">
-              <Shield className="h-4 w-4 text-primary" />
-              <span>Secure, HIPAA-conscious care</span>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
+              <Button asChild size="lg" className="text-lg px-8 h-12 bg-primary text-primary-foreground hover:bg-primary/90">
+                <Link href="/pricing">
+                  <Phone className="mr-2 h-5 w-5" />
+                  Book a Free Intro Call
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="text-lg px-8 h-12">
+                <Link href="#pricing">
+                  See Pricing
+                </Link>
+              </Button>
             </div>
-            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full text-sm text-muted-foreground">
-              <Check className="h-4 w-4 text-primary" />
-              <span>No contracts</span>
+
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 mb-8">
+              <Link href="#hsa-info" className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium border border-emerald-100 hover:bg-emerald-100 transition-colors">
+                <ShieldCheck className="w-4 h-4 mr-2" />
+                HSA/FSA Compatible (Starting 2026)*
+              </Link>
+              <span className="text-sm text-muted-foreground">Available in <strong>select states</strong>.</span>
             </div>
-            <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full text-sm text-muted-foreground">
-              <Check className="h-4 w-4 text-primary" />
-              <span>Cancel anytime</span>
+
+            {/* TRUST CHIPS */}
+            <div className="flex flex-wrap justify-center lg:justify-start gap-3">
+              <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full text-sm text-muted-foreground">
+                <Shield className="h-4 w-4 text-primary" />
+                <span>Secure, HIPAA-conscious</span>
+              </div>
+              <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-full text-sm text-muted-foreground">
+                <Check className="h-4 w-4 text-primary" />
+                <span>No contracts</span>
+              </div>
             </div>
           </div>
 
-          {/* Original trust indicators */}
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 text-sm text-muted-foreground font-medium">
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary" />
-              <span>Board-Certified Family Medicine</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary" />
-              <span>Solo Practice</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle className="h-4 w-4 text-primary" />
-              <span>Membership capped to protect access</span>
+          {/* HERO IMAGE PLACEHOLDER */}
+          <div className="relative mx-auto w-full max-w-md lg:max-w-full aspect-square lg:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-muted/20 border border-border/50 flex items-center justify-center">
+            {/* Placeholder for now - normally would be <Image src="..." /> */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center text-muted-foreground/50">
+              <div className="text-center p-8">
+                <MessageCircle className="w-16 h-16 mx-auto mb-4 text-primary/20" />
+                <p>Direct Doctor Access</p>
+              </div>
             </div>
           </div>
         </div>
@@ -133,7 +117,96 @@ function ExpectationsSection() {
             </Card>
           ))}
         </div>
-        <p className="text-center text-xs text-muted-foreground mt-8">Member stories coming soon.</p>
+      </div>
+    </section>
+  );
+}
+
+// ============================================================================
+// COMPARISON TABLE (Old Way vs New Way)
+// ============================================================================
+function ComparisonSection() {
+  return (
+    <section className="py-20 bg-background">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="text-center max-w-3xl mx-auto mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
+            Primary care is broken. We fixed it.
+          </h2>
+          <p className="text-lg text-muted-foreground">
+            Stop waiting weeks for a 7-minute visit. Get the care you deserve.
+          </p>
+        </div>
+
+        <div className="max-w-4xl mx-auto overflow-hidden rounded-xl border border-border shadow-sm">
+          <div className="grid grid-cols-3 bg-muted/50 p-4 font-semibold text-sm md:text-base">
+            <div className="text-muted-foreground">Feature</div>
+            <div className="text-center text-muted-foreground">Traditional Primary Care</div>
+            <div className="text-center text-primary font-bold">Present Health</div>
+          </div>
+
+          <div className="divide-y divide-border">
+            {[
+              { feature: "Wait Time", old: "20+ days average", new: "Same or Next Day" },
+              { feature: "Visit Length", old: "7-10 minutes rushed", new: "30-60 minutes relaxed" },
+              { feature: "Communication", old: "Portal (3-day delay)", new: "Direct Texting" },
+              { feature: "Cost", old: "Copays + Surprise Bills", new: "Flat Monthly Fee" },
+              { feature: "Relationship", old: "Transactional", new: "Personal & Continuous" },
+            ].map((row, i) => (
+              <div key={i} className="grid grid-cols-3 p-4 items-center text-sm md:text-base bg-background hover:bg-muted/5 transition-colors">
+                <div className="font-medium text-foreground">{row.feature}</div>
+                <div className="text-center text-muted-foreground">{row.old}</div>
+                <div className="text-center font-bold text-primary flex items-center justify-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 hidden sm:block" />
+                  {row.new}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ============================================================================
+// MEET YOUR DOCTOR
+// ============================================================================
+function MeetDoctor() {
+  return (
+    <section className="py-20 bg-muted/30 border-y border-border">
+      <div className="container mx-auto px-4 md:px-6">
+        <div className="flex flex-col md:flex-row items-center gap-12 max-w-5xl mx-auto">
+          <div className="w-full md:w-1/3 flex-shrink-0">
+            <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border border-border">
+              <Image
+                src="/images/dr-j.png"
+                alt="Dr. J - Founder of Present Health"
+                fill
+                className="object-cover"
+              />
+            </div>
+          </div>
+          <div className="w-full md:w-2/3 text-center md:text-left">
+            <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+              Founder & Lead Physician
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold mb-6">Meet Dr. J</h2>
+            <p className="text-lg text-muted-foreground leading-relaxed mb-6">
+              "I started Present Health because I believe primary care should be about the patient, not the paperwork. After years in the traditional system, I realized that the only way to provide true healthcare—not just sick care—was to remove the insurance middlemen and build a direct relationship with my patients."
+            </p>
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <CheckCircle className="w-5 h-5 text-primary" />
+                Board-Certified Family Medicine
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
+                <CheckCircle className="w-5 h-5 text-primary" />
+                10+ Years Experience
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -167,63 +240,6 @@ function SummaryGrid() {
             </Card>
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-// ============================================================================
-// SOCIAL PROOF V2 (Trust Strip)
-// ============================================================================
-function SocialProofV2() {
-  const items = [
-    {
-      icon: <UserCheck className="h-6 w-6 text-primary" />,
-      text: "10+ years experience",
-    },
-    {
-      icon: <ShieldCheck className="h-6 w-6 text-primary" />,
-      text: "Board-certified family medicine",
-    },
-    {
-      icon: <CheckCircle2 className="h-6 w-6 text-primary" />,
-      text: "No insurance billing / no middlemen",
-    },
-    {
-      icon: <Clock className="h-6 w-6 text-primary" />,
-      text: "Direct physician access (responses typically within 1 business day). If something feels urgent, don’t wait—seek urgent care or call 911.",
-    },
-  ];
-
-  return (
-    <section className="bg-muted/30 border-y border-border py-8">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {items.map((item, index) => (
-            <div key={index} className="flex items-center gap-3 justify-center sm:justify-start">
-              <div className="flex-shrink-0">{item.icon}</div>
-              <span className="text-sm font-medium text-foreground">{item.text}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ============================================================================
-// WHY PRESENT HEALTH V2 (Primary Care is Broken)
-// ============================================================================
-function WhyPresentHealthV2() {
-  return (
-    <section className="py-20 bg-background">
-      <div className="container mx-auto px-4 md:px-6 text-center max-w-3xl">
-        <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">
-          Primary care is broken for busy people.
-        </h2>
-        <p className="text-lg text-muted-foreground leading-relaxed">
-          If your doctor is booked for 3 weeks and every visit feels rushed, you’re not getting primary care—you’re getting a throughput system. <strong className="text-foreground">Present Health is different:</strong> Present Health is a small, physician-led, <strong>virtual-first</strong> DPC practice—available in <strong>select states</strong>—built for prevention, coordination, and real access.
-        </p>
       </div>
     </section>
   );
@@ -533,7 +549,7 @@ function StickyCTA() {
           <div className="flex items-center gap-2 bg-background border border-border shadow-lg rounded-full px-2 py-2">
             <Link href="/register?plan=individual">
               <Button size="sm" className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                Join – $129/mo
+                Join – $149/mo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
@@ -563,22 +579,24 @@ export default function Home() {
       {/* 2. Expectations Section (Replaces Testimonials) */}
       <ExpectationsSection />
 
-      {/* 3. 4-Up Summary Grid (skim layer) */}
-      <SummaryGrid />
+      {/* 3. Comparison Table (New) */}
+      <ComparisonSection />
 
-      {/* 4. Narrative sections */}
-      <SocialProofV2 />
-      <WhyPresentHealthV2 />
+      {/* 4. Meet Doctor (New) */}
+      <MeetDoctor />
+
+      {/* 5. 4-Up Summary Grid (skim layer) */}
+      <SummaryGrid />
 
       <HsaInfoV2 />
       <PricingCardsV2 />
       <TransparencyV2 />
       <FAQAccordionV2 />
 
-      {/* 5. Final CTA Band */}
+      {/* 6. Final CTA Band */}
       <FinalCTA />
 
-      {/* 6. Sticky CTA (appears after scroll) */}
+      {/* 7. Sticky CTA (appears after scroll) */}
       <StickyCTA />
     </>
   );
