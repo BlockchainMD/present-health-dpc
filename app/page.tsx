@@ -80,7 +80,7 @@ function HeroV2() {
               <div className="bg-muted/30 border-b border-border p-4 flex items-center gap-3">
                 <div className="relative">
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
-                    <Image src="/images/dr-j-real.jpg" alt="Dr. J" width={40} height={40} className="object-cover" />
+                    <Image src="/doctor-portrait.jpg" alt="Dr. J" width={40} height={40} className="object-cover" />
                   </div>
                   <div className="absolute bottom-0 right-0 h-3 w-3 bg-emerald-500 border-2 border-background rounded-full"></div>
                 </div>
@@ -236,7 +236,7 @@ function MeetDoctor() {
           <div className="w-full md:w-1/3 flex-shrink-0">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border border-border">
               <Image
-                src="/images/dr-j-real.jpg"
+                src="/doctor-portrait.jpg"
                 alt="Dr. J - Founder of Present Health"
                 fill
                 className="object-cover"
