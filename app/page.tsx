@@ -68,13 +68,69 @@ function HeroV2() {
             </div>
           </div>
 
-          {/* HERO IMAGE PLACEHOLDER */}
-          <div className="relative mx-auto w-full max-w-md lg:max-w-full aspect-square lg:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl bg-muted/20 border border-border/50 flex items-center justify-center">
-            {/* Placeholder for now - normally would be <Image src="..." /> */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 flex items-center justify-center text-muted-foreground/50">
-              <div className="text-center p-8">
-                <MessageCircle className="w-16 h-16 mx-auto mb-4 text-primary/20" />
-                <p>Direct Doctor Access</p>
+          {/* HERO VISUAL: CSS CHAT MOCKUP */}
+          <div className="relative mx-auto w-full max-w-md lg:max-w-full">
+            {/* Abstract Background Blob */}
+            <div className="absolute -top-12 -right-12 w-64 h-64 bg-primary/10 rounded-full blur-3xl opacity-50 animate-pulse" />
+            <div className="absolute -bottom-12 -left-12 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl opacity-50" />
+
+            {/* Phone Frame */}
+            <div className="relative bg-background border border-border shadow-2xl rounded-3xl overflow-hidden max-w-[380px] mx-auto">
+              {/* Header */}
+              <div className="bg-muted/30 border-b border-border p-4 flex items-center gap-3">
+                <div className="relative">
+                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center overflow-hidden">
+                    <Image src="/images/dr-j-real.jpg" alt="Dr. J" width={40} height={40} className="object-cover" />
+                  </div>
+                  <div className="absolute bottom-0 right-0 h-3 w-3 bg-emerald-500 border-2 border-background rounded-full"></div>
+                </div>
+                <div>
+                  <p className="font-semibold text-sm">Dr. J (Present Health)</p>
+                  <p className="text-xs text-emerald-600 font-medium">Online Now</p>
+                </div>
+              </div>
+
+              {/* Chat Area */}
+              <div className="p-4 space-y-4 bg-background min-h-[320px]">
+                {/* Time */}
+                <div className="text-center text-[10px] text-muted-foreground uppercase tracking-wider mb-4">Today 9:41 AM</div>
+
+                {/* Message 1: Patient */}
+                <div className="flex justify-end">
+                  <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%] text-sm shadow-sm">
+                    <p>Hey Dr. J, woke up with a weird rash on my arm. Worried it's Lyme. 😰</p>
+                  </div>
+                </div>
+
+                {/* Message 2: Doctor */}
+                <div className="flex justify-start">
+                  <div className="bg-muted text-foreground rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%] text-sm shadow-sm">
+                    <p>Hi Sarah! Send me a photo. I can take a look right now.</p>
+                  </div>
+                </div>
+
+                {/* Message 3: Patient (Photo Placeholder) */}
+                <div className="flex justify-end">
+                  <div className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm p-1 max-w-[85%] shadow-sm">
+                    <div className="bg-primary-foreground/20 h-32 w-48 rounded-xl flex items-center justify-center">
+                      <span className="text-xs opacity-70">IMG_4821.jpg</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Message 4: Doctor */}
+                <div className="flex justify-start">
+                  <div className="bg-muted text-foreground rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%] text-sm shadow-sm">
+                    <p>Got it. That looks like contact dermatitis, not Lyme. I'll send a prescription to your pharmacy. 💊</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Input Area */}
+              <div className="p-3 border-t border-border bg-muted/10">
+                <div className="bg-background border border-border rounded-full h-10 px-4 flex items-center text-sm text-muted-foreground shadow-sm">
+                  Type a message...
+                </div>
               </div>
             </div>
           </div>
