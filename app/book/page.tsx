@@ -3,8 +3,7 @@
 import { useEffect } from "react";
 import { getCalApi } from "@calcom/embed-react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, Phone, Mail } from "lucide-react";
+import { ArrowLeft, Mail } from "lucide-react";
 
 export default function BookPage() {
     useEffect(() => {
@@ -15,19 +14,14 @@ export default function BookPage() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-background flex flex-col">
-            {/* Simple Header */}
-            <header className="border-b border-border py-4">
-                <div className="container mx-auto px-4 flex items-center justify-between">
-                    <Link href="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-                        <ArrowLeft className="h-4 w-4" />
-                        Back to Home
-                    </Link>
-                    <div className="font-semibold text-foreground">Present Health</div>
-                </div>
-            </header>
+        <div className="min-h-screen bg-background">
+            <main className="container mx-auto px-4 py-8 max-w-5xl">
+                {/* Back Link (Replaces redundant header) */}
+                <Link href="/" className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors mb-8">
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Home
+                </Link>
 
-            <main className="flex-1 container mx-auto px-4 py-12 md:py-20 max-w-5xl">
                 <div className="grid lg:grid-cols-3 gap-12">
                     {/* Left Column: Context & Trust */}
                     <div className="lg:col-span-1 space-y-8">
@@ -68,11 +62,11 @@ export default function BookPage() {
                     {/* Right Column: Cal.com Embed */}
                     <div className="lg:col-span-2 bg-background rounded-xl border border-border shadow-sm overflow-hidden min-h-[600px]">
                         {/* 
-                            IMPORTANT: Replace 'presenthealth/intro' with your actual Cal.com link username/event-type.
-                            If you don't have one yet, this placeholder will show a generic Cal.com 404 or demo.
+                            IMPORTANT: This link is currently a PLACEHOLDER.
+                            The user must provide their actual Cal.com username to fix the 404 error.
                         */}
                         <iframe
-                            src="https://cal.com/presenthealth/intro"
+                            src="https://cal.com/jonathan-rouwhorst-1idf8k/15min"
                             style={{ width: "100%", height: "100%", minHeight: "600px", border: "none" }}
                             title="Book an Intro Call"
                         ></iframe>
