@@ -57,7 +57,7 @@ function HeroOptimized() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
               <Button asChild size="lg" className="text-lg px-8 h-14 bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href="/pricing">
+                <Link href="/book">
                   <Phone className="mr-2 h-5 w-5" />
                   Book a Free Intro Call
                 </Link>
@@ -467,7 +467,7 @@ function FinalCTA() {
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="text-lg px-8 h-12 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
-            <Link href="/pricing">
+            <Link href="/book">
               <Phone className="mr-2 h-5 w-5" />
               Book a Free Intro Call
             </Link>
@@ -499,9 +499,9 @@ function StickyCTA() {
       {showSticky && (
         <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
           <div className="flex items-center gap-2 bg-background border border-border shadow-lg rounded-full px-2 py-2">
-            <Link href="/register?plan=individual">
+            <Link href="/book">
               <Button size="sm" className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                Join – $149/mo <ArrowRight className="ml-2 h-4 w-4" />
+                Book Intro Call <Phone className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <button onClick={() => setDismissed(true)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Dismiss">
