@@ -180,7 +180,7 @@ function MeetDoctor() {
           <div className="w-full md:w-1/3 flex-shrink-0">
             <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border border-border">
               <Image
-                src="/images/dr-j.png"
+                src="/images/dr-j-real.jpg"
                 alt="Dr. J - Founder of Present Health"
                 fill
                 className="object-cover"
