@@ -461,12 +461,6 @@ function FinalCTA() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg" variant="secondary" className="text-lg px-8 h-12">
-            <Link href="/register?plan=individual">
-              Join Now – $149/mo
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
-          <Button asChild size="lg" variant="outline" className="text-lg px-8 h-12 border-primary-foreground/30 text-primary-foreground hover:bg-primary-foreground/10">
             <Link href="/book">
               <Phone className="mr-2 h-5 w-5" />
               Book a Free Intro Call
