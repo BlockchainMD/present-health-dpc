@@ -1,0 +1,10 @@
+allContacts:
+  email: 'jonrouwhorst@gmail.com'
+  phoneNumber: '+1.6164028353'
+  postalAddress:
+    regionCode: 'US'
+    postalCode: '49417'
+    administrativeArea: 'MI'
+    locality: 'Grand Haven'
+    addressLines: ['15161 Willowwood Ct']
+    recipients: ['Jonathan Rouwhorst']
