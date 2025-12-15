@@ -15,7 +15,7 @@ export default function PricingPage() {
                     Simple, Transparent Pricing.
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                    No hidden fees. No insurance headaches. Just direct access to your doctor.
+                    No hidden fees. Transparent pricing. Just direct access to your doctor.
                 </p>
             </div>
 
