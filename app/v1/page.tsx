@@ -152,12 +152,12 @@ function ExpectationsSection() {
                         <Card key={i} className="border-border/50 shadow-sm bg-background">
                             <CardContent className="p-6">
                                 <h3 className="font-semibold text-foreground mb-3 text-lg">{item.title}</h3>
-                                <p className="text-muted-foreground">Direct membership. Cancel anytime.</p>{item.body}</p>
-                        </CardContent>
+                                <p className="text-muted-foreground text-sm leading-relaxed">{item.body}</p>
+                            </CardContent>
                         </Card>
                     ))}
+                </div>
             </div>
-        </div>
         </section >
     );
 }
@@ -308,7 +308,7 @@ function PricingCardsV2() {
             <div className="container mx-auto px-4 md:px-6">
                 <div className="text-center max-w-3xl mx-auto mb-12">
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
-                        Simple membership. No insurance billing. Cancel anytime.
+                        Simple membership. Transparent pricing. Cancel anytime.
                     </h2>
 
                     <div className="flex items-center justify-center gap-4 mt-8">
