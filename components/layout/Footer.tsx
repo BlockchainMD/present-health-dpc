@@ -47,7 +47,7 @@ export function Footer() {
                     <div>
                         <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-foreground">Contact</h3>
                         <ul className="space-y-3 text-sm text-muted-foreground">
-                            <li><a href="mailto:hello@presenthealth.com" className="hover:text-primary transition-colors">hello@presenthealth.com</a></li>
+                            <li><a href="mailto:hello@presenthealthmd.com" className="hover:text-primary transition-colors">hello@presenthealthmd.com</a></li>
                         </ul>
                     </div>
                 </div>
@@ -56,11 +56,11 @@ export function Footer() {
                     <p className="text-xs text-muted-foreground">
                         &copy; {new Date().getFullYear()} Present Health. All rights reserved.
                     </p>
-                    <p className="text-xs text-muted-foreground max-w-md text-center md:text-right">
-                        Present Health is a Direct Primary Care practice, not insurance. We do not bill insurance. <br />
-                        Services are provided by a licensed physician where permitted. Availability varies by state. <br />
-                        *Membership fees may be HSA/FSA eligible starting 2026, subject to IRS rules and limits. Consult a tax professional.
-                    </p>
+                    <div className="text-xs text-muted-foreground max-w-2xl text-center md:text-right space-y-1">
+                        <p>Present Health is a Direct Primary Care practice, not insurance. We do not bill insurance.</p>
+                        <p>Services are provided by a licensed physician where permitted. Availability varies by state.</p>
+                        <p className="italic">*Membership fees may be HSA/FSA eligible starting 2026, subject to IRS rules and limits. Consult a tax professional.</p>
+                    </div>
                 </div>
             </div>
         </footer>

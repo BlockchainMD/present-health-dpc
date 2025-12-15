@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
                     </p>
                     <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">4. Contact Us</h2>
                     <p>
-                        If you have any questions about this Privacy Policy, please contact us at support@presenthealth.com.
+                        If you have any questions about this Privacy Policy, please contact us at support@presenthealthmd.com.
                     </p>
                 </div>
             </div>
