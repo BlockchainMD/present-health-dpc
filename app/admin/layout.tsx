@@ -28,7 +28,14 @@ export default function AdminLayout({
                         className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                     >
                         <FileText className="h-4 w-4" />
-                        Review Articles
+                        Review Drafts
+                    </Link>
+                    <Link
+                        href="/admin/published"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <FileText className="h-4 w-4" />
+                        Published Articles
                     </Link>
                     <Link
                         href="/blog"
