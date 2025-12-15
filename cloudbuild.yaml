@@ -24,7 +24,7 @@ steps:
       - '--platform'
       - 'managed'
       - '--allow-unauthenticated'
-      - '--set-env-vars'
+      - '--update-env-vars'
       - 'DATABASE_URL=postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db'
       - '--add-cloudsql-instances'
       - 'present-health-dpc-2025:us-central1:present-health-db'
