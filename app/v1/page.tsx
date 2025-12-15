@@ -152,13 +152,13 @@ function ExpectationsSection() {
                         <Card key={i} className="border-border/50 shadow-sm bg-background">
                             <CardContent className="p-6">
                                 <h3 className="font-semibold text-foreground mb-3 text-lg">{item.title}</h3>
-                                <p className="text-muted-foreground text-sm leading-relaxed">{item.body}</p>
-                            </CardContent>
+                                <p className="text-muted-foreground">Direct membership. Cancel anytime.</p>{item.body}</p>
+                        </CardContent>
                         </Card>
                     ))}
-                </div>
             </div>
-        </section>
+        </div>
+        </section >
     );
 }
 

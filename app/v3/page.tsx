@@ -278,7 +278,7 @@ function PricingCardsV2() {
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">
                         Simple Membership
                     </h2>
-                    <p className="text-muted-foreground">No insurance billing. Cancel anytime.</p>
+                    <p className="text-muted-foreground">Direct membership. Cancel anytime.</p>
 
                     <div className="flex items-center justify-center gap-4 mt-8">
                         <Label htmlFor="annual-mode" className={!isAnnual ? "font-bold" : "text-muted-foreground"}>Monthly</Label>
