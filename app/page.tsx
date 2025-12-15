@@ -334,8 +334,8 @@ function PricingCards() {
             <CardFooter className="flex flex-col gap-4">
               <p className="text-xs text-center text-muted-foreground">Available in select states.</p>
               <Button className="w-full" asChild>
-                <Link href={`/register?plan=individual&billing=${isAnnual ? 'annual' : 'monthly'}`}>
-                  Get Started
+                <Link href="/book">
+                  Book Free Intro Call
                 </Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
@@ -367,8 +367,8 @@ function PricingCards() {
             <CardFooter className="flex flex-col gap-4">
               <p className="text-xs text-center text-muted-foreground">Available in select states.</p>
               <Button className="w-full" variant="default" asChild>
-                <Link href={`/register?plan=family&billing=${isAnnual ? 'annual' : 'monthly'}`}>
-                  Get Started
+                <Link href="/book">
+                  Book Free Intro Call
                 </Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
