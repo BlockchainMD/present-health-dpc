@@ -69,7 +69,7 @@ export async function fetchTrends(): Promise<Trend[]> {
 
         return selectedTopics.map((topic, index) => ({
             title: topic,
-            link: `https://presenthealth.com/topics/${encodeURIComponent(topic.toLowerCase().replace(/\s+/g, '-'))}?id=${Date.now()}-${index}`,
+            link: `https://presenthealthmd.com/topics/${encodeURIComponent(topic.toLowerCase().replace(/\s+/g, '-'))}?id=${Date.now()}-${index}`,
             pubDate: new Date().toISOString(),
             source: "Present Health Topics"
         }));
