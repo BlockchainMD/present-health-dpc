@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
@@ -37,7 +38,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </header>
 
             <div className="prose prose-lg dark:prose-invert max-w-none">
-                <div className="whitespace-pre-wrap">{article.content}</div>
+                <ReactMarkdown>{article.content}</ReactMarkdown>
             </div>
 
             <div className="mt-16 p-8 bg-muted/30 rounded-2xl border border-border text-center">

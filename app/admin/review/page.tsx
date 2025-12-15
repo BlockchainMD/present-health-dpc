@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Check, X, Loader2, ExternalLink } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface Article {
     id: string;
@@ -97,7 +98,7 @@ export default function ReviewPage() {
                                 )}
                             </CardHeader>
                             <CardContent className="pt-6 max-h-64 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
-                                <div className="whitespace-pre-wrap">{article.content}</div>
+                                <ReactMarkdown>{article.content}</ReactMarkdown>
                             </CardContent>
                             <CardFooter className="bg-muted/10 flex justify-end gap-3 pt-4">
                                 <Button

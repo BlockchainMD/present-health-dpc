@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Article } from '@prisma/client';
+import ReactMarkdown from 'react-markdown';
 
 export const revalidate = 60; // Revalidate every minute
 
@@ -44,9 +45,9 @@ export default async function BlogPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="flex-1">
-                            <p className="text-muted-foreground line-clamp-4 text-sm">
-                                {article.content.substring(0, 200)}...
-                            </p>
+                            <div className="text-muted-foreground line-clamp-4 text-sm prose prose-sm dark:prose-invert">
+                                <ReactMarkdown>{article.content.substring(0, 200) + '...'}</ReactMarkdown>
+                            </div>
                             <Link
                                 href={`/blog/${article.id}`}
                                 className="inline-flex items-center text-primary text-sm font-medium mt-4 hover:underline"
