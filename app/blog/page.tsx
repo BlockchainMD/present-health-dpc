@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Article } from '@prisma/client';
 import ReactMarkdown from 'react-markdown';
 
-export const revalidate = 60; // Revalidate every minute
+export const dynamic = 'force-dynamic';
 
 async function getPublishedArticles() {
     try {
