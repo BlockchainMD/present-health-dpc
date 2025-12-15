@@ -10,8 +10,8 @@ export async function POST() {
         // 1. Fetch Trends
         const trends = await fetchTrends();
 
-        // Take top 5 unique trends
-        const topTrends = trends.slice(0, 5);
+        // Take top 1 trend
+        const topTrends = trends.slice(0, 1);
 
         const generatedArticles = [];
 
