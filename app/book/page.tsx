@@ -52,26 +52,26 @@ export default function BookPage() {
 
                         <div className="space-y-4">
                             <p className="text-sm font-medium text-muted-foreground">Prefer to email?</p>
-                            <a href=\"mailto:hello@presenthealthmd.com\" className=\"flex items-center gap-2 text-primary hover:underline\">
-                            <Mail className=\"h-4 w-4\" />
-                            hello@presenthealthmd.com
-                        </a>
+                            <a href="mailto:hello@presenthealthmd.com" className="flex items-center gap-2 text-primary hover:underline">
+                                <Mail className="h-4 w-4" />
+                                hello@presenthealthmd.com
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                {/* Right Column: Cal.com Embed */}
-                <div className="lg:col-span-2 bg-background rounded-xl border border-border shadow-sm overflow-hidden min-h-[600px]">
-                    {/* 
+                    {/* Right Column: Cal.com Embed */}
+                    <div className="lg:col-span-2 bg-background rounded-xl border border-border shadow-sm overflow-hidden min-h-[600px]">
+                        {/* 
                             IMPORTANT: This link is currently a PLACEHOLDER.
                             The user must provide their actual Cal.com username to fix the 404 error.
                         */}
-                    <iframe
-                        src="https://cal.com/jonathan-rouwhorst-1idf8k/15min"
-                        style={{ width: "100%", height: "100%", minHeight: "600px", border: "none" }}
-                        title="Book an Intro Call"
-                    ></iframe>
+                        <iframe
+                            src="https://cal.com/jonathan-rouwhorst-1idf8k/15min"
+                            style={{ width: "100%", height: "100%", minHeight: "600px", border: "none" }}
+                            title="Book an Intro Call"
+                        ></iframe>
+                    </div>
                 </div>
-        </div>
             </main >
         </div >
     );
