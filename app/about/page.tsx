@@ -38,18 +38,18 @@ export default function AboutPage() {
                                 to restore the sacred relationship between patient and physician.
                             </p>
                             <p>
-                                For too long, the insurance industry has stood between us. They dictate what care you get,
-                                how long we can spend with you (usually 7 minutes), and how much it costs.
+                                Traditional healthcare often prioritizes volume over value, leading to rushed visits and fragmented care.
+                                We believe there's a better way.
                             </p>
                             <p>
-                                We built Present Health to remove the noise.
+                                We built Present Health to simplify the experience.
                             </p>
                             <p>
                                 <strong>Why "Present"?</strong> Because that's what you deserve. A doctor who is present
-                                in the moment, listening to your story, not typing into a billing code generator.
+                                in the moment, listening to your story, and focused entirely on your well-being.
                             </p>
                             <p>
-                                We believe in direct connection, whether it's through code or through care. No middle-men. Just us.
+                                We believe in direct connection. No barriers. Just us.
                             </p>
                         </div>
 

@@ -11,8 +11,7 @@ export function SocialProof() {
             text: "Board-certified family medicine",
         },
         {
-            icon: <CheckCircle2 className="h-6 w-6 text-primary" />,
-            text: "No insurance billing / no middlemen",
+            text: "Direct access / transparent pricing",
         },
         {
             icon: <Clock className="h-6 w-6 text-primary" />,

@@ -41,7 +41,7 @@ Goals:
 1. SEO Optimization: Target high-intent keywords related to the topic. Answer "People Also Ask" style questions.
 2. Tone: Authoritative, professional, and accessible (Grade 8 reading level). Do NOT use first-person ("I", "me"). Use "Present Health" or "we" when referring to the practice.
 3. Structure: Use engaging H2/H3 headings, bullet points, and short paragraphs for readability.
-4. Value Proposition: Clearly explain why this topic matters and how the **VIRTUAL** Direct Primary Care model provides a superior solution compared to traditional insurance-based care AND traditional in-person DPC.
+4. Value Proposition: Clearly explain why this topic matters and how the **VIRTUAL** Direct Primary Care model provides a superior solution compared to traditional fee-for-service care.
 5. Highlight Virtual Benefits: Emphasize convenience, accessibility, care from anywhere, no travel time, instant messaging with your doctor, etc.
 6. Call to Action: End with a compelling reason to join Present Health's virtual practice.
 
