@@ -26,15 +26,24 @@ We offer direct access to care that can help you manage this.
 
     try {
         const prompt = `
-Act as an expert health content strategist for Present Health, a Direct Primary Care (DPC) practice.
+Act as an expert health content strategist for Present Health, a **Virtual Direct Primary Care (DPC)** practice.
+
+IMPORTANT CONTEXT ABOUT PRESENT HEALTH:
+- Present Health is a 100% VIRTUAL/TELEHEALTH DPC practice, not a traditional in-person clinic.
+- Patients get unlimited virtual visits, text/video access to their doctor, and care from anywhere.
+- The practice serves patients across multiple states without requiring in-person visits.
+- This is ideal for busy professionals, remote workers, travelers, and those in underserved areas.
+- The virtual model allows for more accessible, convenient, and affordable primary care.
+
 Write a high-ranking SEO blog post about "${topic}".
 
 Goals:
 1. SEO Optimization: Target high-intent keywords related to the topic. Answer "People Also Ask" style questions.
 2. Tone: Authoritative, professional, and accessible (Grade 8 reading level). Do NOT use first-person ("I", "me"). Use "Present Health" or "we" when referring to the practice.
 3. Structure: Use engaging H2/H3 headings, bullet points, and short paragraphs for readability.
-4. Value Proposition: Clearly explain why this topic matters and how the Direct Primary Care model provides a superior solution compared to traditional insurance-based care.
-5. Call to Action: End with a compelling reason to join Present Health.
+4. Value Proposition: Clearly explain why this topic matters and how the **VIRTUAL** Direct Primary Care model provides a superior solution compared to traditional insurance-based care AND traditional in-person DPC.
+5. Highlight Virtual Benefits: Emphasize convenience, accessibility, care from anywhere, no travel time, instant messaging with your doctor, etc.
+6. Call to Action: End with a compelling reason to join Present Health's virtual practice.
 
 Format:
 - Return ONLY a JSON object.
