@@ -9,12 +9,30 @@ export interface Trend {
     source: string;
 }
 
+// Topics relevant to Direct Primary Care
+const DPC_TOPICS = [
+    "Direct Primary Care Benefits",
+    "How to Choose a Primary Care Doctor",
+    "Preventative Health Screenings",
+    "Managing Chronic Conditions",
+    "Understanding HSA and FSA Accounts",
+    "Telehealth vs In-Person Visits",
+    "Annual Physical Exam Checklist",
+    "Mental Health in Primary Care",
+    "Workplace Wellness Programs",
+    "Healthcare Costs in America",
+    "Medicare vs Direct Primary Care",
+    "Family Medicine Best Practices",
+    "Health Insurance Alternatives",
+    "Patient-Doctor Relationship Tips",
+    "Lifestyle Medicine Trends"
+];
+
 export async function fetchTrends(): Promise<Trend[]> {
     const trends: Trend[] = [];
 
     try {
         // 1. Google Trends (Health) - US
-        // Geo=US, Category=45 (Health)
         const trendsFeed = await parser.parseURL('https://trends.google.com/trends/trendingsearches/daily/rss?geo=US');
 
         trendsFeed.items.forEach(item => {
@@ -33,7 +51,6 @@ export async function fetchTrends(): Promise<Trend[]> {
             const encodedQuery = encodeURIComponent(query);
             const newsFeed = await parser.parseURL(`https://news.google.com/rss/search?q=${encodedQuery}&hl=en-US&gl=US&ceid=US:en`);
 
-            // Take top 2 from each query
             newsFeed.items.slice(0, 2).forEach(item => {
                 trends.push({
                     title: item.title || 'Unknown News',
@@ -46,21 +63,16 @@ export async function fetchTrends(): Promise<Trend[]> {
 
     } catch (error) {
         console.error('Error fetching trends:', error);
-        // Return mock data if feeds fail (e.g. rate limiting)
-        return [
-            {
-                title: "Why Direct Primary Care is Booming in 2026",
-                link: `https://example.com/dpc-boom?t=${Date.now()}`,
-                pubDate: new Date().toISOString(),
-                source: "Mock Data (Fallback)"
-            },
-            {
-                title: "New HSA Limits for 2026 Explained",
-                link: `https://example.com/hsa-2026?t=${Date.now()}`,
-                pubDate: new Date().toISOString(),
-                source: "Mock Data (Fallback)"
-            }
-        ];
+        // Return diverse mock data if feeds fail
+        const shuffled = DPC_TOPICS.sort(() => Math.random() - 0.5);
+        const selectedTopics = shuffled.slice(0, 5);
+
+        return selectedTopics.map((topic, index) => ({
+            title: topic,
+            link: `https://presenthealth.com/topics/${encodeURIComponent(topic.toLowerCase().replace(/\s+/g, '-'))}?id=${Date.now()}-${index}`,
+            pubDate: new Date().toISOString(),
+            source: "Present Health Topics"
+        }));
     }
 
     return trends;

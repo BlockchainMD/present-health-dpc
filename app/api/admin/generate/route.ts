@@ -17,26 +17,19 @@ export async function POST() {
 
         // 2. Generate Content for each
         for (const trend of topTrends) {
-            // Check if we already have an article for this source to avoid duplicates
-            const existing = await prisma.article.findFirst({
-                where: { sourceUrl: trend.link }
+            const aiContent = await generateArticleContent(trend.title);
+
+            // 3. Save to DB
+            const article = await prisma.article.create({
+                data: {
+                    title: aiContent.title,
+                    content: aiContent.content,
+                    status: 'DRAFT',
+                    sourceUrl: trend.link
+                }
             });
 
-            if (!existing) {
-                const aiContent = await generateArticleContent(trend.title);
-
-                // 3. Save to DB
-                const article = await prisma.article.create({
-                    data: {
-                        title: aiContent.title,
-                        content: aiContent.content,
-                        status: 'DRAFT',
-                        sourceUrl: trend.link
-                    }
-                });
-
-                generatedArticles.push(article);
-            }
+            generatedArticles.push(article);
         }
 
         return NextResponse.json({
