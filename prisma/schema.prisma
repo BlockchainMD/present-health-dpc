@@ -34,3 +34,54 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Campaign {
+  id              String        @id @default(uuid())
+  slug            String        @unique
+  persona         String
+  intent          String
+  seedKeywords    String[]
+  benefits        String[]
+  proofPoints     String[]
+  disclaimers     String[]
+  landingSlug     String
+  budgetDaily     Float
+  targetCpa       Float
+  geo             String?
+  tone            String?
+  status          String        @default("DRAFT") // DRAFT, READY, DEPLOYED, PAUSED, ARCHIVED, ERROR
+  
+  runs            CampaignRun[]
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+}
+
+model CampaignRun {
+  id                      String   @id @default(uuid())
+  campaignId              String
+  campaign                Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  
+  // Artifacts
+  chosenKeywords          String[]
+  matchTypes              String[]
+  negativeKeywords        String[]
+  rsaHeadlines            String[]
+  rsaDescriptions         String[]
+  finalUrl                String?
+  landingPageContent      String?  @db.Text
+  
+  // Status & Lifecycle
+  status                  String   @default("PENDING") // PENDING, VALIDATED, DEPLOYED, PAUSED
+  googleAdsResourceIds    Json?    // Store IDs from Google Ads API
+  
+  // Metrics Snapshot
+  metrics                 Json?    // { clicks: 0, cost: 0, conversions: 0, ctr: 0, cvr: 0, cpa: 0 }
+  lastMetricsSync         DateTime?
+
+  // Compliance
+  complianceCheckResults  Json?    // { status: "PASS" | "FAIL", reasons: [] }
+  
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
