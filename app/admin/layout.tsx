@@ -53,6 +53,12 @@ export default function AdminLayout({
                         View Live Blog
                     </Link>
                 </nav>
+
+                {/* Version Info */}
+                <div className="p-4 border-t border-border text-xs text-muted-foreground/60">
+                    <p>Build: {process.env.NEXT_PUBLIC_BUILD_ID?.slice(0, 7) || 'dev'}</p>
+                    <p>{process.env.NEXT_PUBLIC_BUILD_TIME || 'Local'}</p>
+                </div>
             </aside>
 
             {/* Main Content */}

@@ -7,6 +7,8 @@ steps:
       - '--cache=true'
       - '--cache-ttl=168h'  # Cache for 7 days
       - '--build-arg=DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy'
+      - '--build-arg=NEXT_PUBLIC_BUILD_ID=$COMMIT_SHA'
+      - '--build-arg=NEXT_PUBLIC_BUILD_TIME=$BUILD_ID'
 
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
