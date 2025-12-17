@@ -17,6 +17,49 @@ export default function NewCampaignPage() {
     const [error, setError] = useState<string | null>(null);
     const [complianceErrors, setComplianceErrors] = useState<string[]>([]);
 
+    const [generating, setGenerating] = useState(false);
+
+    async function handleAutoGenerate() {
+        setGenerating(true);
+        setError(null);
+        try {
+            const res = await fetch('/api/admin/campaigns/suggest', { method: 'POST' });
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error);
+
+            // Pre-fill form by setting inputs directly (simplest way without controlled state refactor)
+            const setInputValue = (name: string, value: any) => {
+                const input = document.querySelector(`[name="${name}"]`) as HTMLInputElement | HTMLTextAreaElement;
+                if (input) {
+                    if (Array.isArray(value)) {
+                        input.value = value.join(name === 'seedKeywords' ? ', ' : '\n');
+                    } else {
+                        input.value = value;
+                    }
+                }
+            };
+
+            setInputValue('slug', data.slug);
+            setInputValue('landingSlug', data.landingSlug);
+            setInputValue('persona', data.persona);
+            setInputValue('intent', data.intent);
+            setInputValue('seedKeywords', data.seedKeywords);
+            setInputValue('benefits', data.benefits);
+            setInputValue('proofPoints', data.proofPoints);
+            setInputValue('disclaimers', data.disclaimers);
+            setInputValue('budgetDaily', data.budgetDaily);
+            setInputValue('targetCpa', data.targetCpa);
+            setInputValue('geo', data.geo);
+            setInputValue('tone', data.tone);
+
+        } catch (err: any) {
+            setError(err.message || 'Failed to auto-generate campaign');
+        } finally {
+            setGenerating(false);
+        }
+    }
+
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setLoading(true);
@@ -74,16 +117,27 @@ export default function NewCampaignPage() {
 
     return (
         <div className="max-w-3xl mx-auto space-y-8">
-            <div className="flex items-center gap-4">
-                <Button variant="ghost" size="icon" asChild>
-                    <Link href="/admin/campaigns">
-                        <ArrowLeft className="h-4 w-4" />
-                    </Link>
-                </Button>
-                <div>
-                    <h1 className="text-2xl font-bold tracking-tight">New Campaign</h1>
-                    <p className="text-muted-foreground">Define your audience, intent, and safety guardrails.</p>
+            <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="icon" asChild>
+                        <Link href="/admin/campaigns">
+                            <ArrowLeft className="h-4 w-4" />
+                        </Link>
+                    </Button>
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight">New Campaign</h1>
+                        <p className="text-muted-foreground">Define your audience, intent, and safety guardrails.</p>
+                    </div>
                 </div>
+                <Button
+                    variant="secondary"
+                    onClick={handleAutoGenerate}
+                    disabled={generating}
+                    className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20 text-indigo-700 border border-indigo-200/50"
+                >
+                    {generating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <span className="mr-2">✨</span>}
+                    Auto-Generate with AI
+                </Button>
             </div>
 
             {error && (
