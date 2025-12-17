@@ -1,14 +1,12 @@
-
 steps:
-  # Build the container image
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '--build-arg', 'DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy', '-t', 'gcr.io/$PROJECT_ID/present-health-dpc', '.']
-
-  # Push the container image to Container Registry
-  - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/present-health-dpc']
-
-
+  # Build with layer caching using Kaniko
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    args:
+      - '--destination=gcr.io/$PROJECT_ID/present-health-dpc:$COMMIT_SHA'
+      - '--destination=gcr.io/$PROJECT_ID/present-health-dpc:latest'
+      - '--cache=true'
+      - '--cache-ttl=168h'  # Cache for 7 days
+      - '--build-arg=DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy'
 
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -18,7 +16,7 @@ steps:
       - 'deploy'
       - 'present-health-dpc'
       - '--image'
-      - 'gcr.io/$PROJECT_ID/present-health-dpc'
+      - 'gcr.io/$PROJECT_ID/present-health-dpc:$COMMIT_SHA'
       - '--region'
       - 'us-central1'
       - '--platform'
@@ -30,7 +28,8 @@ steps:
       - 'present-health-dpc-2025:us-central1:present-health-db'
 
 images:
-  - 'gcr.io/$PROJECT_ID/present-health-dpc'
+  - 'gcr.io/$PROJECT_ID/present-health-dpc:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/present-health-dpc:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
