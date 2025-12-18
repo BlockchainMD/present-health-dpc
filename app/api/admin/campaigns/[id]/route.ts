@@ -28,3 +28,21 @@ export async function GET(
         return NextResponse.json({ error: 'Failed to fetch campaign' }, { status: 500 });
     }
 }
+
+export async function DELETE(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const { id } = await params;
+
+    try {
+        await prisma.campaign.delete({
+            where: { id }
+        });
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error('Error deleting campaign:', error);
+        return NextResponse.json({ error: 'Failed to delete campaign' }, { status: 500 });
+    }
+}

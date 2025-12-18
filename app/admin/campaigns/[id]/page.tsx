@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Play, Pause, Trash2, RefreshCw, ExternalLink, CheckCircle, AlertTriangle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Trash2, RefreshCw, ExternalLink, CheckCircle, AlertTriangle, Loader2, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,6 +18,8 @@ export default function CampaignDetailsPage() {
     const [campaign, setCampaign] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [generating, setGenerating] = useState(false);
+    const [deploying, setDeploying] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [metrics, setMetrics] = useState<any[]>([]);
 
@@ -83,6 +85,42 @@ export default function CampaignDetailsPage() {
         } catch (e) { }
     }
 
+    async function handleDeploy() {
+        if (!confirm('Are you sure you want to go live with this campaign? This will enable it in Google Ads.')) return;
+        setDeploying(true);
+        setError(null);
+        try {
+            const res = await fetch(`/api/admin/campaigns/${id}/deploy`, { method: 'POST' });
+            if (res.ok) {
+                await fetchCampaign(); // Refresh status
+            } else {
+                const data = await res.json();
+                setError(data.error || 'Deployment failed');
+            }
+        } catch (err) {
+            setError('An error occurred during deployment');
+        } finally {
+            setDeploying(false);
+        }
+    }
+
+    async function handleDelete() {
+        if (!confirm('Are you sure you want to DELETE this campaign? This cannot be undone.')) return;
+        setDeleting(true);
+        try {
+            const res = await fetch(`/api/admin/campaigns/${id}`, { method: 'DELETE' });
+            if (res.ok) {
+                router.push('/admin/campaigns');
+            } else {
+                setError('Failed to delete campaign');
+                setDeleting(false);
+            }
+        } catch (err) {
+            setError('An error occurred during deletion');
+            setDeleting(false);
+        }
+    }
+
     if (loading) return <div className="p-8 text-center"><Loader2 className="h-8 w-8 animate-spin mx-auto text-muted-foreground" /></div>;
     if (!campaign) return <div className="p-8 text-center text-red-500">Campaign not found</div>;
 
@@ -113,14 +151,28 @@ export default function CampaignDetailsPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
+                    {/* Delete */}
+                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" onClick={handleDelete} disabled={deleting}>
+                        {deleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                    </Button>
+
                     <Button variant="ghost" size="sm" onClick={handleRegenerateMetrics}>
                         <RefreshCw className="mr-2 h-3 w-3" /> Simulate Data
                     </Button>
+
+                    {/* Regenerate Assets */}
                     <Button variant="outline" onClick={handleGenerate} disabled={generating}>
                         {generating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                        Generate Assets
+                        {latestRun ? 'Regenerate Assets' : 'Generate Assets'}
                     </Button>
-                    {/* Deploy Button would go here in Phase 2 */}
+
+                    {/* Go Live */}
+                    {latestRun && (
+                        <Button onClick={handleDeploy} disabled={deploying || campaign.status === 'ACTIVE'} className={campaign.status === 'ACTIVE' ? "bg-green-600 hover:bg-green-700" : ""}>
+                            {deploying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (campaign.status === 'ACTIVE' ? <CheckCircle className="mr-2 h-4 w-4" /> : <Rocket className="mr-2 h-4 w-4" />)}
+                            {campaign.status === 'ACTIVE' ? 'Live' : 'Go Live'}
+                        </Button>
+                    )}
                 </div>
             </div>
 
