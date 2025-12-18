@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
@@ -18,6 +18,19 @@ export default function NewCampaignPage() {
     const [complianceErrors, setComplianceErrors] = useState<string[]>([]);
 
     const [generating, setGenerating] = useState(false);
+    const [logs, setLogs] = useState<string[]>([]);
+
+    const addLog = (message: string, type: 'info' | 'error' = 'info') => {
+        const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
+        const logEntry = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+        setLogs(prev => [...prev, logEntry]);
+        if (type === 'error') console.error(message);
+        else console.log(message);
+    };
+
+    useEffect(() => {
+        addLog('Debug session started. Waiting for interaction...');
+    }, []);
 
     async function handleAutoGenerate() {
         setGenerating(true);
@@ -62,11 +75,13 @@ export default function NewCampaignPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        addLog('[NewCampaignPage] handleSubmit triggered');
         setLoading(true);
         setError(null);
         setComplianceErrors([]);
 
         const formData = new FormData(e.currentTarget);
+        addLog('[NewCampaignPage] FormData created');
 
         // Parse array fields (comma-separated)
         const seedKeywords = (formData.get('seedKeywords') as string).split(',').map(s => s.trim()).filter(Boolean);
@@ -89,16 +104,31 @@ export default function NewCampaignPage() {
             disclaimers
         };
 
+        addLog(`[NewCampaignPage] Payload prepared: ${JSON.stringify(data, null, 2)}`);
+
         try {
+            addLog('[NewCampaignPage] Sending POST request to /api/admin/campaigns');
             const res = await fetch('/api/admin/campaigns', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
             });
+            addLog(`[NewCampaignPage] Response received. Status: ${res.status} ${res.statusText}`);
 
-            const result = await res.json();
+            const resultText = await res.text();
+            addLog(`[NewCampaignPage] Raw response text: ${resultText}`);
+
+            let result;
+            try {
+                result = JSON.parse(resultText);
+                addLog(`[NewCampaignPage] Parsed JSON response: ${JSON.stringify(result)}`);
+            } catch (jsonErr) {
+                addLog(`[NewCampaignPage] Failed to parse JSON response: ${jsonErr}`, 'error');
+                throw new Error(`Server returned invalid JSON: ${resultText.substring(0, 100)}...`);
+            }
 
             if (!res.ok) {
+                addLog(`[NewCampaignPage] Request failed with status: ${res.status}`, 'error');
                 if (result.reasons) {
                     setComplianceErrors(result.reasons);
                     setError('Compliance check failed. Please fix the issues below.');
@@ -106,11 +136,14 @@ export default function NewCampaignPage() {
                     setError(result.error || 'Failed to create campaign');
                 }
             } else {
+                addLog(`[NewCampaignPage] Campaign created successfully, redirecting to: /admin/campaigns/${result.id}`);
                 router.push(`/admin/campaigns/${result.id}`);
             }
-        } catch (err) {
-            setError('An unexpected error occurred');
+        } catch (err: any) {
+            addLog(`[NewCampaignPage] Exception caught in handleSubmit: ${err}`, 'error');
+            setError(err.message || 'An unexpected error occurred');
         } finally {
+            addLog('[NewCampaignPage] handleSubmit finished, setLoading(false)');
             setLoading(false);
         }
     }
@@ -250,6 +283,28 @@ export default function NewCampaignPage() {
                     </Button>
                 </div>
             </form>
+
+            <Card className="mt-8 bg-slate-950 text-slate-50 border-slate-800">
+                <CardHeader>
+                    <CardTitle className="text-sm font-mono flex items-center gap-2">
+                        <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                        Debug Logs
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="bg-slate-900 rounded p-4 h-64 overflow-y-auto font-mono text-xs space-y-1">
+                        {logs.length === 0 ? (
+                            <div className="text-slate-500 italic">No logs yet...</div>
+                        ) : (
+                            logs.map((log, i) => (
+                                <div key={i} className={log.includes('ERROR') ? 'text-red-400' : 'text-slate-300'}>
+                                    {log}
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </CardContent>
+            </Card>
         </div>
     );
 }
