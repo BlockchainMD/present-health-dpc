@@ -71,6 +71,9 @@ model CampaignRun {
   finalUrl                String?
   landingPageContent      String?  @db.Text
   
+  // Metrics History
+  metricsHistory          CampaignMetric[]
+  
   // Status & Lifecycle
   status                  String   @default("PENDING") // PENDING, VALIDATED, DEPLOYED, PAUSED
   googleAdsResourceIds    Json?    // Store IDs from Google Ads API
@@ -84,4 +87,22 @@ model CampaignRun {
   
   createdAt               DateTime @default(now())
   updatedAt               DateTime @updatedAt
+}
+
+model CampaignMetric {
+  id              String       @id @default(uuid())
+  campaignRunId   String
+  campaignRun     CampaignRun  @relation(fields: [campaignRunId], references: [id], onDelete: Cascade)
+  
+  date            DateTime     // Daily granularity
+  
+  impressions     Int          @default(0)
+  clicks          Int          @default(0)
+  conversions     Int          @default(0)
+  cost            Float        @default(0.0)
+  
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@unique([campaignRunId, date]) // One entry per run per day
 }

@@ -25,7 +25,14 @@ const DENYLIST = [
 
     // Insurance Terms (to avoid confusion/compliance issues if we are cash-pay only)
     // "insurance accepted" - we are DPC, we don't bill insurance.
-    "medicare", "medicaid", "tricare", "insurance accepted", "bill insurance", "copay", "deductible"
+    // Insurance Terms (to avoid confusion/compliance issues if we are cash-pay only)
+    // "insurance accepted" - we are DPC, we don't bill insurance.
+    "medicare", "medicaid", "tricare", "insurance accepted", "bill insurance", "copay", "deductible",
+
+    // Unsubstantiated Claims / Specific Stats (unless verified)
+    "24/7", "24/7 access", "open 24 hours",
+    "95%", "90%", "99%", "100%", // Ban specific high percentages commonly hallucinated
+    "10,000", "5,000", "1,000", "million" // Ban specific large user counts
 ];
 
 // REQUIRED TERMS: Landing pages MUST contain these (or variations).
