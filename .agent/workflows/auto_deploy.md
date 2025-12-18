@@ -21,6 +21,15 @@ After completing any code modifications, ALWAYS follow these steps to ensure cha
    git push origin master
    ```
 
-4. **Confirm to user** that changes have been deployed and they should wait 2-3 minutes for Cloud Build to complete.
+4. **Wait for deployment** (2-3 minutes for Cloud Build to complete)
 
-> **IMPORTANT**: This workflow should be executed at the END of every coding task, before notifying the user that work is complete. Do NOT wait for user approval to deploy unless the changes are breaking or risky.
+5. **Verify deployment via browser**
+   - Use the `browser_subagent` tool to navigate to the production URL and verify:
+     - The page loads without errors
+     - Any new API endpoints return expected responses
+     - Any UI changes are visible
+   - Example: If you added `/api/admin/migrate`, navigate to `https://presenthealthmd.com/api/admin/migrate` and confirm it returns the expected JSON.
+
+6. **Confirm to user** that changes have been deployed AND verified working in production.
+
+> **IMPORTANT**: This workflow should be executed at the END of every coding task. Do NOT conclude a task until you have verified the deployment is working via browser. If verification fails, debug and redeploy before notifying the user.
