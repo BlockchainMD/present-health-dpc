@@ -57,7 +57,18 @@ export default function AdminLayout({
                 {/* Version Info */}
                 <div className="p-4 border-t border-border text-xs text-muted-foreground/60">
                     <p>Build: {process.env.NEXT_PUBLIC_BUILD_ID?.slice(0, 7) || 'dev'}</p>
-                    <p>{process.env.NEXT_PUBLIC_BUILD_TIME || 'Local'}</p>
+                    <p suppressHydrationWarning>
+                        {process.env.NEXT_PUBLIC_BUILD_TIME
+                            ? new Date(process.env.NEXT_PUBLIC_BUILD_TIME).toLocaleString('en-US', {
+                                timeZone: 'America/New_York',
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                timeZoneName: 'short'
+                            })
+                            : 'Local Dev'}
+                    </p>
                 </div>
             </aside>
 
