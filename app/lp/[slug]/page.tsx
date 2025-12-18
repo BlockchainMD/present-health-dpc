@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { Button } from '@/components/ui/button';
 import { CheckCircle2, ArrowRight, ShieldCheck } from 'lucide-react';
+import Image from "next/image";
 
 // Force dynamic rendering to ensure we get fresh data
 export const dynamic = 'force-dynamic';
@@ -45,22 +46,63 @@ export default async function LandingPage({ params }: PageProps) {
 
             <main className="flex-1">
                 {/* Hero */}
-                <section className="py-20 md:py-32 bg-muted/30">
-                    <div className="container mx-auto px-4 text-center max-w-3xl">
-                        <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
-                            {content.hero.headline}
-                        </h1>
-                        <p className="text-xl text-muted-foreground mb-8">
-                            {content.hero.subheadline}
-                        </p>
-                        <Button asChild size="lg" className="text-lg px-8 h-12">
-                            <Link href="/book">
-                                {content.hero.cta} <ArrowRight className="ml-2 h-5 w-5" />
-                            </Link>
-                        </Button>
-                        <p className="mt-4 text-sm text-muted-foreground">
-                            No insurance needed. Transparent pricing.
-                        </p>
+                {/* Hero */}
+                <section className="relative pt-12 pb-20 md:pt-24 md:pb-32 overflow-hidden bg-background">
+                    <div className="container mx-auto px-4 md:px-6 relative z-10">
+                        <div className="grid lg:grid-cols-2 gap-12 items-center">
+                            <div className="text-center lg:text-left order-2 lg:order-1">
+                                <h1 className="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+                                    {content.hero.headline}
+                                </h1>
+                                <p className="text-xl text-muted-foreground mb-8 text-balance">
+                                    {content.hero.subheadline}
+                                </p>
+                                <Button asChild size="lg" className="text-lg px-8 h-12">
+                                    <Link href="/book">
+                                        {content.hero.cta} <ArrowRight className="ml-2 h-5 w-5" />
+                                    </Link>
+                                </Button>
+                                <p className="mt-4 text-sm text-muted-foreground">
+                                    No insurance needed. Transparent pricing.
+                                </p>
+                            </div>
+
+                            {/* HERO VISUAL: LARGE PORTRAIT */}
+                            <div className="relative mx-auto w-full max-w-md order-1 lg:order-2">
+                                {/* Abstract Background Blob */}
+                                <div className="absolute -top-16 -right-16 w-80 h-80 bg-primary/10 rounded-full blur-3xl opacity-60" />
+                                <div className="absolute -bottom-16 -left-16 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl opacity-60" />
+
+                                {/* Portrait */}
+                                <div className="relative">
+                                    <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border-2 border-border">
+                                        <Image
+                                            src="/doctor-portrait.jpg"
+                                            alt="Dr. J - Your Physician at Present Health"
+                                            fill
+                                            className="object-cover"
+                                            priority
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                                    </div>
+
+                                    {/* Overlay Card */}
+                                    <div className="absolute -bottom-6 -left-6 right-6 bg-background border border-border rounded-2xl p-4 shadow-xl">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex-shrink-0">
+                                                <div className="h-12 w-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                                    <div className="h-3 w-3 bg-emerald-500 rounded-full animate-pulse" />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <p className="font-bold text-foreground">Dr. J</p>
+                                                <p className="text-sm text-emerald-600 font-medium">Accepting New Members</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
