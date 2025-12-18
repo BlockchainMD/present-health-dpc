@@ -80,12 +80,13 @@ export async function GET() {
     `);
 
     // Check if tables exist now
-    const campaigns = await prisma.$queryRawUnsafe('SELECT COUNT(*) FROM "Campaign"');
+    const result: any = await prisma.$queryRawUnsafe('SELECT COUNT(*)::int as count FROM "Campaign"');
+    const campaignCount = result?.[0]?.count ?? 0;
 
     return NextResponse.json({
       status: 'success',
       message: 'Tables created successfully (including CampaignMetric)',
-      campaigns
+      campaignCount
     });
   } catch (error: any) {
     console.error('Migration failed:', error);
