@@ -48,8 +48,33 @@ export function validateContent(content: string, context: string = "General"): C
 
     // 1. Check Denylist
     for (const term of DENYLIST) {
-        if (lowerContent.includes(term)) {
-            reasons.push(`[${context}] Contains forbidden term: "${term}"`);
+        if (term === "bill insurance") {
+            // Context-aware check for "bill insurance"
+            // We want to BAN "bill insurance" UNLESS it is preceded by a negation like "not", "no", "don't"
+            // Regex matches: (not|no|don't|do not|doesn't) [optional words] bill insurance
+            // But checking for presence of banned phrase WITHOUT negation is easier:
+
+            // Find all occurrences of "bill insurance"
+            const indices = [];
+            let pos = lowerContent.indexOf(term);
+            while (pos !== -1) {
+                indices.push(pos);
+                pos = lowerContent.indexOf(term, pos + 1);
+            }
+
+            for (const index of indices) {
+                // Look at the preceding characters (e.g., 20 chars back)
+                const precedingText = lowerContent.substring(Math.max(0, index - 25), index);
+                // If it DOES NOT contain a negation, flag it.
+                if (!/(not|no|don't|won't|never)\b/.test(precedingText)) {
+                    reasons.push(`[${context}] Contains forbidden term: "${term}" (context suggesting you might bill insurance)`);
+                }
+            }
+        } else {
+            // Standard check for other terms
+            if (lowerContent.includes(term)) {
+                reasons.push(`[${context}] Contains forbidden term: "${term}"`);
+            }
         }
     }
 
