@@ -83,30 +83,37 @@ export default function NewCampaignPage() {
         const formData = new FormData(e.currentTarget);
         addLog('[NewCampaignPage] FormData created');
 
-        // Parse array fields (comma-separated)
-        const seedKeywords = (formData.get('seedKeywords') as string).split(',').map(s => s.trim()).filter(Boolean);
-        const benefits = (formData.get('benefits') as string).split('\n').map(s => s.trim()).filter(Boolean);
-        const proofPoints = (formData.get('proofPoints') as string).split('\n').map(s => s.trim()).filter(Boolean);
-        const disclaimers = (formData.get('disclaimers') as string).split('\n').map(s => s.trim()).filter(Boolean);
-
-        const data = {
+        addLog(`[NewCampaignPage] Payload prepared: ${JSON.stringify({
             slug: formData.get('slug'),
             persona: formData.get('persona'),
             intent: formData.get('intent'),
             landingSlug: formData.get('landingSlug'),
-            budgetDaily: formData.get('budgetDaily'),
-            targetCpa: formData.get('targetCpa'),
-            geo: formData.get('geo'),
-            tone: formData.get('tone'),
-            seedKeywords,
-            benefits,
-            proofPoints,
-            disclaimers
-        };
-
-        addLog(`[NewCampaignPage] Payload prepared: ${JSON.stringify(data, null, 2)}`);
+            // truncated for log clarity
+        }, null, 2)}`);
 
         try {
+            // Parse array fields (comma-separated or newlines)
+            // SAFELY handle nulls by defaulting to empty string before splitting
+            const seedKeywords = (formData.get('seedKeywords') as string || '').split(',').map(s => s.trim()).filter(Boolean);
+            const benefits = (formData.get('benefits') as string || '').split('\n').map(s => s.trim()).filter(Boolean);
+            const proofPoints = (formData.get('proofPoints') as string || '').split('\n').map(s => s.trim()).filter(Boolean);
+            const disclaimers = (formData.get('disclaimers') as string || '').split('\n').map(s => s.trim()).filter(Boolean);
+
+            const data = {
+                slug: formData.get('slug'),
+                persona: formData.get('persona'),
+                intent: formData.get('intent'),
+                landingSlug: formData.get('landingSlug'),
+                budgetDaily: formData.get('budgetDaily'),
+                targetCpa: formData.get('targetCpa'),
+                geo: formData.get('geo'),
+                tone: formData.get('tone'),
+                seedKeywords,
+                benefits,
+                proofPoints,
+                disclaimers
+            };
+
             addLog('[NewCampaignPage] Sending POST request to /api/admin/campaigns');
             const res = await fetch('/api/admin/campaigns', {
                 method: 'POST',
@@ -241,6 +248,11 @@ export default function NewCampaignPage() {
                         <div className="space-y-2">
                             <Label htmlFor="proofPoints">Proof Points (One per line)</Label>
                             <Textarea id="proofPoints" name="proofPoints" placeholder="Board-certified physicians&#10;5-star rated&#10;Open evenings and weekends" rows={3} />
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="disclaimers">Disclaimers (One per line)</Label>
+                            <Textarea id="disclaimers" name="disclaimers" placeholder="Not insurance&#10;Available in select states" rows={2} />
                         </div>
                     </CardContent>
                 </Card>
