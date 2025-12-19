@@ -17,11 +17,18 @@ export const metadata: Metadata = {
   description: "Membership primary care with direct doctor access, same/next-day virtual visits, prevention planning, and transparent pricing. HSA-friendly starting 2026 (limits apply).",
 };
 
-<body
-  className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-background text-foreground bg-noise`}
->
-  {children}
-</body>
-    </html >
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-background text-foreground bg-noise`}
+      >
+        {children}
+      </body>
+    </html>
   );
 }
