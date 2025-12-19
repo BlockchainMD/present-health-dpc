@@ -136,6 +136,23 @@ export default async function LandingPage({ params }: PageProps) {
                     </div>
                 </section>
 
+                {/* FAQ Section (New) */}
+                {content.faqs && content.faqs.length > 0 && (
+                    <section className="py-20 bg-background">
+                        <div className="container mx-auto px-4 max-w-3xl">
+                            <h2 className="text-3xl font-bold mb-12 text-center">Frequently Asked Questions</h2>
+                            <div className="space-y-6">
+                                {content.faqs.map((faq: any, i: number) => (
+                                    <div key={i} className="border border-border rounded-lg p-6 hover:shadow-md transition-shadow">
+                                        <h3 className="font-semibold text-lg mb-2">{faq.question}</h3>
+                                        <p className="text-muted-foreground">{faq.answer}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                )}
+
                 {/* How It Works */}
                 <section className="py-20 bg-muted/30">
                     <div className="container mx-auto px-4 text-center">
@@ -155,12 +172,14 @@ export default async function LandingPage({ params }: PageProps) {
                 </section>
 
                 {/* Final CTA */}
+                {/* Final CTA */}
                 <section className="py-20 bg-primary text-primary-foreground text-center">
                     <div className="container mx-auto px-4">
-                        <h2 className="text-3xl font-bold mb-6">Ready to get started?</h2>
+                        <h2 className="text-3xl font-bold mb-4">{content.ctaSection?.headline || "Ready to get started?"}</h2>
+                        <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">{content.ctaSection?.subheadline || "Join Present Health today."}</p>
                         <Button asChild size="lg" variant="secondary" className="text-lg px-8">
                             <Link href="/book">
-                                Book Your Free Intro Call
+                                {content.ctaSection?.buttonText || "Book Your Free Intro Call"}
                             </Link>
                         </Button>
                     </div>
