@@ -50,15 +50,21 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
     }
 
     // Defensive defaults for rendering
-    content.benefits = content.benefits || campaign.benefits || [];
-    content.proof = content.proof || campaign.proofPoints || [];
-    content.howItWorks = content.howItWorks || [
-        { title: "Book", desc: "Schedule a free intro call." },
-        { title: "Meet", desc: "Talk to Dr. J directly." },
-        { title: "Join", desc: "Sign up for membership." }
-    ];
+    content.benefits = (content.benefits && content.benefits.length > 0) ? content.benefits : (campaign.benefits || []);
+    content.proof = (content.proof && content.proof.length > 0) ? content.proof : (campaign.proofPoints || []);
+
+    if (!content.howItWorks || !Array.isArray(content.howItWorks) || content.howItWorks.length === 0) {
+        content.howItWorks = [
+            { title: "Book", desc: "Schedule a free intro call." },
+            { title: "Meet", desc: "Talk to Dr. J directly." },
+            { title: "Join", desc: "Sign up for membership." }
+        ];
+    }
+
     content.faqs = content.faqs || [];
-    content.pricing = content.pricing || {
+
+    // BULLETPROOF PRICING FALLBACK
+    const defaultPricing = {
         headline: "Simple Monthly Membership",
         subheadline: "Direct access. Transparent pricing. No insurance required.",
         tiers: [
@@ -76,22 +82,9 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
             }
         ]
     };
-    // Ensure tiers always exists if pricing exists
-    if (content.pricing && !content.pricing.tiers) {
-        content.pricing.tiers = [
-            {
-                name: "Individual",
-                price: 149,
-                period: "mo",
-                features: ["Unlimited virtual visits", "Direct messaging with Dr. J", "Care coordination", "Prevention planning"]
-            },
-            {
-                name: "Family",
-                price: 299,
-                period: "mo",
-                features: ["Unlimited visits for up to 5", "Pediatric triage", "Family prevention", "Direct access for all"]
-            }
-        ];
+
+    if (!content.pricing || typeof content.pricing !== 'object' || !content.pricing.tiers || !Array.isArray(content.pricing.tiers) || content.pricing.tiers.length === 0) {
+        content.pricing = defaultPricing;
     }
 
     const bookUrl = `/book?runId=${runId}${gclid ? `&gclid=${gclid}` : ''}`;
