@@ -6,7 +6,7 @@ export interface ComplianceResult {
 
 // STRICT DENYLIST: These terms must NEVER appear in ads, keywords, or landing pages.
 // Case-insensitive matching will be applied.
-const DENYLIST = [
+export const DENYLIST = [
     // Prescriptions & Meds
     "prescription", "rx", "refill", "pharmacy", "medication", "medicine", "drug", "pill", "tablet", "capsule",
     "controlled substance", "narcotic", "opioid", "stimulant", "adderall", "ritalin", "vyvanse", "concerta",
@@ -36,7 +36,7 @@ const DENYLIST = [
 ];
 
 // REQUIRED TERMS: Landing pages MUST contain these (or variations).
-const REQUIRED_DISCLAIMERS = [
+export const REQUIRED_DISCLAIMERS = [
     "not insurance",
     "membership",
     "direct primary care"

@@ -192,25 +192,9 @@ export default function CampaignDetailsPage() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                         <Card>
                             <CardContent className="p-6">
-                                <div className="text-xs font-medium text-muted-foreground uppercase">Impressions</div>
+                                <div className="text-xs font-medium text-muted-foreground uppercase">Leads (SQL)</div>
                                 <div className="text-2xl font-bold mt-2">
-                                    {metrics.reduce((a, b) => a + b.impressions, 0).toLocaleString()}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent className="p-6">
-                                <div className="text-xs font-medium text-muted-foreground uppercase">Clicks</div>
-                                <div className="text-2xl font-bold mt-2">
-                                    {metrics.reduce((a, b) => a + b.clicks, 0).toLocaleString()}
-                                </div>
-                            </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent className="p-6">
-                                <div className="text-xs font-medium text-muted-foreground uppercase">Conv.</div>
-                                <div className="text-2xl font-bold mt-2">
-                                    {metrics.reduce((a, b) => a + b.conversions, 0).toLocaleString()}
+                                    {latestRun?._count?.leads || 0}
                                 </div>
                             </CardContent>
                         </Card>
@@ -219,6 +203,22 @@ export default function CampaignDetailsPage() {
                                 <div className="text-xs font-medium text-muted-foreground uppercase">Spend</div>
                                 <div className="text-2xl font-bold mt-2">
                                     ${metrics.reduce((a, b) => a + b.cost, 0).toLocaleString()}
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-6">
+                                <div className="text-xs font-medium text-muted-foreground uppercase">CPL</div>
+                                <div className="text-2xl font-bold mt-2">
+                                    ${latestRun?._count?.leads ? (metrics.reduce((a, b) => a + b.cost, 0) / latestRun._count.leads).toFixed(2) : '0.00'}
+                                </div>
+                            </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent className="p-6">
+                                <div className="text-xs font-medium text-muted-foreground uppercase">CTR</div>
+                                <div className="text-2xl font-bold mt-2">
+                                    {(latestRun?.metrics?.ctr * 100 || 0).toFixed(2)}%
                                 </div>
                             </CardContent>
                         </Card>

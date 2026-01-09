@@ -1,8 +1,9 @@
-import OpenAI from "openai";
 import { prisma } from '@/lib/prisma';
-import { validateCampaignSpec } from './compliance';
+import { validateCampaignSpec, DENYLIST } from './compliance';
+import OpenAI from "openai";
+import { CampaignSpec } from './types';
 
-export async function generateCampaignSpec() {
+export async function generateCampaignSpec(strategy: 'TRANSACTIONAL' | 'EDUCATIONAL' = 'TRANSACTIONAL', inlet?: any): Promise<CampaignSpec> {
     if (!process.env.OPENAI_API_KEY) {
         throw new Error("Missing OPENAI_API_KEY");
     }
@@ -24,60 +25,54 @@ export async function generateCampaignSpec() {
     ).join("\n");
 
     // 2. Prompt Engineering
+    const isEducational = strategy === 'EDUCATIONAL';
+    const persona = inlet?.persona || "People needing primary care";
+    const intent = inlet?.problem || "Tired of waiting for doctor appointments";
+
     const prompt = `
-Act as a Google Ads Strategist for Present Health, a Virtual Direct Primary Care (DPC) practice.
-We want to launch a NEW search ad campaign that targets a high-potential "micro-niche" audience.
-Instead of broad "primary care", target specific life situations where DPC is a perfect fit.
+Act as an expert search marketing strategist for Present Health, a **Virtual Direct Primary Care (DPC)** practice.
+Your goal is to generate a campaign specification that will be used to create Google Ads and Landing Pages.
+
+STRATEGY: ${strategy}
+${isEducational ? 'GOAL: Educate first, convert second. Target problem-aware users looking for answers.' : 'GOAL: Direct conversion. Target solution-aware users looking for a doctor.'}
+
+${inlet ? `CONTEXT: We are targeting the topic "${inlet.topic}" specifically for the persona "${persona}".` : ''}
 
 EXISTING CAMPAIGNS (DO NOT DUPLICATE THESE):
 ${context}
 
-TASK:
-Create a JSON specification for a NEW campaign targeting a distinct, specific micro-niche.
-Examples of micro-niches: "Truck drivers on the road", "Freelance digital nomads", "Busy real estate agents", "Parents of kids with chronic ear infections", "Executive assistants managing boss's health".
-Be CREATIVE and QUIRKY. The goal is to find cheap clicks in under-served segments.
+CORE VIRTUAL DPC BENEFITS (MUST INCLUDE):
+- Direct Access: Text/email your doctor anytime.
+- Virtual Care: Unlimited visits via text/video/phone. No travel.
+- Relationship: A doctor who actually knows your name.
+- Transparent Pricing: $149/mo individual, $299/mo family. No insurance needed.
 
-CRITICAL UNIQUENESS RULE:
-- Check the "EXISTING CAMPAIGNS" list above.
-- Do NOT generate a campaign that is "substantially equivalent" to any of them.
-- Substantially equivalent means: targeting the same persona/intent combination, even if words are slightly different.
-- You must find a NEW angle, new persona, or new problem to solve.
+INSTRUCTIONS:
+1. Persona: Identify a high-intent audience segment ${inlet ? `based on ${persona}` : ''}.
+2. Intent: Define what they are searching for (The "Pain Point") ${inlet ? `focusing on ${intent}` : ''}.
+3. Seed Keywords: Generate 3-5 high-value keywords. ${isEducational ? 'Focus on questions or symptoms.' : 'Focus on service/location keywords.'}
+4. Benefits: 4 specific benefits tailored to this persona.
+5. Proof Points: 3 items that build trust (experience, credentials, patient focus).
+6. Disclaimers: Required legal/compliance disclaimers (e.g., "Not insurance").
+7. Slug: Unique URL slug for the campaign (e.g., "nomad-health-burnout").
 
-REQUIREMENTS:
-- Strictly NO "prescription", "Rx", "medication", or "pharmacy" terms.
-- STRICTLY FORBIDDEN CLAIMS (Do NOT use these): 
-  - "24/7" (Are we actually 24/7? Assume no for safety).
-  - Specific percentages (e.g., "95% satisfaction").
-  - Specific user counts (e.g., "10,000 users").
-- NUANCE ON ACCESS:
-  - Emphasize "direct personal connection" and "unrushed time".
-  - Frame it as "text/email your doctor directly" or "your doctor in your pocket".
-  - DO NOT imply "instant midnight response" or "around-the-clock" availability. We are human.
-- HIGHLIGHT DPC BENEFITS:
-  - "30-60 minute appointments" (vs 15 min industry avg).
-  - "No waiting rooms" (Starts on time).
-  - "Same-day or next-day scheduling".
-  - "Wholesale prices on labs".
-  - "Direct relationship" (No middlemen/insurance hassles).
-- Focus on "access", "convenience", "relationship", "time", "peace of mind".
-- Budget: Default to 50.
-- Target CPA: Default to 30.
+STRICT NO "prescription", "Rx", "medication", or "pharmacy" terms.
+Strictly NO "24/7" (Use "Direct Access" or "Extended Hours").
 
-OUTPUT JSON FORMAT:
+RETURN VALID JSON ONLY:
 {
-  "slug": "kebab-case-slug",
-  "persona": "Target Persona Name",
-  "intent": "Specific user intent/problem",
-  "landingSlug": "kebab-case-landing-slug",
-  "seedKeywords": ["keyword 1", "keyword 2", "keyword 3"],
-  "benefits": ["Benefit 1", "Benefit 2", "Benefit 3"],
-  "proofPoints": ["Proof 1", "Proof 2"],
-  "differentiationReason": "Internal note: brief explanation of how this differs from existing campaigns",
-  "disclaimers": ["Disclaimer 1"],
-  "budgetDaily": 50,
-  "targetCpa": 30,
+  "slug": "unique-slug",
+  "persona": "...",
+  "intent": "...",
+  "landingSlug": "...",
+  "seedKeywords": ["...", "..."],
+  "benefits": ["...", "..."],
+  "proofPoints": ["...", "..."],
+  "disclaimers": ["Not insurance", "..."],
   "geo": "US",
-  "tone": "Professional & Empathetic"
+  "tone": "Empathetic & Professional",
+  "strategy": "${strategy}",
+  "layoutType": "${isEducational ? 'EDUCATIONAL' : 'CONVERSION'}"
 }
 `;
 
@@ -115,21 +110,32 @@ OUTPUT JSON FORMAT:
 
     // 5. Post-Processing / Sanitization (Safety Net)
     // Even if validation passed (or failed max retries), strictly remove forbidden terms to be safe.
-    // 5. Post-Processing / Sanitization (Safety Net)
-    // Even if validation passed (or failed max retries), strictly remove forbidden terms to be safe.
     function sanitizeString(str: string): string {
         if (!str) return "";
         let clean = str;
-        // Replace 24/7 with 'Direct Access'
+
+        // 1. Proactively replace specific known patterns
         clean = clean.replace(/24\/7/gi, "Direct Access");
         clean = clean.replace(/24 hours/gi, "Direct Access");
-        // Remove specific percentages
         clean = clean.replace(/\d{2,3}% satisfaction/gi, "High satisfaction");
-        return clean;
+
+        // 2. Search for and remove any terms from the DENYLIST
+        // We do this by creating a giant regex for efficiency
+        const forbiddenRegex = new RegExp(`\\b(${DENYLIST.join('|')})\\b`, 'gi');
+
+        // If a forbidden term is found, we try to remove the whole sentence or just the term
+        // For now, let's just strip the term and any surrounding awkwardness
+        clean = clean.replace(forbiddenRegex, "[Restricted Term Removed]");
+
+        return clean.trim();
     }
 
-    // Checking for 24/7 keywords to filter out completely
+    // Checking for forbidden patterns to filter out completely
     const forbiddenPatterns = [/24\/7/i, /24 hours/i, /around the clock/i];
+    // Add regexes for a few high-risk denylist items that often appear in sentences
+    const highRiskPhrases = ["prescription", "medication", "ozempic", "wegovy", "cure", "guarantee"];
+    highRiskPhrases.forEach(p => forbiddenPatterns.push(new RegExp(p, "i")));
+
     function isSafe(str: string): boolean {
         return !forbiddenPatterns.some(p => p.test(str));
     }
@@ -147,5 +153,19 @@ OUTPUT JSON FORMAT:
     if (spec.seedKeywords) spec.seedKeywords = spec.seedKeywords.map(sanitizeString);
     if (spec.intent) spec.intent = sanitizeString(spec.intent);
 
-    return spec;
+    return {
+        slug: spec.slug,
+        persona: spec.persona,
+        intent: spec.intent,
+        seedKeywords: spec.seedKeywords || [],
+        strategy: spec.strategy || strategy,
+        layoutType: spec.layoutType || (strategy === 'EDUCATIONAL' ? 'EDUCATIONAL' : 'CONVERSION'),
+        benefits: spec.benefits,
+        proofPoints: spec.proofPoints,
+        disclaimers: spec.disclaimers,
+        budgetDaily: spec.budgetDaily || 50,
+        targetCpa: spec.targetCpa || 30,
+        geo: spec.geo || 'US',
+        tone: spec.tone || 'Empathetic & Professional'
+    };
 }

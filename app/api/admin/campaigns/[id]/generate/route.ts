@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { generateLandingPage } from '@/lib/ads/generator';
+import { generateLandingPageSpec } from '@/lib/ads/generator';
 import { generateKeywords } from '@/lib/ads/keywords';
-import { generateAdAssets } from '@/lib/ads/google-ads';
+import { generateAdPlan } from '@/lib/ads/google-ads';
+import { PipelineManager } from '@/lib/ads/pipeline';
 
 export async function POST(
     request: Request,
@@ -20,26 +21,39 @@ export async function POST(
             return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
         }
 
-        // 2. Generate Landing Page (This creates/updates the CampaignRun)
-        const run = await generateLandingPage(campaign.id);
+        // 2. Initial CampaignRun if not exists
+        let run = await prisma.campaignRun.findFirst({
+            where: { campaignId: campaign.id },
+            orderBy: { createdAt: 'desc' }
+        });
 
-        // 3. Generate Keywords
-        const keywordResults = generateKeywords(campaign.seedKeywords);
-        const keywords = keywordResults.map(k => k.keyword);
-        const matchTypes = keywordResults.map(k => k.matchType);
+        if (!run) {
+            run = await prisma.campaignRun.create({
+                data: {
+                    campaignId: campaign.id,
+                    status: 'DRAFT'
+                }
+            });
+        }
 
-        // 4. Generate Ads
-        const adAssets = generateAdAssets(campaign);
+        // 3. Generate Landing Page Spec Artifact
+        const lpSpec = await generateLandingPageSpec(campaign.id);
+        await PipelineManager.saveArtifact(run.id, 'LANDING_PAGE_SPEC', lpSpec);
 
-        // 5. Update CampaignRun with all assets
+        // 4. Generate Ad Plan Artifact
+        const adPlan = await generateAdPlan(campaign as any);
+        await PipelineManager.saveArtifact(run.id, 'AD_PLAN', adPlan);
+
+        // 5. Update CampaignRun with all legacy fields (for backward compatibility of the LP Page)
         const updatedRun = await prisma.campaignRun.update({
             where: { id: run.id },
             data: {
-                chosenKeywords: keywords,
-                matchTypes: matchTypes,
-                rsaHeadlines: adAssets.headlines,
-                rsaDescriptions: adAssets.descriptions,
-                status: 'VALIDATED' // Assuming all generators run internal validation
+                landingPageContent: JSON.stringify(lpSpec),
+                chosenKeywords: adPlan.keywords.map(k => k.text),
+                matchTypes: adPlan.keywords.map(k => k.matchType),
+                rsaHeadlines: adPlan.rsa.headlines,
+                rsaDescriptions: adPlan.rsa.descriptions,
+                status: 'VALIDATED'
             }
         });
 

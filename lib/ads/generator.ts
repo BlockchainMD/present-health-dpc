@@ -1,56 +1,57 @@
 import { prisma } from '@/lib/prisma';
-import { validateContent } from './compliance';
 import OpenAI from "openai";
+import { CampaignSpec, LandingPageSpec } from './types';
 
-interface CampaignSpec {
-    id: string;
-    slug: string;
-    persona: string;
-    intent: string;
-    benefits: string[];
-    proofPoints: string[];
-    disclaimers: string[];
-    landingSlug: string;
-}
-
-export async function generateLandingPage(campaignId: string) {
+export async function generateLandingPageSpec(campaignId: string, mockCampaign?: CampaignSpec): Promise<LandingPageSpec> {
     // 1. Fetch Campaign
-    const campaign = await prisma.campaign.findUnique({
+    const campaign = mockCampaign || (await prisma.campaign.findUnique({
         where: { id: campaignId }
-    });
+    }) as unknown as CampaignSpec);
 
     if (!campaign) throw new Error('Campaign not found');
 
     // 2. Generate Content
-    // 2. Generate Content
-    // Default / Fallback Content
-    let content: any = {
+    let spec: LandingPageSpec = {
         hero: {
             headline: `Direct Primary Care for ${campaign.persona}`,
             subheadline: `Get the care you need for "${campaign.intent}" without the wait.`,
             cta: "Book a Free Intro Conversation"
         },
-        benefits: campaign.benefits,
+        educationalBriefing: undefined,
+        benefits: campaign.benefits || [],
         howItWorks: [
             { title: "Book", desc: "Schedule a free intro call." },
             { title: "Meet", desc: "Talk to Dr. J directly." },
             { title: "Join", desc: "Sign up for membership." }
         ],
-        proof: campaign.proofPoints,
+        proof: campaign.proofPoints || [],
+        pricing: {
+            headline: "Simple Monthly Membership",
+            subheadline: "Direct access. Transparent pricing. No insurance required.",
+            tiers: [
+                {
+                    name: "Individual",
+                    price: 149,
+                    period: "mo",
+                    features: ["Unlimited virtual visits", "Direct messaging with Dr. J", "Care coordination", "Prevention planning"]
+                },
+                {
+                    name: "Family",
+                    price: 299,
+                    period: "mo",
+                    features: ["Unlimited visits for up to 5", "Pediatric triage", "Family prevention", "Direct access for all"]
+                }
+            ]
+        },
         faqs: [
             { question: "Do you accept insurance?", answer: "We do not bill insurance directly. This allows us to keep costs transparent and focus on your care, not paperwork." },
-            { question: "Can I text my doctor?", answer: "Yes! Members have direct access to their doctor via text and email." }
+            { question: "Can I text my doctor?", answer: "Yes! Members have direct access to your doctor via text and email." }
         ],
         ctaSection: {
             headline: "Ready to take control of your health?",
             subheadline: "Join Present Health today.",
             buttonText: "Book Your Free Intro Call"
-        },
-        disclaimer: [
-            "Present Health is a Direct Primary Care practice, not insurance.",
-            "We do not bill insurance.",
-            ...campaign.disclaimers
-        ].join(" ")
+        }
     };
 
     // Try to use AI for better copy if API key exists
@@ -58,28 +59,36 @@ export async function generateLandingPage(campaignId: string) {
         try {
             const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
             const prompt = `
-            You are a professional copywriter for Present Health, a premium Direct Primary Care practice.
-            Write the content for a high-converting landing page targeting this specific audience:
+            You are a professional, high-conversion direct response copywriter for Present Health, a premium Direct Primary Care (DPC) practice.
+            Your goal is to write landing page content that resonates deeply with a specific audience.
             
             Persona: ${campaign.persona}
             User Intent/Problem: ${campaign.intent}
             
-            Project the value of "Direct Access", "Time Savings", and "Personal Relationship".
+            CORE VALUE PROPOSITIONS:
+            - Direct Access: Text/email your doctor anytime.
+            - Time Savings: No waiting rooms, same-day starts.
+            - Relationship: A doctor who actually knows you.
+            - Transparent Pricing: No insurance headaches.
+
+            COPYWRITING INSTRUCTIONS:
+            - HERO: Use "Pain-Benefit Mapping". Contrast the persona's frustration with our solution. (e.g. "Tired of [Problem]? Experience [Benefit]").
+            - HOW IT WORKS: Tailor these 3 steps specifically to the ${campaign.persona}. Use active verbs.
+            - FAQs: Address the top 3 psychological barriers or logistical questions THIS SPECIFIC persona would have. 
+            - CTA: Make the final offer feel low-risk and high-reward.
             
             STRICT RULES:
-            - NO medical advice.
-            - NO forbidden terms (cure, guarantee, specific % numbers).
-            - Tone: Empathetic, Professional, Assuring.
-            - Hero Headline: Short, punchy (Max 7 words).
-            - Hero Subheadline: 1-2 sentences elaborating on the solution (Max 20 words).
-            - How It Works: 3 STEPS tailored to this user. (e.g. for travelers: "1. Text us from anywhere...")
-            - FAQs: 3 Questions & Answers that THIS SPECIFIC PERSONA would have. (e.g. "Can I access this while abroad?", "What about prescriptions?").
-            - CTA Section: A final closing argument.
+            - NO medical advice or diagnosis.
+            - NO forbidden terms: cure, guarantee, 100%, 24/7 (use "direct access" instead).
+            - Hero Headline: Max 8 words.
+            - Hero Subheadline: Max 25 words.
+            - Tone: Empathetic, Authoritative, Premium.
             
-            RETURN JSON ONLY matching this structure:
+            RETURN JSON ONLY:
             {
                 "hero": { "headline": "...", "subheadline": "...", "cta": "..." },
                 "howItWorks": [ { "title": "...", "desc": "..." }, { "title": "...", "desc": "..." }, { "title": "...", "desc": "..." } ],
+                "pricing": { "headline": "...", "subheadline": "..." },
                 "faqs": [ { "question": "...", "answer": "..." }, { "question": "...", "answer": "..." }, { "question": "...", "answer": "..." } ],
                 "ctaSection": { "headline": "...", "subheadline": "...", "buttonText": "..." }
             }
@@ -87,7 +96,10 @@ export async function generateLandingPage(campaignId: string) {
 
             const response = await openai.chat.completions.create({
                 model: "gpt-4-turbo",
-                messages: [{ role: "system", content: "Return valid JSON only." }, { role: "user", content: prompt }],
+                messages: [
+                    { role: "system", content: "You are a professional, high-conversion direct response copywriter for Present Health, a premium Direct Primary Care (DPC) practice. You write empathetic, authoritative, and premium copy." },
+                    { role: "user", content: prompt }
+                ],
                 response_format: { type: "json_object" },
                 temperature: 0.7
             });
@@ -95,48 +107,63 @@ export async function generateLandingPage(campaignId: string) {
             const text = response.choices[0]?.message?.content;
             if (text) {
                 const json = JSON.parse(text);
-                // Merge AI content with campaign data overrides
-                content = {
-                    ...content,
-                    hero: json.hero || content.hero,
-                    howItWorks: json.howItWorks || content.howItWorks,
-                    faqs: json.faqs || content.faqs,
-                    ctaSection: json.ctaSection || content.ctaSection
+                spec = {
+                    ...spec,
+                    hero: json.hero || spec.hero,
+                    howItWorks: (json.howItWorks && json.howItWorks.length > 0) ? json.howItWorks : spec.howItWorks,
+                    pricing: {
+                        ...spec.pricing,
+                        headline: json.pricing?.headline || spec.pricing.headline,
+                        subheadline: json.pricing?.subheadline || spec.pricing.subheadline,
+                        tiers: spec.pricing.tiers // Explicitly keep our tiers, AI only tunes the headlines
+                    },
+                    faqs: (json.faqs && json.faqs.length > 0) ? json.faqs : spec.faqs,
+                    ctaSection: json.ctaSection || spec.ctaSection
                 };
+            }
+
+            // 2.5 Generate Educational Briefing if needed
+            if (campaign.layoutType === 'EDUCATIONAL') {
+                const briefingPrompt = `
+                Write a high-authority, 400-word "Medical Briefing" for the persona "${campaign.persona}" about "${campaign.intent}".
+                
+                Goal: Educate them on why this is happening and how a high-access personal physician (DPC) is the best way to manage it.
+                Tone: Editorial, Premium, Peer-to-peer.
+                Format: Markdown. Use H2, H3, and bullet points.
+                
+                Strictly NO "prescription", "Rx", "medication".
+                `;
+
+                const briefingResponse = await openai.chat.completions.create({
+                    model: "gpt-4-turbo",
+                    messages: [{ role: "system", content: "You are a senior medical editor." }, { role: "user", content: briefingPrompt }],
+                    temperature: 0.7
+                });
+
+                const briefingText = briefingResponse.choices[0]?.message?.content;
+                if (briefingText) {
+                    spec.educationalBriefing = briefingText;
+                }
             }
         } catch (e) {
             console.error("Failed to generate AI copy, falling back to template:", e);
         }
-    }
-
-    // 3. Validate Content
-    const compliance = validateContent(JSON.stringify(content), "Landing Page");
-    if (compliance.status === 'FAIL') {
-        throw new Error(`Generated content failed compliance: ${compliance.reasons.join(', ')}`);
-    }
-
-    // 4. Save/Update CampaignRun
-    // Check for existing run to be idempotent
-    const existingRun = await prisma.campaignRun.findFirst({
-        where: { campaignId: campaign.id },
-        orderBy: { createdAt: 'desc' }
-    });
-
-    if (existingRun) {
-        return await prisma.campaignRun.update({
-            where: { id: existingRun.id },
-            data: {
-                landingPageContent: JSON.stringify(content),
-                updatedAt: new Date()
-            }
-        });
     } else {
-        return await prisma.campaignRun.create({
-            data: {
-                campaignId: campaign.id,
-                landingPageContent: JSON.stringify(content),
-                status: 'PENDING'
-            }
-        });
+        // Fallback for educational briefing if no AI key
+        if (campaign.layoutType === 'EDUCATIONAL') {
+            spec.educationalBriefing = `
+# Understanding Your Health: A Medical Briefing
+
+At Present Health, we believe that the foundation of great care is a deep, unhurried relationship with your physician.
+
+## Why This Matters
+When addressing concerns like **${campaign.intent}**, you shouldn't be rushed through a 15-minute appointment. You deserve the time to explore the root causes.
+
+## How DPC Helps
+Direct Primary Care (DPC) gives us the freedom to focus entirely on you, not insurance paperwork. This means longer visits and direct access to Dr. J via text or video.
+            `.trim();
+        }
     }
+
+    return spec;
 }

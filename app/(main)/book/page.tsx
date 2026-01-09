@@ -1,17 +1,24 @@
-"use client";
-
-import { useEffect } from "react";
-import { getCalApi } from "@calcom/embed-react";
+import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 
-export default function BookPage() {
-    useEffect(() => {
-        (async function () {
-            const cal = await getCalApi({});
-            cal("ui", { "styles": { "branding": { "brandColor": "#10b981" } }, "hideEventTypeDetails": false, "layout": "month_view" });
-        })();
-    }, []);
+interface PageProps {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+export default async function BookPage({ searchParams }: PageProps) {
+    const { runId, gclid } = await searchParams;
+
+    // Construct Cal.com URL with UTMs for attribution
+    // We'll use utm_source=presenthealth and utm_medium=ad
+    // utm_campaign can be the runId
+    const calBaseUrl = "https://cal.com/jonathan-rouwhorst-1idf8k/15min";
+    const calUrl = new URL(calBaseUrl);
+    calUrl.searchParams.set("utm_source", "presenthealth");
+    calUrl.searchParams.set("utm_medium", "ad");
+    if (runId) calUrl.searchParams.set("utm_campaign", runId as string);
+    if (gclid) calUrl.searchParams.set("utm_term", gclid as string);
+    if (runId) calUrl.searchParams.set("utm_content", runId as string);
 
     return (
         <div className="min-h-screen bg-background">
@@ -61,12 +68,8 @@ export default function BookPage() {
 
                     {/* Right Column: Cal.com Embed */}
                     <div className="lg:col-span-2 bg-background rounded-xl border border-border shadow-sm overflow-hidden min-h-[600px]">
-                        {/* 
-                            IMPORTANT: This link is currently a PLACEHOLDER.
-                            The user must provide their actual Cal.com username to fix the 404 error.
-                        */}
                         <iframe
-                            src="https://cal.com/jonathan-rouwhorst-1idf8k/15min"
+                            src={calUrl.toString()}
                             style={{ width: "100%", height: "100%", minHeight: "600px", border: "none" }}
                             title="Book an Intro Call"
                         ></iframe>

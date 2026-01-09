@@ -14,6 +14,11 @@ export async function GET(
                 runs: {
                     orderBy: { createdAt: 'desc' },
                     take: 1,
+                    include: {
+                        _count: {
+                            select: { leads: true }
+                        }
+                    }
                 }
             }
         });

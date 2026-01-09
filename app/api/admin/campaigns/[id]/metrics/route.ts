@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateMockMetrics } from '@/lib/ads/metrics';
+import { syncMetricsFromGoogleAds } from '@/lib/ads/google-ads';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
@@ -21,7 +22,17 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             return NextResponse.json({ error: 'Campaign not found or has no runs' }, { status: 404 });
         }
 
-        const runId = campaign.runs[0].id;
+        const run = campaign.runs[0];
+        const runId = run.id;
+
+        // Attempt live sync if deployed
+        if (run.status === 'DEPLOYED' || run.status === 'ACTIVE') {
+            try {
+                await syncMetricsFromGoogleAds(runId);
+            } catch (err) {
+                console.error("[MetricsAPI] Live sync failed, showing existing/mock data:", err);
+            }
+        }
 
         // Fetch metrics
         let metrics = await prisma.campaignMetric.findMany({

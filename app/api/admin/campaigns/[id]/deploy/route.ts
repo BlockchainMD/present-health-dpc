@@ -39,15 +39,8 @@ export async function POST(
             data: { status: 'ACTIVE' }
         });
 
-        await prisma.campaignRun.update({
-            where: { id: latestRun.id },
-            data: {
-                status: 'DEPLOYED',
-                // Store resource IDs from sync response (if any)
-                // googleAdsResourceIds: syncResult.mockResourceIds 
-            }
-        });
-
+        // The status is already updated inside syncToGoogleAds for the run, 
+        // but we can ensure it here as well and return the result.
         return NextResponse.json({ success: true, syncResult });
 
     } catch (error: any) {
