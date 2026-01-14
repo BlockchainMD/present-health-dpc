@@ -4,30 +4,56 @@ import { requireAdmin } from '@/lib/authz';
 import { getFullPromptContext } from '@/lib/ads/brand-context';
 
 export async function GET(
-    request: Request,
-    { params }: { params: Promise<{ id: string }> }
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
-    await requireAdmin();
-    const { id } = await params;
+  await requireAdmin();
+  const { id } = await params;
 
-    try {
-        const campaign = await prisma.campaign.findUnique({
-            where: { id }
-        });
-
-        if (!campaign) {
-            return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
+  try {
+    const campaign = await prisma.campaign.findUnique({
+      where: { id },
+      include: {
+        runs: {
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          where: { status: { in: ['READY_FOR_REVIEW', 'DEPLOYED', 'PAUSED'] } }
         }
+      }
+    });
 
-        const brandContext = getFullPromptContext();
+    if (!campaign) {
+      return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
+    }
 
-        const prompt = `
+    const brandContext = getFullPromptContext();
+
+    // Format previous attempts
+    let previousAttempts = "";
+    if (campaign.runs && campaign.runs.length > 0) {
+      previousAttempts = "\n# PREVIOUS AD ATTEMPTS (ALREADY TESTED - DO NOT DUPLICATE)\n";
+      campaign.runs.forEach((run, idx) => {
+        previousAttempts += `Attempt ${idx + 1}:\n`;
+        if (run.rsaHeadlines && run.rsaHeadlines.length > 0) {
+          previousAttempts += `- Headlines: ${run.rsaHeadlines.join(" | ")}\n`;
+        }
+        if (run.rsaDescriptions && run.rsaDescriptions.length > 0) {
+          previousAttempts += `- Descriptions: ${run.rsaDescriptions.join(" | ")}\n`;
+        }
+        previousAttempts += "\n";
+      });
+    }
+
+    const prompt = `
 # MISSION
 Act as a Senior Direct Response Copywriter and Healthcare Marketing Strategist for Present Health. 
+Your goal is to generate the highest-performance Google Ads and Landing Page assets possible. 
+You MUST provide original, creative variations for the ad headlines and descriptions that improve upon previous attempts. 
+STRICTLY avoid phrases or hooks used in the provided history. focus on the specific persona's psychological triggers.
 
 # BRAND CONTEXT
 ${brandContext}
-
+${previousAttempts}
 # CAMPAIGN TARGET
 - Persona: ${campaign.persona}
 - Intent: ${campaign.intent}
@@ -66,8 +92,8 @@ Return valid JSON only in the following schema. No extra text, no markdown code 
 }
 `.trim();
 
-        return NextResponse.json({ prompt });
-    } catch (error: any) {
-        return NextResponse.json({ error: error.message }, { status: 500 });
-    }
+    return NextResponse.json({ prompt });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
