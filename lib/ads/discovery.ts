@@ -66,8 +66,8 @@ export async function discoverInlets(): Promise<InletCandidate[]> {
             `;
 
             const response = await openai.chat.completions.create({
-                model: "gpt-5.2-pro",
-                reasoning_effort: "xhigh",
+                model: "gpt-5.2",
+                reasoning_effort: "medium",
                 messages: [{ role: "developer", content: "Return valid JSON only." }, { role: "user", content: prompt }],
                 response_format: { type: "json_object" },
             } as any);

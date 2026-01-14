@@ -94,8 +94,8 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             `;
 
             const response = await openai.chat.completions.create({
-                model: "gpt-5.2-pro",
-                reasoning_effort: "xhigh",
+                model: "gpt-5.2",
+                reasoning_effort: "medium",
                 messages: [
                     { role: "developer", content: "You are a professional, high-conversion direct response copywriter for Present Health, a premium Direct Primary Care (DPC) practice. You write empathetic, authoritative, and premium copy." },
                     { role: "user", content: prompt }
@@ -134,8 +134,8 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
                 `;
 
                 const briefingResponse = await openai.chat.completions.create({
-                    model: "gpt-5.2-pro",
-                    reasoning_effort: "xhigh",
+                    model: "gpt-5.2",
+                    reasoning_effort: "medium",
                     messages: [{ role: "developer", content: "You are a senior medical editor." }, { role: "user", content: briefingPrompt }],
                 } as any);
 

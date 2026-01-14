@@ -82,8 +82,8 @@ RETURN VALID JSON ONLY:
     while (attempts < maxAttempts) {
         attempts++;
         const response = await openai.chat.completions.create({
-            model: "gpt-5.2-pro",
-            reasoning_effort: "xhigh",
+            model: "gpt-5.2",
+            reasoning_effort: "medium",
             messages: [
                 { role: "developer", content: "You are a Google Ads expert. Return valid JSON only. STRICTLY FOLLOW NEGATIVE CONSTRAINTS." },
                 { role: "user", content: prompt }
