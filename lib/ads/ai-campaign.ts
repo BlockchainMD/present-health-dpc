@@ -85,7 +85,7 @@ RETURN VALID JSON ONLY:
             model: "gpt-5.2-pro",
             reasoning_effort: "xhigh",
             messages: [
-                { role: "system", content: "You are a Google Ads expert. Return valid JSON only. STRICTLY FOLLOW NEGATIVE CONSTRAINTS." },
+                { role: "developer", content: "You are a Google Ads expert. Return valid JSON only. STRICTLY FOLLOW NEGATIVE CONSTRAINTS." },
                 { role: "user", content: prompt }
             ],
             response_format: { type: "json_object" },
