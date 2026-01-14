@@ -1,7 +1,7 @@
 
 import { discoverInlets } from '../lib/ads/discovery';
 import { generateCampaignSpec } from '../lib/ads/ai-campaign';
-import { generateLandingPage } from '../lib/ads/generator';
+import { generateLandingPageSpec } from '../lib/ads/generator';
 import { prisma } from '../lib/prisma';
 
 async function testFullEducationalFlow() {
@@ -29,7 +29,6 @@ async function testFullEducationalFlow() {
                 slug: "nomad-burnout-prevention",
                 persona: inlet.persona,
                 intent: inlet.problem,
-                landingSlug: "nomad-health-burnout",
                 seedKeywords: inlet.suggestedKeywords,
                 benefits: ["Direct Access to Doctor", "Text Any Time", "No Waiting Rooms"],
                 proofPoints: ["10+ Years Experience", "Board Certified"],
@@ -38,16 +37,15 @@ async function testFullEducationalFlow() {
                 targetCpa: 30,
                 geo: "US",
                 tone: "Professional",
-                strategy: "EDUCATIONAL",
-                layoutType: "EDUCATIONAL"
+                strategy: "EDUCATIONAL" as const,
+                layoutType: "EDUCATIONAL" as const
             };
         }
         console.log("Generated Educational Spec:", JSON.stringify(spec, null, 2));
 
         // 3. LP Content Generation Phase (Bypassing DB)
         console.log("\n--- 3. LP Content Generation Phase (Mock Spec) ---");
-        const run = await generateLandingPage("MOCK_ID", spec);
-        const content = JSON.parse(run.landingPageContent || '{}');
+        const content = await generateLandingPageSpec("MOCK_ID", spec);
 
         console.log("\n✅ Verification Results:");
         console.log("- Strategy:", spec.strategy);

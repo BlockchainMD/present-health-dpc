@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server";
 import { headers } from "next/headers";
+import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
-import { PrismaClient } from "@prisma/client";
 import Stripe from "stripe";
-
-const prisma = new PrismaClient();
+import { recordConversionEvent } from "@/lib/conversion";
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -25,6 +24,24 @@ export async function POST(req: Request) {
         );
     }
 
+    // Idempotency: Upsert StripeEvent and check if processed
+    const stripeEvent = await prisma.stripeEvent.upsert({
+        where: { stripeEventId: event.id },
+        update: {},
+        create: {
+            stripeEventId: event.id,
+            type: event.type,
+            metadata: event as any,
+        }
+    });
+
+    if (stripeEvent.processedAt) {
+        console.log(`[StripeWebhook] Duplicate event ignored: ${event.id}`);
+        return NextResponse.json({ received: true, duplicate: true });
+    }
+
+    console.log(`[StripeWebhook] Processing event: ${event.id} type: ${event.type}`);
+
     const session = event.data.object as Stripe.Checkout.Session;
 
     if (event.type === "checkout.session.completed") {
@@ -39,6 +56,12 @@ export async function POST(req: Request) {
             );
         }
 
+        // Find user and their attribution info
+        const user = await prisma.user.findUnique({
+            where: { id: session.metadata.userId },
+            select: { id: true, leadId: true, attributionSessionId: true }
+        });
+
         await prisma.user.update({
             where: {
                 id: session.metadata.userId,
@@ -49,6 +72,28 @@ export async function POST(req: Request) {
                 subscriptionStatus: "active",
             },
         });
+
+        // Record Conversion Event with enriched metadata
+        await recordConversionEvent({
+            type: 'STRIPE_SUBSCRIBED',
+            attributionSessionId: session.metadata.attributionSessionId || user?.attributionSessionId,
+            userId: session.metadata.userId,
+            leadId: user?.leadId,
+            metadata: {
+                stripeSubscriptionId: subscription.id,
+                stripeEventId: event.id,
+                leadId: user?.leadId,
+                attributionSessionId: user?.attributionSessionId || session.metadata.attributionSessionId
+            }
+        });
+
+        await recordConversionEvent({
+            type: 'MEMBER_ACTIVE',
+            attributionSessionId: session.metadata.attributionSessionId || user?.attributionSessionId,
+            userId: session.metadata.userId,
+            leadId: user?.leadId,
+            metadata: { source: 'StripeWebhook' }
+        });
     }
 
     if (event.type === "invoice.payment_failed") {
@@ -57,6 +102,16 @@ export async function POST(req: Request) {
         // This is a bit trickier without storing the sub ID first, but for now we assume it's there
         // or we can look up by customer ID if we had it.
         // For MVP, we'll skip complex logic here.
+    }
+
+    // Mark event as processed
+    try {
+        await prisma.stripeEvent.update({
+            where: { stripeEventId: event.id },
+            data: { processedAt: new Date() }
+        });
+    } catch (err) {
+        console.error("[StripeWebhook] Failed to mark event as processed:", err);
     }
 
     return NextResponse.json({ result: event, ok: true });

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { getOrCreateAttributionSession, linkAttributionSessionToLead } from '@/lib/attribution';
+import { recordConversionEvent } from '@/lib/conversion';
 
 export async function POST(request: Request) {
     try {
@@ -43,7 +45,29 @@ export async function POST(request: Request) {
             });
         }
 
-        return NextResponse.json({ success: true, leadId: lead.id });
+        // Attribution Handling
+        const sessionId = await getOrCreateAttributionSession(request);
+        if (sessionId && lead) {
+            await linkAttributionSessionToLead(sessionId, lead.id);
+        }
+
+        // Record Conversion Event
+        if (lead) {
+            console.log(`[LeadsAPI] Created/Updated lead: ${lead.id}`, {
+                email: email ? '[REDACTED]' : null,
+                runId: runId,
+                sessionId: sessionId
+            });
+
+            await recordConversionEvent({
+                type: 'LEAD_CREATED',
+                attributionSessionId: sessionId,
+                leadId: lead.id,
+                metadata: { ...metadata, source: 'LeadsAPI' }
+            });
+        }
+
+        return NextResponse.json({ success: true, leadId: lead?.id });
     } catch (error: any) {
         console.error('[LeadsAPI] Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });

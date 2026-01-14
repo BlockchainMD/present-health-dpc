@@ -9,6 +9,8 @@ import Image from "next/image";
 
 import { LPAnimations, FadeInWhenVisible, StickyMobileCTA } from './client';
 import ReactMarkdown from 'react-markdown';
+import { getOrCreateAttributionSession } from '@/lib/attribution';
+import { headers } from 'next/headers';
 
 // Force dynamic rendering to ensure we get fresh data
 export const dynamic = 'force-dynamic';
@@ -18,9 +20,47 @@ interface PageProps {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
+export async function generateMetadata({ params }: PageProps) {
+    const { slug } = await params;
+    const run = await prisma.campaignRun.findFirst({
+        where: { campaign: { landingSlug: slug } },
+        orderBy: { createdAt: 'desc' },
+        select: { indexing: true }
+    });
+
+    const indexing = run?.indexing || 'NOINDEX';
+
+    return {
+        robots: {
+            index: indexing === 'INDEX',
+            follow: indexing === 'INDEX',
+            nocache: true,
+            googleBot: {
+                index: indexing === 'INDEX',
+                follow: indexing === 'INDEX',
+            },
+        },
+    };
+}
+
 export default async function LandingPage({ params, searchParams }: PageProps) {
     const { slug } = await params;
-    const { gclid } = await searchParams;
+    const { gclid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = await searchParams;
+
+    // Trigger Attribution Session
+    const headerList = await headers();
+    await getOrCreateAttributionSession(undefined, {
+        gclid: gclid as string,
+        utmSource: utm_source as string,
+        utmMedium: utm_medium as string,
+        utmCampaign: utm_campaign as string,
+        utmTerm: utm_term as string,
+        utmContent: utm_content as string,
+        landingPath: `/lp/${slug}`,
+        referrer: headerList.get('referer') || undefined,
+        userAgentHash: headerList.get('user-agent') || undefined, // Hashed in helper
+    });
+
     const runId = (await prisma.campaign.findFirst({
         where: { landingSlug: slug },
         select: { runs: { orderBy: { createdAt: 'desc' }, take: 1, select: { id: true } } }

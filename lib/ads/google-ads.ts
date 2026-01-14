@@ -90,6 +90,17 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     };
 }
 
+/**
+ * Helper function for CLI script - returns simplified AdAssets format
+ */
+export function generateAdAssets(campaign: CampaignSpec): AdAssets {
+    const plan = generateAdPlan(campaign);
+    return {
+        headlines: plan.rsa.headlines,
+        descriptions: plan.rsa.descriptions
+    };
+}
+
 import { GoogleAdsApi, enums } from 'google-ads-api';
 import { prisma } from '@/lib/prisma';
 
@@ -110,6 +121,21 @@ export async function syncToGoogleAds(runId: string, dryRun: boolean = true) {
     });
 
     if (!run) throw new Error("Campaign Run not found");
+
+    // 1b. Idempotency Check
+    if (run.googleCampaignId && !dryRun) {
+        console.log(`[GoogleAds] Run ${runId} already has a Google Campaign ID: ${run.googleCampaignId}. Skipping creation.`);
+        return {
+            status: 'success',
+            mode: 'live',
+            message: 'Campaign already exists.',
+            resourceIds: {
+                campaign: run.googleCampaignId,
+                adGroup: run.googleAdGroupId,
+                ad: (run.googleAdsResourceIds as any)?.ad
+            }
+        };
+    }
 
     if (dryRun) {
         return {
@@ -266,10 +292,15 @@ export async function syncToGoogleAds(runId: string, dryRun: boolean = true) {
             ad: adResourceName
         };
 
-        // 9. Persist Resource IDs to DB
+        // 9. Persist Resource IDs to DB - Populate top-level fields
         await prisma.campaignRun.update({
             where: { id: run.id },
             data: {
+                googleCustomerId: customerId,
+                googleCampaignId: campaignResourceName,
+                googleAdGroupId: adGroupResourceName,
+                googleResourceName: campaignResourceName,
+                googleSyncStatus: 'OK',
                 googleAdsResourceIds: resourceIds,
                 status: 'DEPLOYED'
             }

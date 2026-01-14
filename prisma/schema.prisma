@@ -30,6 +30,13 @@ model User {
   stripeCustomerId       String?
   stripeSubscriptionId   String?
   subscriptionStatus     String? // active, past_due, canceled, incomplete
+  role                   String   @default("USER") // ADMIN, STAFF, PATIENT, USER
+  
+  auditLogs              AuditLog[]
+  conversionEvents       ConversionEvent[]
+  
+  attributionSessionId   String?
+  leadId                 String?
   
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -79,7 +86,14 @@ model CampaignRun {
   
   // Status & Lifecycle
   status                  String   @default("PENDING") // PENDING, VALIDATED, DEPLOYED, PAUSED
-  googleAdsResourceIds    Json?    // Store IDs from Google Ads API
+  
+  // Google Ads mapping
+  googleCustomerId        String?
+  googleCampaignId        String?
+  googleAdGroupId         String?
+  googleResourceName      String?
+  googleSyncStatus        String?  // OK, ERROR, PENDING
+  googleAdsResourceIds    Json?    // Legacy store IDs from Google Ads API
   
   // Metrics Snapshot
   artifacts               Json?    // Stores TrendSignal, InletCandidate, AdPlan, etc.
@@ -88,6 +102,8 @@ model CampaignRun {
 
   // Compliance
   complianceCheckResults  Json?    // { status: "PASS" | "FAIL", reasons: [] }
+  
+  indexing                String   @default("NOINDEX") // INDEX, NOINDEX
   
   leads                   Lead[]
   
@@ -125,9 +141,92 @@ model Lead {
   metadata        Json?        // URL params, device info, etc.
   convertedAt     DateTime?
   
+  attributionSessions AttributionSession[]
+  conversionEvents    ConversionEvent[]
+  
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
   @@index([email])
   @@index([gclid])
 }
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  actorUserId   String?
+  actorUser     User?    @relation(fields: [actorUserId], references: [id])
+  action        String
+  entityType    String
+  entityId      String
+  metadata      Json?
+}
+
+model AttributionSession {
+  id              String   @id @default(cuid())
+  createdAt       DateTime @default(now())
+  gclid           String?
+  utmSource       String?
+  utmMedium       String?
+  utmCampaign     String?
+  utmTerm         String?
+  utmContent      String?
+  landingPath     String
+  referrer        String?
+  userAgentHash   String?
+  ipHash          String?
+  leadId          String?
+  lead            Lead?    @relation(fields: [leadId], references: [id])
+  
+  conversions     ConversionEvent[]
+
+  @@index([createdAt])
+  @@index([gclid])
+}
+
+model ConversionEvent {
+  id                    String              @id @default(uuid())
+  createdAt             DateTime            @default(now())
+  type                  String              // LEAD_CREATED, REGISTERED, BOOKED, STRIPE_SUBSCRIBED
+  attributionSessionId  String?
+  attributionSession    AttributionSession? @relation(fields: [attributionSessionId], references: [id])
+  leadId                String?
+  lead                  Lead?               @relation(fields: [leadId], references: [id])
+  userId                String?
+  user                  User?               @relation(fields: [userId], references: [id])
+  metadata              Json?
+}
+
+model GeneratedAsset {
+  id                String   @id @default(uuid())
+  createdAt         DateTime @default(now())
+  type              String   // AD_COPY, LANDING_PAGE, ARTICLE, KEYWORDS
+  status            String   @default("DRAFT") // DRAFT, READY_FOR_REVIEW, APPROVED, REJECTED
+  campaignId        String?
+  campaignRunId     String?
+  promptVersion     String
+  input             Json
+  output            Json
+  validation        Json?    // { status: "PASS", errors: [] }
+  approvedAt        DateTime?
+  approvedByUserId  String?
+}
+
+model StripeEvent {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now())
+  stripeEventId   String   @unique
+  type            String
+  processedAt     DateTime?
+  metadata        Json?
+}
+
+model GoogleAdsSyncCursor {
+  id                    String   @id @default(uuid())
+  accountId             String   @unique
+  lastSuccessfulSyncAt  DateTime?
+  lastSyncedDate        DateTime?
+  status                String   // OK, ERROR
+  error                 String?
+}
+

@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import OpenAI from "openai";
 import { CampaignSpec, LandingPageSpec } from './types';
+import { redactSensitive } from '@/lib/ai/redact';
 
 export async function generateLandingPageSpec(campaignId: string, mockCampaign?: CampaignSpec): Promise<LandingPageSpec> {
     // 1. Fetch Campaign
@@ -34,12 +35,6 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
                     price: 149,
                     period: "mo",
                     features: ["Unlimited virtual visits", "Direct messaging with Dr. J", "Care coordination", "Prevention planning"]
-                },
-                {
-                    name: "Family",
-                    price: 299,
-                    period: "mo",
-                    features: ["Unlimited visits for up to 5", "Pediatric triage", "Family prevention", "Direct access for all"]
                 }
             ]
         },
@@ -56,14 +51,17 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
 
     // Try to use AI for better copy if API key exists
     if (process.env.OPENAI_API_KEY) {
+        const redactedPersona = redactSensitive(campaign.persona);
+        const redactedIntent = redactSensitive(campaign.intent);
+
         try {
             const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
             const prompt = `
             You are a professional, high-conversion direct response copywriter for Present Health, a premium Direct Primary Care (DPC) practice.
             Your goal is to write landing page content that resonates deeply with a specific audience.
             
-            Persona: ${campaign.persona}
-            User Intent/Problem: ${campaign.intent}
+            Persona: ${redactedPersona}
+            User Intent/Problem: ${redactedIntent}
             
             CORE VALUE PROPOSITIONS:
             - Direct Access: Text/email your doctor anytime.
@@ -125,7 +123,7 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             // 2.5 Generate Educational Briefing if needed
             if (campaign.layoutType === 'EDUCATIONAL') {
                 const briefingPrompt = `
-                Write a high-authority, 400-word "Medical Briefing" for the persona "${campaign.persona}" about "${campaign.intent}".
+                Write a high-authority, 400-word "Medical Briefing" for the persona "${redactedPersona}" about "${redactedIntent}".
                 
                 Goal: Educate them on why this is happening and how a high-access personal physician (DPC) is the best way to manage it.
                 Tone: Editorial, Premium, Peer-to-peer.

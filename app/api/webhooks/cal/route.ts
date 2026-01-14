@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { uploadConversionToGoogleAds } from '@/lib/ads/google-ads';
+import { cookies } from 'next/headers';
+import { recordConversionEvent } from '@/lib/conversion';
 
 export async function POST(request: Request) {
     try {
@@ -42,6 +44,19 @@ export async function POST(request: Request) {
         });
 
         console.log(`[CalWebhook] Lead converted: ${email} (Lead ID: ${lead.id})`);
+
+        // Record Conversion Event
+        const session = await prisma.attributionSession.findFirst({
+            where: { leadId: lead.id },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        await recordConversionEvent({
+            type: 'BOOKED',
+            attributionSessionId: session?.id,
+            leadId: lead.id,
+            metadata: { source: 'CalWebhook', payload }
+        });
 
         // Trigger Google Ads conversion if we have a gclid
         if (lead.gclid) {

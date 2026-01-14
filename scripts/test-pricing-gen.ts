@@ -1,5 +1,5 @@
 
-import { generateLandingPage } from '../lib/ads/generator';
+import { generateLandingPageSpec } from '../lib/ads/generator';
 import { prisma } from '../lib/prisma';
 
 async function testPricingGeneration() {
@@ -19,11 +19,9 @@ async function testPricingGeneration() {
         console.log(`Using campaign: ${campaign.slug} (${campaign.id})`);
 
         // 2. Trigger generation
-        const run = await generateLandingPage(campaign.id);
+        const content = await generateLandingPageSpec(campaign.id);
 
         // 3. Inspect artifacts
-        const content = JSON.parse(run.landingPageContent || '{}');
-
         console.log("\n--- Generated LP Content ---");
         console.log("Hero Headline:", content.hero?.headline);
 

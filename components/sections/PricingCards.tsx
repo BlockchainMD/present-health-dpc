@@ -28,9 +28,12 @@ export function PricingCards() {
                     </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div className="flex justify-center max-w-lg mx-auto">
                     {/* Individual Plan */}
-                    <Card className="flex flex-col border-border shadow-sm hover:shadow-md transition-shadow">
+                    <Card className="flex flex-col border-primary shadow-md w-full relative overflow-hidden">
+                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
+                            MEMBERSHIP
+                        </div>
                         <CardHeader>
                             <CardTitle className="text-2xl">Individual</CardTitle>
                             <CardDescription>For the solo health optimizer.</CardDescription>
@@ -51,39 +54,6 @@ export function PricingCards() {
                         </CardContent>
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full" asChild>
-                                <Link href="/book">
-                                    Book Free Intro Call
-                                </Link>
-                            </Button>
-                            <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
-                        </CardFooter>
-                    </Card>
-
-                    {/* Family Plan */}
-                    <Card className="flex flex-col border-primary shadow-md relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
-                            BEST VALUE
-                        </div>
-                        <CardHeader>
-                            <CardTitle className="text-2xl">Family</CardTitle>
-                            <CardDescription>Includes partner + children (up to 5 total).</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-1">
-                            <div className="mb-6">
-                                <span className="text-4xl font-bold">${isAnnual ? 3289 : 299}</span>
-                                <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
-                            </div>
-                            <ul className="space-y-3">
-                                {["Unlimited virtual visits for all", "Pediatric triage", "Family prevention strategy", "Coordination"].map((feature) => (
-                                    <li key={feature} className="flex items-center gap-3 text-sm">
-                                        <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                        <CardFooter className="flex flex-col gap-4">
-                            <Button className="w-full" variant="default" asChild>
                                 <Link href="/book">
                                     Book Free Intro Call
                                 </Link>

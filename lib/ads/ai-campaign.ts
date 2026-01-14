@@ -45,7 +45,7 @@ CORE VIRTUAL DPC BENEFITS (MUST INCLUDE):
 - Direct Access: Text/email your doctor anytime.
 - Virtual Care: Unlimited visits via text/video/phone. No travel.
 - Relationship: A doctor who actually knows your name.
-- Transparent Pricing: $149/mo individual, $299/mo family. No insurance needed.
+- Transparent Pricing: $149/mo membership. No insurance needed.
 
 INSTRUCTIONS:
 1. Persona: Identify a high-intent audience segment ${inlet ? `based on ${persona}` : ''}.

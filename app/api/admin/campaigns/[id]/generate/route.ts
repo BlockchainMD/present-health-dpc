@@ -4,11 +4,13 @@ import { generateLandingPageSpec } from '@/lib/ads/generator';
 import { generateKeywords } from '@/lib/ads/keywords';
 import { generateAdPlan } from '@/lib/ads/google-ads';
 import { PipelineManager } from '@/lib/ads/pipeline';
+import { requireAdmin } from '@/lib/authz';
 
 export async function POST(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const session = await requireAdmin();
     const { id } = await params;
 
     try {
@@ -53,7 +55,7 @@ export async function POST(
                 matchTypes: adPlan.keywords.map(k => k.matchType),
                 rsaHeadlines: adPlan.rsa.headlines,
                 rsaDescriptions: adPlan.rsa.descriptions,
-                status: 'VALIDATED'
+                status: 'READY_FOR_REVIEW'
             }
         });
 
@@ -61,6 +63,17 @@ export async function POST(
         await prisma.campaign.update({
             where: { id: campaign.id },
             data: { status: 'READY' }
+        });
+
+        // 7. Record Audit Log for Generation
+        await prisma.auditLog.create({
+            data: {
+                actorUserId: session.user.id,
+                action: 'GENERATE_ASSETS',
+                entityType: 'CampaignRun',
+                entityId: run.id,
+                metadata: { campaignId: campaign.id }
+            }
         });
 
         return NextResponse.json(updatedRun);

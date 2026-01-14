@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+import { getOrCreateAttributionSession } from "@/lib/attribution";
+import { recordConversionEvent } from "@/lib/conversion";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +21,6 @@ export async function POST(req: Request) {
             );
         }
 
-        console.log("Checking for existing user...");
         const existingUser = await prisma.user.findUnique({
             where: { email },
         });
@@ -35,15 +36,33 @@ export async function POST(req: Request) {
         console.log("Hashing password...");
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        console.log("Checking for existing lead...");
+        const lead = await prisma.lead.findFirst({
+            where: { email },
+            orderBy: { createdAt: "desc" },
+        });
+
+        const sessionId = await getOrCreateAttributionSession(req);
+
         console.log("Creating user in DB...");
         const user = await prisma.user.create({
             data: {
                 name: `${firstName} ${lastName}`,
                 email,
                 password: hashedPassword,
+                leadId: lead?.id,
+                attributionSessionId: sessionId,
             },
         });
         console.log("User created:", user.id);
+
+        // Record Conversion Event
+        await recordConversionEvent({
+            type: 'REGISTERED',
+            attributionSessionId: sessionId,
+            userId: user.id,
+            metadata: { source: 'RegisterAPI', leadId: lead?.id }
+        });
 
         return NextResponse.json(
             { message: "User created successfully", userId: user.id },

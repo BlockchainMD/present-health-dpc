@@ -13,7 +13,7 @@ export function FAQAccordion() {
         },
         {
             question: "Can I use my HSA for this?",
-            answer: "Starting Jan 1, 2026, IRS guidance allows HSA funds to pay certain DPC fees within limits ($150/mo individual, $300/mo family), if you’re otherwise eligible. We recommend consulting a tax professional."
+            answer: "Starting Jan 1, 2026, IRS guidance allows HSA funds to pay certain DPC fees within limits ($150/mo per individual), if you’re otherwise eligible. We recommend consulting a tax professional."
         },
         {
             question: "Why is enrollment limited?",

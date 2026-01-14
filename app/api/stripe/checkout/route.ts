@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { PrismaClient } from "@prisma/client";
+import { cookies } from "next/headers";
 
 const prisma = new PrismaClient();
 
@@ -48,6 +49,7 @@ export async function POST(req: Request) {
             customer_email: session.user.email!,
             metadata: {
                 userId: session.user.id,
+                attributionSessionId: (await cookies()).get('ph_attrib')?.value || '',
             },
             success_url: `${process.env.NEXTAUTH_URL}/dashboard?success=true`,
             cancel_url: `${process.env.NEXTAUTH_URL}/dashboard?canceled=true`,

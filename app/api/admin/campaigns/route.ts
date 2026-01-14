@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateCampaignSpec } from '@/lib/ads/compliance';
+import { requireAdmin } from '@/lib/authz';
 
 export async function GET() {
+    await requireAdmin();
     try {
         const campaigns = await prisma.campaign.findMany({
             orderBy: { updatedAt: 'desc' },
@@ -21,6 +23,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    await requireAdmin();
     console.log('[POST /api/admin/campaigns] Request received');
     try {
         const bodyText = await request.text();

@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { syncToGoogleAds } from '@/lib/ads/google-ads';
+import { requireAdmin } from '@/lib/authz';
 
 export async function POST(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const session = await requireAdmin();
     const { id } = await params;
 
     try {
@@ -29,18 +31,46 @@ export async function POST(
             return NextResponse.json({ error: 'No assets generated yet. Please generate assets first.' }, { status: 400 });
         }
 
+        // 2. Approval Gate: Find APPROVED Ad Plan
+        const approvedAsset = await prisma.generatedAsset.findFirst({
+            where: {
+                campaignRunId: latestRun.id,
+                type: 'AD_PLAN',
+                status: 'APPROVED'
+            }
+        });
+
+        if (!approvedAsset) {
+            return NextResponse.json({
+                error: 'Deployment blocked. The Ad Plan has not been approved yet.'
+            }, { status: 400 });
+        }
+
         // 2. Sync to Google Ads (Live Mode: dryRun = false)
         console.log(`[Deploy] Deploying campaign ${campaign.slug} (Run: ${latestRun.id})`);
         const syncResult = await syncToGoogleAds(latestRun.id, false); // dryRun = false
 
-        // 3. Update Status
+        // 4. Update Status
         await prisma.campaign.update({
             where: { id: campaign.id },
             data: { status: 'ACTIVE' }
         });
 
-        // The status is already updated inside syncToGoogleAds for the run, 
-        // but we can ensure it here as well and return the result.
+        // 5. Record Audit Log
+        await prisma.auditLog.create({
+            data: {
+                actorUserId: session.user.id,
+                action: 'DEPLOY_CAMPAIGN',
+                entityType: 'Campaign',
+                entityId: campaign.id,
+                metadata: {
+                    runId: latestRun.id,
+                    assetId: approvedAsset.id,
+                    syncResult
+                }
+            }
+        });
+
         return NextResponse.json({ success: true, syncResult });
 
     } catch (error: any) {

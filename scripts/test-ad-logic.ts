@@ -13,7 +13,13 @@ async function testLogicWithMockSpec() {
         seedKeywords: ["digital nomad health", "bali doctor", "travel medicine subscription"],
         benefits: ["English-Speaking Doctor", "WhatsApp Access", "Global Care Coordination", "24/7 Support", "Free Ozempic Prescription"], // Very bad terms added
         proofPoints: ["10+ Years Experience", "99% Patient Satisfaction", "Guaranteed Cure"], // More bad terms
-        disclaimers: ["Not insurance"]
+        disclaimers: ["Not insurance"],
+        strategy: "TRANSACTIONAL" as const,
+        layoutType: "CONVERSION" as const,
+        budgetDaily: 50,
+        targetCpa: 30,
+        geo: "US",
+        tone: "Professional & Empathetic"
     };
 
     try {

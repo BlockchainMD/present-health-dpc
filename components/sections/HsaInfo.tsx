@@ -10,7 +10,7 @@ export function HsaInfo() {
                         In 2026, Direct Primary Care becomes HSA-friendly.*
                     </h2>
                     <p className="text-lg text-emerald-800/80">
-                        IRS guidance allows eligible people to use HSA funds for certain DPC memberships starting Jan 1, 2026, with a fee cap of <strong className="text-emerald-900">$150/mo individual / $300/mo family</strong> (indexed).
+                        IRS guidance allows eligible people to use HSA funds for certain DPC memberships starting Jan 1, 2026, with a fee cap of <strong className="text-emerald-900">$150/mo per individual</strong> (indexed).
                     </p>
                 </div>
 
@@ -26,7 +26,7 @@ export function HsaInfo() {
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">2</div>
-                                <p className="text-sm text-emerald-900/80">You join Present Health at <strong>$149/mo</strong> (Individual) or <strong>$299/mo</strong> (Family) — both under the IRS monthly limits.</p>
+                                <p className="text-sm text-emerald-900/80">You join Present Health at <strong>$149/mo</strong> — under the IRS monthly limit.</p>
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">3</div>
