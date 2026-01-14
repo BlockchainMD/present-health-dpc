@@ -2,7 +2,8 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { Plus, Search, AlertTriangle, CheckCircle, PauseCircle, PlayCircle, Archive } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Plus, Search, AlertTriangle, CheckCircle, PauseCircle, PlayCircle, Archive, Upload, Copy, Info, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -21,6 +22,12 @@ interface Campaign {
 export default function CampaignsPage() {
     const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showImport, setShowImport] = useState(false);
+    const [importJson, setImportJson] = useState('');
+    const [importing, setImporting] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+
 
     useEffect(() => {
         fetchCampaigns();
@@ -37,6 +44,38 @@ export default function CampaignsPage() {
             console.error('Failed to fetch campaigns', error);
         } finally {
             setLoading(false);
+        }
+    }
+
+    async function handleGlobalImport() {
+        if (!importJson) return;
+        setImporting(true);
+        setError(null);
+        try {
+            let parsed;
+            try {
+                parsed = JSON.parse(importJson);
+            } catch (e) {
+                throw new Error('Invalid JSON format.');
+            }
+
+            const res = await fetch('/api/admin/campaigns/import', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(parsed)
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                router.push(`/admin/campaigns/${data.id}`);
+            } else {
+                const data = await res.json();
+                throw new Error(data.error || 'Import failed');
+            }
+        } catch (err: any) {
+            setError(err.message);
+        } finally {
+            setImporting(false);
         }
     }
 
@@ -57,13 +96,46 @@ export default function CampaignsPage() {
                     <h1 className="text-3xl font-bold tracking-tight">Ad Campaigns</h1>
                     <p className="text-muted-foreground">Manage your Google Search Ads and Landing Pages.</p>
                 </div>
-                <Button asChild>
-                    <Link href="/admin/campaigns/new">
-                        <Plus className="mr-2 h-4 w-4" />
-                        New Campaign
-                    </Link>
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button variant="outline" onClick={() => setShowImport(!showImport)}>
+                        <Upload className="mr-2 h-4 w-4" />
+                        External AI Import
+                    </Button>
+                    <Button asChild>
+                        <Link href="/admin/campaigns/new">
+                            <Plus className="mr-2 h-4 w-4" />
+                            New Campaign
+                        </Link>
+                    </Button>
+                </div>
             </div>
+
+            {showImport && (
+                <Card className="border-primary/50 bg-primary/5 mb-8">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <Upload className="h-5 w-5" />
+                            Direct AI Import
+                        </CardTitle>
+                        <CardDescription>
+                            Create a campaign and assets in one go by pasting the JSON from ChatGPT Pro High.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <textarea
+                            className="w-full h-40 p-4 text-xs font-mono border rounded-md bg-background"
+                            placeholder='{ "campaign": { ... }, "adPlan": { ... }, "landingPageSpec": { ... } }'
+                            value={importJson}
+                            onChange={(e) => setImportJson(e.target.value)}
+                        />
+                        {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
+                        <Button className="w-full" onClick={handleGlobalImport} disabled={importing || !importJson}>
+                            {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Plus className="mr-2 h-4 w-4" />}
+                            Create & Import Campaign
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
 
             {loading ? (
                 <div className="text-center py-12 text-muted-foreground">Loading campaigns...</div>
