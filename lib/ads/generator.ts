@@ -94,14 +94,14 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             `;
 
             const response = await openai.chat.completions.create({
-                model: "gpt-5.2-thinking",
+                model: "gpt-5.2-pro",
+                reasoning_effort: "xhigh",
                 messages: [
                     { role: "system", content: "You are a professional, high-conversion direct response copywriter for Present Health, a premium Direct Primary Care (DPC) practice. You write empathetic, authoritative, and premium copy." },
                     { role: "user", content: prompt }
                 ],
                 response_format: { type: "json_object" },
-                temperature: 0.7
-            });
+            } as any);
 
             const text = response.choices[0]?.message?.content;
             if (text) {
@@ -134,10 +134,10 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
                 `;
 
                 const briefingResponse = await openai.chat.completions.create({
-                    model: "gpt-5.2-thinking",
+                    model: "gpt-5.2-pro",
+                    reasoning_effort: "xhigh",
                     messages: [{ role: "system", content: "You are a senior medical editor." }, { role: "user", content: briefingPrompt }],
-                    temperature: 0.7
-                });
+                } as any);
 
                 const briefingText = briefingResponse.choices[0]?.message?.content;
                 if (briefingText) {
