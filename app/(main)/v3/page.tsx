@@ -225,7 +225,7 @@ function HsaInfoV2() {
                         Starting <strong>Jan 1, 2026</strong>, eligible individuals may use HSA funds to pay DPC fees tax-free.
                     </p>
                     <p className="text-sm text-emerald-800/80 mt-2">
-                        Monthly limit: <strong>$150 (individual)</strong> / <strong>$300 (family)</strong>.
+                        Monthly limit: <strong>$150 per individual</strong>.
                     </p>
                 </div>
 
@@ -241,7 +241,7 @@ function HsaInfoV2() {
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">2</div>
-                                <p className="text-sm text-emerald-900/80">Join Present Health ($149 / $299 per month).</p>
+                                <p className="text-sm text-emerald-900/80">Join Present Health ($149 per month).</p>
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">3</div>
@@ -289,8 +289,11 @@ function PricingCardsV2() {
                     </div>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                    <Card className="flex flex-col border-border shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex justify-center max-w-lg mx-auto">
+                    <Card className="flex flex-col border-primary shadow-md w-full relative overflow-hidden">
+                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
+                            MEMBERSHIP
+                        </div>
                         <CardHeader>
                             <CardTitle className="text-2xl">Individual</CardTitle>
                             <CardDescription>For one adult.</CardDescription>
@@ -312,37 +315,6 @@ function PricingCardsV2() {
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full" asChild>
                                 <Link href={`/register?plan=individual&billing=${isAnnual ? 'annual' : 'monthly'}`}>
-                                    Get Started
-                                </Link>
-                            </Button>
-                        </CardFooter>
-                    </Card>
-
-                    <Card className="flex flex-col border-primary shadow-md relative overflow-hidden">
-                        <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
-                            BEST VALUE
-                        </div>
-                        <CardHeader>
-                            <CardTitle className="text-2xl">Family</CardTitle>
-                            <CardDescription>Up to 5 members.</CardDescription>
-                        </CardHeader>
-                        <CardContent className="flex-1">
-                            <div className="mb-6">
-                                <span className="text-4xl font-bold">${isAnnual ? 3289 : 299}</span>
-                                <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
-                            </div>
-                            <ul className="space-y-3">
-                                {["Unlimited visits for all", "Pediatric triage", "Family prevention", "Coordination"].map((feature) => (
-                                    <li key={feature} className="flex items-center gap-3 text-sm">
-                                        <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </CardContent>
-                        <CardFooter className="flex flex-col gap-4">
-                            <Button className="w-full" variant="default" asChild>
-                                <Link href={`/register?plan=family&billing=${isAnnual ? 'annual' : 'monthly'}`}>
                                     Get Started
                                 </Link>
                             </Button>

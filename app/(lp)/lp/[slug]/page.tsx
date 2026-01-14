@@ -113,12 +113,6 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                 price: 149,
                 period: "mo",
                 features: ["Unlimited virtual visits", "Direct messaging with Dr. J", "Care coordination", "Prevention planning"]
-            },
-            {
-                name: "Family",
-                price: 299,
-                period: "mo",
-                features: ["Unlimited visits for up to 5", "Pediatric triage", "Family prevention", "Direct access for all"]
             }
         ]
     };
@@ -262,17 +256,15 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                         <p className="text-muted-foreground">{content.pricing.subheadline}</p>
                                     </div>
 
-                                    <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                                    <div className="flex justify-center max-w-lg mx-auto">
                                         {content.pricing.tiers.map((tier: any, i: number) => (
-                                            <Card key={i} className={`flex flex-col border-border shadow-sm hover:shadow-md transition-shadow ${i === 1 ? 'border-primary relative overflow-hidden' : ''}`}>
-                                                {i === 1 && (
-                                                    <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
-                                                        BEST VALUE
-                                                    </div>
-                                                )}
+                                            <Card key={i} className="flex flex-col border-primary shadow-md w-full relative overflow-hidden">
+                                                <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
+                                                    MEMBERSHIP
+                                                </div>
                                                 <CardHeader>
                                                     <CardTitle className="text-2xl">{tier.name}</CardTitle>
-                                                    <CardDescription>{i === 0 ? "For one adult." : "Up to 5 members."}</CardDescription>
+                                                    <CardDescription>For one adult.</CardDescription>
                                                 </CardHeader>
                                                 <CardContent className="flex-1">
                                                     <div className="mb-6">
@@ -289,7 +281,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                                     </ul>
                                                 </CardContent>
                                                 <CardFooter className="flex flex-col gap-4">
-                                                    <Button className="w-full" variant={i === 1 ? "default" : "outline"} asChild>
+                                                    <Button className="w-full" asChild>
                                                         <Link href={bookUrl}>
                                                             Book Free Intro Call
                                                         </Link>
