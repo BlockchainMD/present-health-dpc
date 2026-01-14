@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Sparkles, Loader2, ArrowRight } from 'lucide-react';
+import { Sparkles, Loader2, ArrowRight, Rocket, Megaphone } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -76,6 +76,29 @@ export default function AdminDashboard() {
                                 )}
                             </Button>
                         )}
+                    </CardContent>
+                </Card>
+
+                {/* Ad Engine Card */}
+                <Card className="bg-gradient-to-br from-indigo-500/5 to-transparent border-indigo-500/20">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Megaphone className="h-5 w-5 text-indigo-500" />
+                            Ad Engine
+                        </CardTitle>
+                        <CardDescription>
+                            Generate Google Search Ads and Landing Pages with zero-cost AI workflows.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="p-4 bg-background rounded-lg border border-border">
+                            <p className="text-sm">Leverage ChatGPT Pro High for premium asset generation.</p>
+                        </div>
+                        <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-700">
+                            <Link href="/admin/campaigns">
+                                Manage Campaigns <Rocket className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
                     </CardContent>
                 </Card>
 
