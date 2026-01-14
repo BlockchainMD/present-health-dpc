@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Play, Pause, Trash2, RefreshCw, ExternalLink, CheckCircle, AlertTriangle, Loader2, Rocket } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Trash2, RefreshCw, ExternalLink, CheckCircle, AlertTriangle, Loader2, Rocket, Copy, Upload, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,11 @@ export default function CampaignDetailsPage() {
     const [deleting, setDeleting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [metrics, setMetrics] = useState<any[]>([]);
+    const [showManual, setShowManual] = useState(false);
+    const [manualJson, setManualJson] = useState('');
+    const [promptText, setPromptText] = useState('');
+    const [importing, setImporting] = useState(false);
+    const [copySuccess, setCopySuccess] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -104,6 +109,58 @@ export default function CampaignDetailsPage() {
         }
     }
 
+    async function fetchPrompt() {
+        try {
+            const res = await fetch(`/api/admin/campaigns/${id}/prompt`);
+            if (res.ok) {
+                const data = await res.json();
+                setPromptText(data.prompt);
+                setShowManual(true);
+            }
+        } catch (e) {
+            setError('Failed to fetch prompt template');
+        }
+    }
+
+    async function handleCopyPrompt() {
+        await navigator.clipboard.writeText(promptText);
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
+    }
+
+    async function handleImport() {
+        if (!manualJson) return;
+        setImporting(true);
+        setError(null);
+        try {
+            let parsed;
+            try {
+                parsed = JSON.parse(manualJson);
+            } catch (e) {
+                throw new Error('Invalid JSON format. Please ensure you copied the entire output.');
+            }
+
+            const res = await fetch(`/api/admin/campaigns/${id}/import`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(parsed)
+            });
+
+            if (res.ok) {
+                setManualJson('');
+                setShowManual(false);
+                await fetchCampaign();
+            } else {
+                const data = await res.json();
+                setError(data.error || 'Import failed');
+            }
+        } catch (err: any) {
+            setError(err.message || 'An error occurred during import');
+        } finally {
+            setImporting(false);
+        }
+    }
+
     async function handleDelete() {
         if (!confirm('Are you sure you want to DELETE this campaign? This cannot be undone.')) return;
         setDeleting(true);
@@ -160,10 +217,16 @@ export default function CampaignDetailsPage() {
                         <RefreshCw className="mr-2 h-3 w-3" /> Simulate Data
                     </Button>
 
+                    {/* Manual Workflow */}
+                    <Button variant="outline" onClick={showManual ? () => setShowManual(false) : fetchPrompt}>
+                        <Copy className="mr-2 h-4 w-4" />
+                        {showManual ? 'Hide Manual' : 'ChatGPT Workflow'}
+                    </Button>
+
                     {/* Regenerate Assets */}
                     <Button variant="outline" onClick={handleGenerate} disabled={generating}>
                         {generating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-                        {latestRun ? 'Regenerate Assets' : 'Generate Assets'}
+                        {latestRun ? 'Auto-Generate' : 'Auto-Generate'}
                     </Button>
 
                     {/* Go Live */}
@@ -175,6 +238,48 @@ export default function CampaignDetailsPage() {
                     )}
                 </div>
             </div>
+
+            {showManual && (
+                <Card className="border-primary/50 bg-primary/5">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Info className="h-5 w-5 text-primary" />
+                            ChatGPT Pro High Workflow
+                        </CardTitle>
+                        <CardDescription>
+                            Leverage your own AI subscription for free by copying the prompt below into ChatGPT Pro High and pasting the result back.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium">1. Copy this mega-prompt</label>
+                                <Button size="sm" variant="outline" onClick={handleCopyPrompt}>
+                                    {copySuccess ? 'Copied!' : <><Copy className="mr-2 h-3 w-3" /> Copy Prompt</>}
+                                </Button>
+                            </div>
+                            <div className="bg-muted p-4 rounded-md h-32 overflow-y-auto text-xs whitespace-pre-wrap font-mono border">
+                                {promptText}
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <label className="text-sm font-medium">2. Paste the JSON output here</label>
+                            <textarea
+                                className="w-full h-32 p-3 text-xs font-mono border rounded-md bg-background focus:ring-2 focus:ring-primary outline-none"
+                                placeholder='{ "adPlan": { ... }, "landingPageSpec": { ... } }'
+                                value={manualJson}
+                                onChange={(e) => setManualJson(e.target.value)}
+                            />
+                        </div>
+
+                        <Button className="w-full" onClick={handleImport} disabled={importing || !manualJson}>
+                            {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
+                            Import Assets
+                        </Button>
+                    </CardContent>
+                </Card>
+            )}
 
             {error && (
                 <Alert variant="destructive">
