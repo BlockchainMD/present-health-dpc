@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import { validateCampaignSpec, DENYLIST } from './compliance';
 import OpenAI from "openai";
 import { CampaignSpec } from './types';
+import { BRAND_CONTEXT, COMPLIANCE_RULES } from './brand-context';
 
 export async function generateCampaignSpec(strategy: 'TRANSACTIONAL' | 'EDUCATIONAL' = 'TRANSACTIONAL', inlet?: any): Promise<CampaignSpec> {
     if (!process.env.OPENAI_API_KEY) {
@@ -30,8 +31,9 @@ export async function generateCampaignSpec(strategy: 'TRANSACTIONAL' | 'EDUCATIO
     const intent = inlet?.problem || "Tired of waiting for doctor appointments";
 
     const prompt = `
-Act as an expert search marketing strategist for Present Health, a **Virtual Direct Primary Care (DPC)** practice.
-Your goal is to generate a campaign specification that will be used to create Google Ads and Landing Pages.
+Act as an expert search marketing strategist for Present Health.
+
+${BRAND_CONTEXT}
 
 STRATEGY: ${strategy}
 ${isEducational ? 'GOAL: Educate first, convert second. Target problem-aware users looking for answers.' : 'GOAL: Direct conversion. Target solution-aware users looking for a doctor.'}
@@ -41,11 +43,7 @@ ${inlet ? `CONTEXT: We are targeting the topic "${inlet.topic}" specifically for
 EXISTING CAMPAIGNS (DO NOT DUPLICATE THESE):
 ${context}
 
-CORE VIRTUAL DPC BENEFITS (MUST INCLUDE):
-- Direct Access: Text/email your doctor anytime.
-- Virtual Care: Unlimited visits via text/video/phone. No travel.
-- Relationship: A doctor who actually knows your name.
-- Transparent Pricing: $149/mo membership. No insurance needed.
+${COMPLIANCE_RULES}
 
 INSTRUCTIONS:
 1. Persona: Identify a high-intent audience segment ${inlet ? `based on ${persona}` : ''}.
@@ -84,7 +82,7 @@ RETURN VALID JSON ONLY:
     while (attempts < maxAttempts) {
         attempts++;
         const response = await openai.chat.completions.create({
-            model: "gpt-4-turbo",
+            model: "gpt-4o",
             messages: [
                 { role: "system", content: "You are a Google Ads expert. Return valid JSON only. STRICTLY FOLLOW NEGATIVE CONSTRAINTS." },
                 { role: "user", content: prompt }

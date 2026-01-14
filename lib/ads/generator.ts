@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma';
 import OpenAI from "openai";
 import { CampaignSpec, LandingPageSpec } from './types';
 import { redactSensitive } from '@/lib/ai/redact';
+import { BRAND_CONTEXT, COMPLIANCE_RULES } from './brand-context';
 
 export async function generateLandingPageSpec(campaignId: string, mockCampaign?: CampaignSpec): Promise<LandingPageSpec> {
     // 1. Fetch Campaign
@@ -93,7 +94,7 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             `;
 
             const response = await openai.chat.completions.create({
-                model: "gpt-4-turbo",
+                model: "gpt-4o",
                 messages: [
                     { role: "system", content: "You are a professional, high-conversion direct response copywriter for Present Health, a premium Direct Primary Care (DPC) practice. You write empathetic, authoritative, and premium copy." },
                     { role: "user", content: prompt }
@@ -133,7 +134,7 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
                 `;
 
                 const briefingResponse = await openai.chat.completions.create({
-                    model: "gpt-4-turbo",
+                    model: "gpt-4o",
                     messages: [{ role: "system", content: "You are a senior medical editor." }, { role: "user", content: briefingPrompt }],
                     temperature: 0.7
                 });
