@@ -1,11 +1,14 @@
 import Link from 'next/link';
 import { LayoutDashboard, FileText, Settings, ExternalLink } from 'lucide-react';
+import { protectAdminPage } from '@/lib/authz';
 
-export default function AdminLayout({
+export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    await protectAdminPage();
+
     return (
         <div className="flex min-h-screen bg-muted/20">
             {/* Sidebar */}

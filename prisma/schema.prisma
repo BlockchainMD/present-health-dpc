@@ -1,8 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
@@ -15,218 +12,188 @@ model Article {
   id        String   @id @default(uuid())
   title     String
   content   String
-  status    String   @default("DRAFT") // DRAFT, PUBLISHED, DISCARDED
+  status    String   @default("DRAFT")
   sourceUrl String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  
-  stripeCustomerId       String?
-  stripeSubscriptionId   String?
-  subscriptionStatus     String? // active, past_due, canceled, incomplete
-  role                   String   @default("USER") // ADMIN, STAFF, PATIENT, USER
-  
-  auditLogs              AuditLog[]
-  conversionEvents       ConversionEvent[]
-  
-  attributionSessionId   String?
-  leadId                 String?
-  
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String            @id @default(uuid())
+  email                String            @unique
+  password             String
+  name                 String?
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  subscriptionStatus   String?
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+  role                 String            @default("USER")
+  attributionSessionId String?
+  leadId               String?
+  auditLogs            AuditLog[]
+  conversionEvents     ConversionEvent[]
 }
 
 model Campaign {
-  id              String        @id @default(uuid())
-  slug            String        @unique
-  persona         String
-  intent          String
-  seedKeywords    String[]
-  benefits        String[]
-  proofPoints     String[]
-  disclaimers     String[]
-  landingSlug     String
-  budgetDaily     Float
-  targetCpa       Float
-  geo             String?
-  tone            String?
-  strategy        String        @default("TRANSACTIONAL") // TRANSACTIONAL, EDUCATIONAL
-  layoutType      String        @default("CONVERSION") // CONVERSION, EDUCATIONAL
-  status          String        @default("DRAFT") // DRAFT, READY, DEPLOYED, PAUSED, ARCHIVED, ERROR
-  
-  runs            CampaignRun[]
-  
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  id           String        @id @default(uuid())
+  slug         String        @unique
+  persona      String
+  intent       String
+  seedKeywords String[]
+  benefits     String[]
+  proofPoints  String[]
+  disclaimers  String[]
+  landingSlug  String
+  budgetDaily  Float
+  targetCpa    Float
+  geo          String?
+  tone         String?
+  status       String        @default("DRAFT")
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  layoutType   String        @default("CONVERSION")
+  strategy     String        @default("TRANSACTIONAL")
+  runs         CampaignRun[]
 }
 
 model CampaignRun {
-  id                      String   @id @default(uuid())
-  campaignId              String
-  campaign                Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  
-  // Artifacts
-  chosenKeywords          String[]
-  matchTypes              String[]
-  negativeKeywords        String[]
-  rsaHeadlines            String[]
-  rsaDescriptions         String[]
-  finalUrl                String?
-  landingPageContent      String?  @db.Text
-  educationalContent      String?  @db.Text
-  
-  // Metrics History
-  metricsHistory          CampaignMetric[]
-  
-  // Status & Lifecycle
-  status                  String   @default("PENDING") // PENDING, VALIDATED, DEPLOYED, PAUSED
-  
-  // Google Ads mapping
-  googleCustomerId        String?
-  googleCampaignId        String?
-  googleAdGroupId         String?
-  googleResourceName      String?
-  googleSyncStatus        String?  // OK, ERROR, PENDING
-  googleAdsResourceIds    Json?    // Legacy store IDs from Google Ads API
-  
-  // Metrics Snapshot
-  artifacts               Json?    // Stores TrendSignal, InletCandidate, AdPlan, etc.
-  metrics                 Json?    // { clicks: 0, cost: 0, conversions: 0, ctr: 0, cvr: 0, cpa: 0 }
-  lastMetricsSync         DateTime?
-
-  // Compliance
-  complianceCheckResults  Json?    // { status: "PASS" | "FAIL", reasons: [] }
-  
-  indexing                String   @default("NOINDEX") // INDEX, NOINDEX
-  
-  leads                   Lead[]
-  
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                     String           @id @default(uuid())
+  campaignId             String
+  chosenKeywords         String[]
+  matchTypes             String[]
+  negativeKeywords       String[]
+  rsaHeadlines           String[]
+  rsaDescriptions        String[]
+  finalUrl               String?
+  landingPageContent     String?
+  status                 String           @default("PENDING")
+  googleAdsResourceIds   Json?
+  metrics                Json?
+  lastMetricsSync        DateTime?
+  complianceCheckResults Json?
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+  artifacts              Json?
+  educationalContent     String?
+  googleAdGroupId        String?
+  googleCampaignId       String?
+  googleCustomerId       String?
+  googleResourceName     String?
+  googleSyncStatus       String?
+  indexing               String           @default("NOINDEX")
+  metricsHistory         CampaignMetric[]
+  campaign               Campaign         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  leads                  Lead[]
 }
 
 model CampaignMetric {
-  id              String       @id @default(uuid())
-  campaignRunId   String
-  campaignRun     CampaignRun  @relation(fields: [campaignRunId], references: [id], onDelete: Cascade)
-  
-  date            DateTime     // Daily granularity
-  
-  impressions     Int          @default(0)
-  clicks          Int          @default(0)
-  conversions     Int          @default(0)
-  cost            Float        @default(0.0)
-  
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  id            String      @id @default(uuid())
+  campaignRunId String
+  date          DateTime
+  impressions   Int         @default(0)
+  clicks        Int         @default(0)
+  conversions   Int         @default(0)
+  cost          Float       @default(0.0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  campaignRun   CampaignRun @relation(fields: [campaignRunId], references: [id], onDelete: Cascade)
 
-  @@unique([campaignRunId, date]) // One entry per run per day
+  @@unique([campaignRunId, date])
 }
 
 model Lead {
-  id              String       @id @default(uuid())
-  campaignRunId   String
-  campaignRun     CampaignRun  @relation(fields: [campaignRunId], references: [id], onDelete: Cascade)
-  
-  email           String?
-  gclid           String?      // Google Click ID
-  status          String       @default("PENDING") // PENDING, BOOKED, CANCELLED
-  
-  metadata        Json?        // URL params, device info, etc.
-  convertedAt     DateTime?
-  
+  id                  String               @id @default(uuid())
+  campaignRunId       String
+  email               String?
+  gclid               String?
+  status              String               @default("PENDING")
+  metadata            Json?
+  convertedAt         DateTime?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
   attributionSessions AttributionSession[]
   conversionEvents    ConversionEvent[]
-  
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  campaignRun         CampaignRun          @relation(fields: [campaignRunId], references: [id], onDelete: Cascade)
 
   @@index([email])
   @@index([gclid])
 }
 
 model AuditLog {
-  id            String   @id @default(uuid())
-  createdAt     DateTime @default(now())
-  actorUserId   String?
-  actorUser     User?    @relation(fields: [actorUserId], references: [id])
-  action        String
-  entityType    String
-  entityId      String
-  metadata      Json?
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  actorUserId String?
+  action      String
+  entityType  String
+  entityId    String
+  metadata    Json?
+  actorUser   User?    @relation(fields: [actorUserId], references: [id])
 }
 
 model AttributionSession {
-  id              String   @id @default(cuid())
-  createdAt       DateTime @default(now())
-  gclid           String?
-  utmSource       String?
-  utmMedium       String?
-  utmCampaign     String?
-  utmTerm         String?
-  utmContent      String?
-  landingPath     String
-  referrer        String?
-  userAgentHash   String?
-  ipHash          String?
-  leadId          String?
-  lead            Lead?    @relation(fields: [leadId], references: [id])
-  
-  conversions     ConversionEvent[]
+  id            String            @id @default(cuid())
+  createdAt     DateTime          @default(now())
+  gclid         String?
+  utmSource     String?
+  utmMedium     String?
+  utmCampaign   String?
+  utmTerm       String?
+  utmContent    String?
+  landingPath   String
+  referrer      String?
+  userAgentHash String?
+  ipHash        String?
+  leadId        String?
+  lead          Lead?             @relation(fields: [leadId], references: [id])
+  conversions   ConversionEvent[]
 
   @@index([createdAt])
   @@index([gclid])
 }
 
 model ConversionEvent {
-  id                    String              @id @default(uuid())
-  createdAt             DateTime            @default(now())
-  type                  String              // LEAD_CREATED, REGISTERED, BOOKED, STRIPE_SUBSCRIBED
-  attributionSessionId  String?
-  attributionSession    AttributionSession? @relation(fields: [attributionSessionId], references: [id])
-  leadId                String?
-  lead                  Lead?               @relation(fields: [leadId], references: [id])
-  userId                String?
-  user                  User?               @relation(fields: [userId], references: [id])
-  metadata              Json?
+  id                   String              @id @default(uuid())
+  createdAt            DateTime            @default(now())
+  type                 String
+  attributionSessionId String?
+  leadId               String?
+  userId               String?
+  metadata             Json?
+  attributionSession   AttributionSession? @relation(fields: [attributionSessionId], references: [id])
+  lead                 Lead?               @relation(fields: [leadId], references: [id])
+  user                 User?               @relation(fields: [userId], references: [id])
 }
 
 model GeneratedAsset {
-  id                String   @id @default(uuid())
-  createdAt         DateTime @default(now())
-  type              String   // AD_COPY, LANDING_PAGE, ARTICLE, KEYWORDS
-  status            String   @default("DRAFT") // DRAFT, READY_FOR_REVIEW, APPROVED, REJECTED
-  campaignId        String?
-  campaignRunId     String?
-  promptVersion     String
-  input             Json
-  output            Json
-  validation        Json?    // { status: "PASS", errors: [] }
-  approvedAt        DateTime?
-  approvedByUserId  String?
+  id               String    @id @default(uuid())
+  createdAt        DateTime  @default(now())
+  type             String
+  status           String    @default("DRAFT")
+  campaignId       String?
+  campaignRunId    String?
+  promptVersion    String
+  input            Json
+  output           Json
+  validation       Json?
+  approvedAt       DateTime?
+  approvedByUserId String?
 }
 
 model StripeEvent {
-  id              String   @id @default(uuid())
-  createdAt       DateTime @default(now())
-  stripeEventId   String   @unique
-  type            String
-  processedAt     DateTime?
-  metadata        Json?
+  id            String    @id @default(uuid())
+  createdAt     DateTime  @default(now())
+  stripeEventId String    @unique
+  type          String
+  processedAt   DateTime?
+  metadata      Json?
 }
 
 model GoogleAdsSyncCursor {
-  id                    String   @id @default(uuid())
-  accountId             String   @unique
-  lastSuccessfulSyncAt  DateTime?
-  lastSyncedDate        DateTime?
-  status                String   // OK, ERROR
-  error                 String?
+  id                   String    @id @default(uuid())
+  accountId            String    @unique
+  lastSuccessfulSyncAt DateTime?
+  lastSyncedDate       DateTime?
+  status               String
+  error                String?
 }
-

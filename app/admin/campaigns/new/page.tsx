@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Loader2, AlertTriangle, Copy, Upload, Info, Wand2 } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { ArrowLeft, Loader2, AlertTriangle, Copy, Upload, Info, Wand2, User, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 export default function NewCampaignPage() {
     const router = useRouter();
+    const { data: session } = useSession();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [complianceErrors, setComplianceErrors] = useState<string[]>([]);
@@ -123,27 +125,64 @@ Return ONLY a JSON object with this exact structure:
     }
 
     async function handleImport() {
-        if (!manualJson) return;
+        if (!manualJson) {
+            addLog('Import aborted: JSON input is empty.', 'error');
+            return;
+        }
+
         setImporting(true);
         setError(null);
+        addLog('Starting manual import...');
+
         try {
-            const parsed = JSON.parse(manualJson);
+            addLog('Parsing JSON input...');
+            let parsed;
+            try {
+                parsed = JSON.parse(manualJson);
+            } catch (pErr: any) {
+                let helpfulMsg = 'Invalid JSON format. Please ensure you are pasting only the JSON object.';
+                if (manualJson.trim().startsWith('Present Health') || manualJson.trim().includes('Admin Panel')) {
+                    helpfulMsg = 'It looks like you accidentally pasted the entire webpage content. Please clear the box and paste ONLY the JSON output from ChatGPT.';
+                }
+                throw new Error(helpfulMsg);
+            }
+            addLog(`JSON parsed successfully. Campaign slug: ${parsed.campaign?.slug || 'unknown'}`);
+
+            addLog('Sending POST request to /api/admin/campaigns/import...');
             const res = await fetch('/api/admin/campaigns/import', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(parsed)
             });
 
-            const data = await res.json();
+            addLog(`Response received. Status: ${res.status} ${res.statusText}`);
+
+            let data;
+            const contentType = res.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await res.json();
+            } else {
+                const text = await res.text();
+                addLog('Response is not JSON. Raw body: ' + text.slice(0, 200), 'error');
+                throw new Error(`Server returned a ${res.status} error (non-JSON).`);
+            }
+
             if (res.ok) {
+                addLog('Import successful! Redirecting to campaign details...', 'info');
                 router.push(`/admin/campaigns/${data.id}`);
             } else {
+                addLog(`Import failed on server: ${data.error || 'Unknown error'}`, 'error');
                 throw new Error(data.error || 'Import failed');
             }
         } catch (err: any) {
-            setError(err.message || 'Invalid JSON format');
+            const msg = err.message || 'Invalid JSON format';
+            addLog(`Exception caught: ${msg}`, 'error');
+            setError(msg);
+            // Ensure error is visible by scrolling to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         } finally {
             setImporting(false);
+            addLog('Import process finished.');
         }
     }
 
@@ -256,6 +295,13 @@ Return ONLY a JSON object with this exact structure:
                             <label className="text-sm font-medium">2. Paste ChatGPT JSON output here</label>
                             <textarea className="w-full h-48 p-3 text-xs font-mono border rounded-md bg-background" placeholder='{ "campaign": { ... }, "adPlan": { ... }, "landingPageSpec": { ... } }' value={manualJson} onChange={(e) => setManualJson(e.target.value)} />
                         </div>
+                        {error && (
+                            <Alert variant="destructive" className="border-destructive/50">
+                                <AlertTriangle className="h-4 w-4" />
+                                <AlertTitle>Import Error</AlertTitle>
+                                <AlertDescription>{error}</AlertDescription>
+                            </Alert>
+                        )}
                         <Button className="w-full" size="lg" onClick={handleImport} disabled={importing || !manualJson}>
                             {importing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
                             Create & Import Everything
@@ -313,6 +359,23 @@ Return ONLY a JSON object with this exact structure:
                     <div className="bg-slate-900 p-2 h-32 overflow-y-auto font-mono text-[10px] space-y-1">
                         {logs.map((log, i) => <div key={i}>{log}</div>)}
                     </div>
+                </CardContent>
+            </Card>
+
+            <Card className="mt-8 border-dashed bg-muted/30">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-sm flex items-center gap-2">
+                        <User className="h-4 w-4" /> Session Diagnostics
+                    </CardTitle>
+                </CardHeader>
+                <CardContent className="flex items-center justify-between text-xs">
+                    <div className="space-y-1">
+                        <p>Logged in as: <span className="font-semibold">{session?.user?.email || 'Not logged in'}</span></p>
+                        <p>Role: <span className={`px-2 py-0.5 rounded-full ${(session?.user as any)?.role === 'ADMIN' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>{(session?.user as any)?.role || 'None'}</span></p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => signOut({ callbackUrl: '/login' })} className="text-muted-foreground hover:text-destructive">
+                        <LogOut className="mr-2 h-3 w-3" /> Sign Out
+                    </Button>
                 </CardContent>
             </Card>
         </div>

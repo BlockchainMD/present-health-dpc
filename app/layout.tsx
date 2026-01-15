@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Membership primary care with direct doctor access, same/next-day virtual visits, prevention planning, and transparent pricing. HSA-friendly starting 2026 (limits apply).",
 };
 
+import { Providers } from "@/components/Providers";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-background text-foreground bg-noise`}
       >
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
