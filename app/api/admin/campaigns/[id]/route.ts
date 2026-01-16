@@ -27,7 +27,22 @@ export async function GET(
             return NextResponse.json({ error: 'Campaign not found' }, { status: 404 });
         }
 
-        return NextResponse.json(campaign);
+        // Fetch GeneratedAssets for the latest run
+        let assets: any[] = [];
+        if (campaign.runs[0]) {
+            assets = await prisma.generatedAsset.findMany({
+                where: { campaignRunId: campaign.runs[0].id },
+                select: {
+                    id: true,
+                    type: true,
+                    status: true,
+                    approvedAt: true,
+                    approvedByUserId: true
+                }
+            });
+        }
+
+        return NextResponse.json({ ...campaign, assets });
     } catch (error) {
         console.error('Error fetching campaign:', error);
         return NextResponse.json({ error: 'Failed to fetch campaign' }, { status: 500 });

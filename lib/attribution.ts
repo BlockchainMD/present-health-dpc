@@ -84,13 +84,18 @@ export async function getOrCreateAttributionSession(req?: Request, dataOverride?
             landingPath: data.landingPath
         });
 
-        cookieStore.set(ATTRIBUION_COOKIE_NAME, session.id, {
-            maxAge: 60 * 60 * 24 * COOKIE_DURATION_DAYS,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-        });
+        try {
+            cookieStore.set(ATTRIBUION_COOKIE_NAME, session.id, {
+                maxAge: 60 * 60 * 24 * COOKIE_DURATION_DAYS,
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: 'lax',
+                path: '/',
+            });
+        } catch (e) {
+            // Cookie setting is not allowed in Server Components, this is expected
+            console.log('[Attribution] Could not set cookie (read-only context), session ID:', session.id);
+        }
 
         return session.id;
     }
@@ -114,13 +119,18 @@ export async function getOrCreateAttributionSession(req?: Request, dataOverride?
         referrer: data.referrer
     });
 
-    cookieStore.set(ATTRIBUION_COOKIE_NAME, session.id, {
-        maxAge: 60 * 60 * 24 * COOKIE_DURATION_DAYS,
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-        path: '/',
-    });
+    try {
+        cookieStore.set(ATTRIBUION_COOKIE_NAME, session.id, {
+            maxAge: 60 * 60 * 24 * COOKIE_DURATION_DAYS,
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            path: '/',
+        });
+    } catch (e) {
+        // Cookie setting is not allowed in Server Components, this is expected
+        console.log('[Attribution] Could not set cookie (read-only context), session ID:', session.id);
+    }
 
     return session.id;
 }

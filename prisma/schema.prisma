@@ -48,6 +48,7 @@ model Campaign {
   budgetDaily  Float
   targetCpa    Float
   geo          String?
+  geoStates    String[]      @default([])
   tone         String?
   status       String        @default("DRAFT")
   createdAt    DateTime      @default(now())

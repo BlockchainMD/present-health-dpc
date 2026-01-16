@@ -27,6 +27,7 @@ export default function CampaignDetailsPage() {
     const [promptText, setPromptText] = useState('');
     const [importing, setImporting] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
+    const [approving, setApproving] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -88,6 +89,29 @@ export default function CampaignDetailsPage() {
             await fetch(`/api/admin/campaigns/${id}/metrics`, { method: 'POST' });
             fetchMetrics();
         } catch (e) { }
+    }
+
+    async function handleApproveAdPlan() {
+        const adPlanAsset = campaign?.assets?.find((a: any) => a.type === 'AD_PLAN');
+        if (!adPlanAsset) {
+            setError('No Ad Plan found to approve.');
+            return;
+        }
+        setApproving(true);
+        setError(null);
+        try {
+            const res = await fetch(`/api/admin/assets/${adPlanAsset.id}/approve`, { method: 'POST' });
+            if (res.ok) {
+                await fetchCampaign(); // Refresh to get updated asset status
+            } else {
+                const data = await res.json();
+                setError(data.error || 'Approval failed');
+            }
+        } catch (err) {
+            setError('An error occurred during approval');
+        } finally {
+            setApproving(false);
+        }
     }
 
     async function handleDeploy() {
@@ -186,6 +210,15 @@ export default function CampaignDetailsPage() {
     // Simple Chart Helpers
     const maxClicks = Math.max(...metrics.map(m => m.clicks), 1);
     const maxCost = Math.max(...metrics.map(m => m.cost), 1);
+    const hasGoogleIds = latestRun?.googleCampaignId && latestRun?.googleCustomerId;
+
+    const getGoogleAdsLink = () => {
+        if (!hasGoogleIds) return '#';
+        // Extract numeric campaign ID from resource name "customers/{customer_id}/campaigns/{campaign_id}"
+        const campaignId = latestRun.googleCampaignId.split('/').pop();
+        const customerId = latestRun.googleCustomerId.replace(/-/g, '');
+        return `https://ads.google.com/aw/overview?campaignId=${campaignId}&__c=${customerId}`;
+    };
 
     return (
         <div className="space-y-8 max-w-6xl mx-auto pb-12">
@@ -228,6 +261,22 @@ export default function CampaignDetailsPage() {
                         {generating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
                         {latestRun ? 'Auto-Generate' : 'Auto-Generate'}
                     </Button>
+
+                    {/* Approve Ad Plan */}
+                    {latestRun && (() => {
+                        const adPlanAsset = campaign?.assets?.find((a: any) => a.type === 'AD_PLAN');
+                        const isApproved = adPlanAsset?.status === 'APPROVED';
+                        return adPlanAsset && !isApproved ? (
+                            <Button variant="secondary" onClick={handleApproveAdPlan} disabled={approving} className="bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200">
+                                {approving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <CheckCircle className="mr-2 h-4 w-4" />}
+                                Approve Ad Plan
+                            </Button>
+                        ) : isApproved ? (
+                            <Badge className="bg-green-100 text-green-700 border-green-200 px-3 py-1.5">
+                                <CheckCircle className="mr-1 h-3 w-3" /> Ad Plan Approved
+                            </Badge>
+                        ) : null;
+                    })()}
 
                     {/* Go Live */}
                     {latestRun && (
@@ -338,9 +387,19 @@ export default function CampaignDetailsPage() {
 
                         <TabsContent value="performance" className="space-y-6 mt-6">
                             <Card>
-                                <CardHeader>
-                                    <CardTitle>Clicks & Cost (30 Days)</CardTitle>
-                                    <CardDescription>Daily performance trends.</CardDescription>
+                                <CardHeader className="flex flex-row items-center justify-between">
+                                    <div>
+                                        <CardTitle>Clicks & Cost (30 Days)</CardTitle>
+                                        <CardDescription>Daily performance trends.</CardDescription>
+                                    </div>
+                                    {hasGoogleIds && (
+                                        <Button variant="outline" size="sm" asChild>
+                                            <a href={getGoogleAdsLink()} target="_blank" rel="noopener noreferrer">
+                                                <ExternalLink className="mr-2 h-4 w-4" />
+                                                View in Google Ads
+                                            </a>
+                                        </Button>
+                                    )}
                                 </CardHeader>
                                 <CardContent>
                                     <div className="h-64 flex items-end justify-between gap-1 w-full pt-8">
@@ -501,6 +560,16 @@ export default function CampaignDetailsPage() {
                                 <span className="text-muted-foreground block mb-1">Geo</span>
                                 <span className="font-medium">{campaign.geo}</span>
                             </div>
+                            {campaign.geoStates && campaign.geoStates.length > 0 && (
+                                <div>
+                                    <span className="text-muted-foreground block mb-1">Licensed States</span>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                        {campaign.geoStates.map((state: string, i: number) => (
+                                            <Badge key={i} variant="outline" className="text-xs">{state}</Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                             <div>
                                 <span className="text-muted-foreground block mb-1">Seed Keywords</span>
                                 <div className="flex flex-wrap gap-1 mt-1">

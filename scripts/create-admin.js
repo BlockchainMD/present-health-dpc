@@ -4,8 +4,8 @@ const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient();
 
 async function main() {
-    const email = 'admin@presenthealthmd.com';
-    const password = 'admin-password-2026';
+    const email = 'admin';
+    const password = 'admin';
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await prisma.user.upsert({

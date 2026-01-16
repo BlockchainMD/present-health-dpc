@@ -46,6 +46,7 @@ export async function POST(request: Request) {
                 budgetDaily: isNaN(safeBudget) ? 50.0 : safeBudget,
                 targetCpa: isNaN(safeCpa) ? 30.0 : safeCpa,
                 geo: campaign.geo || 'US',
+                geoStates: Array.isArray(campaign.geoStates) ? campaign.geoStates : [],
                 tone: campaign.tone || 'Professional',
                 status: 'READY'
             }

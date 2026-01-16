@@ -60,8 +60,8 @@ export default function LoginPage() {
                             </div>
                         )}
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
-                            <Input id="email" name="email" type="email" placeholder="john@example.com" required disabled={isLoading} />
+                            <Label htmlFor="email">Email or Username</Label>
+                            <Input id="email" name="email" type="text" placeholder="admin or email@example.com" required disabled={isLoading} />
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
