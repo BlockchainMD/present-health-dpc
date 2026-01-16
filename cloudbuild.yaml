@@ -25,7 +25,7 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--update-env-vars'
-      - 'DATABASE_URL=postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db'
+      - 'DATABASE_URL=postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db,NEXTAUTH_SECRET=present-health-production-secret-2025-v1,NEXTAUTH_URL=https://presenthealthmd.com'
       - '--add-cloudsql-instances'
       - 'present-health-dpc-2025:us-central1:present-health-db'
 
