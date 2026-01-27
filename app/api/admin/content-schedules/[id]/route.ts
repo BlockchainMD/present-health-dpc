@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/authz';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const { id } = await params;
         const body = await request.json();
@@ -28,6 +34,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const { id } = await params;
         await prisma.contentSchedule.delete({ where: { id } });

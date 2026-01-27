@@ -15,7 +15,7 @@ export async function enqueueDueSchedules(now = new Date()) {
         });
         if (existingJob) continue;
 
-        const scheduledTime = computeScheduledTime(schedule.timezone, schedule.runHour, schedule.runMinute, now);
+        const scheduledTime = computeScheduledTime(schedule.cadence, schedule.timezone, schedule.runHour, schedule.runMinute, now);
         if (now < scheduledTime) continue;
         if (schedule.lastRunAt && schedule.lastRunAt >= scheduledTime) continue;
 
@@ -25,7 +25,7 @@ export async function enqueueDueSchedules(now = new Date()) {
             prisma.contentJob.create({
                 data: {
                     scheduleId: schedule.id,
-                    runAt: now,
+                    runAt: scheduledTime,
                     options
                 }
             }),
@@ -56,10 +56,11 @@ export async function runDueJobs(limit = 3) {
 
     for (const job of jobs) {
         processed += 1;
-        await prisma.contentJob.update({
-            where: { id: job.id },
+        const claimed = await prisma.contentJob.updateMany({
+            where: { id: job.id, status: 'PENDING' },
             data: { status: 'RUNNING', startedAt: new Date() }
         });
+        if (claimed.count === 0) continue;
 
         try {
             const result = await runContentEngine(job.options as EngineOptions);
@@ -86,13 +87,13 @@ export async function runDueJobs(limit = 3) {
     return processed;
 }
 
-function computeScheduledTime(timezone: string, hour: number, minute: number, now: Date) {
+function computeScheduledTime(cadence: string, timezone: string, hour: number, minute: number, now: Date) {
     const tzNow = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
     const scheduled = new Date(tzNow);
-    scheduled.setHours(hour, minute, 0, 0);
-
-    if (scheduled > tzNow) {
-        return fromTimeZone(scheduled, now, timezone);
+    if (cadence === 'HOURLY') {
+        scheduled.setHours(tzNow.getHours(), minute, 0, 0);
+    } else {
+        scheduled.setHours(hour, minute, 0, 0);
     }
 
     return fromTimeZone(scheduled, now, timezone);

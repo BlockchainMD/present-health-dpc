@@ -1,11 +1,16 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { refreshStrategy } from '@/lib/content-engine/feedback';
+import { requireAdmin } from '@/lib/authz';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
     try {
+        const authorized = await verifyMetricsAuth(request);
+        if (!authorized) {
+            return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+        }
         const body = await request.json();
         const source = body.source || 'GSC';
         const metrics = Array.isArray(body.metrics) ? body.metrics : [];
@@ -66,5 +71,20 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: true, upserted, strategy });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to ingest metrics' }, { status: 500 });
+    }
+}
+
+async function verifyMetricsAuth(request: Request) {
+    const secret = process.env.CONTENT_ENGINE_METRICS_SECRET || process.env.CONTENT_ENGINE_CRON_SECRET;
+    if (secret) {
+        const header = request.headers.get('x-metrics-secret');
+        const bearer = request.headers.get('authorization')?.replace('Bearer ', '');
+        if (header === secret || bearer === secret) return true;
+    }
+    try {
+        await requireAdmin();
+        return true;
+    } catch {
+        return false;
     }
 }

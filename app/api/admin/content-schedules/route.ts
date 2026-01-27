@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/authz';
 
 export async function GET() {
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const schedules = await prisma.contentSchedule.findMany({
             orderBy: { createdAt: 'desc' }
@@ -13,6 +19,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const body = await request.json();
         const schedule = await prisma.contentSchedule.create({

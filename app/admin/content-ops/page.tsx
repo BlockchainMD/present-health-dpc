@@ -42,6 +42,7 @@ export default function ContentOpsPage() {
     const [reviewType, setReviewType] = useState<'CLINICAL' | 'EDITORIAL'>('CLINICAL');
     const [reviewLabel, setReviewLabel] = useState('Present Health Clinical Team');
     const [timezone, setTimezone] = useState('America/Chicago');
+    const [cadence, setCadence] = useState<'DAILY' | 'HOURLY'>('DAILY');
     const [runHour, setRunHour] = useState(8);
     const [runMinute, setRunMinute] = useState(0);
     const [maxDaily, setMaxDaily] = useState(50);
@@ -64,7 +65,25 @@ export default function ContentOpsPage() {
             ]);
             const scheduleData = await scheduleRes.json();
             const jobData = await jobRes.json();
-            if (scheduleData.success) setSchedules(scheduleData.schedules);
+            if (scheduleData.success) {
+                setSchedules(scheduleData.schedules);
+                const first = scheduleData.schedules[0];
+                if (first) {
+                    setTimezone(first.timezone);
+                    setCadence(first.cadence as 'DAILY' | 'HOURLY');
+                    setRunHour(first.runHour);
+                    setRunMinute(first.runMinute);
+                    setMaxDaily(first.maxDaily || 50);
+                    const opts = first.options || {};
+                    setCount(opts.count ?? 20);
+                    setMode((opts.mode as any) || 'BALANCED');
+                    setAutoPublish(Boolean(opts.autoPublish));
+                    setUseFeedback(opts.useFeedback !== false);
+                    setReviewType((opts.reviewType as any) || 'CLINICAL');
+                    setReviewLabel(opts.reviewLabel || 'Present Health Clinical Team');
+                    if (opts.sources) setSources((prev) => ({ ...prev, ...opts.sources }));
+                }
+            }
             if (jobData.success) setJobs(jobData.jobs);
         } finally {
             setLoading(false);
@@ -89,8 +108,9 @@ export default function ContentOpsPage() {
             const payload = {
                 name: 'Daily Content Engine',
                 timezone,
-                runHour,
-                runMinute,
+                    cadence,
+                    runHour,
+                    runMinute,
                 maxDaily,
                 options: {
                     count,
@@ -162,6 +182,13 @@ export default function ContentOpsPage() {
                                 <Input type="number" min={0} max={23} value={runHour} onChange={(e) => setRunHour(Number(e.target.value))} />
                                 <Input type="number" min={0} max={59} value={runMinute} onChange={(e) => setRunMinute(Number(e.target.value))} />
                             </div>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Cadence</Label>
+                            <select value={cadence} onChange={(e) => setCadence(e.target.value as 'DAILY' | 'HOURLY')} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+                                <option value="DAILY">Daily</option>
+                                <option value="HOURLY">Hourly</option>
+                            </select>
                         </div>
                         <div className="grid gap-2">
                             <Label>Daily target (per run)</Label>
@@ -254,7 +281,7 @@ export default function ContentOpsPage() {
                         <div key={schedule.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
                             <div>
                                 <p className="font-medium">{schedule.name}</p>
-                                <p className="text-xs text-muted-foreground">{schedule.timezone} • {schedule.runHour.toString().padStart(2, '0')}:{schedule.runMinute.toString().padStart(2, '0')} • Last run: {schedule.lastRunAt ? new Date(schedule.lastRunAt).toLocaleString() : 'Never'}</p>
+                                <p className="text-xs text-muted-foreground">{schedule.cadence} • {schedule.timezone} • {schedule.runHour.toString().padStart(2, '0')}:{schedule.runMinute.toString().padStart(2, '0')} • Last run: {schedule.lastRunAt ? new Date(schedule.lastRunAt).toLocaleString() : 'Never'}</p>
                             </div>
                             <Button size="sm" variant="outline" onClick={() => toggleSchedule(schedule)}>
                                 {schedule.enabled ? 'Disable' : 'Enable'}

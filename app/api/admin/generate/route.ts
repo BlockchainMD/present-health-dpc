@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { runContentEngine } from '@/lib/content-engine/engine';
+import { requireAdmin } from '@/lib/authz';
 
 export const runtime = 'nodejs';
 
 export async function POST(request: Request) {
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const body = await request.json().catch(() => ({}));
         const options = typeof body === 'object' && body !== null ? body : {};
@@ -24,7 +30,6 @@ export async function POST(request: Request) {
             published: result.published,
             articles: result.articles
         });
-
     } catch (error) {
         console.error('Generation error:', error);
         return NextResponse.json(
