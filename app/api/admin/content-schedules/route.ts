@@ -19,8 +19,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+    let session;
     try {
-        await requireAdmin();
+        session = await requireAdmin();
     } catch {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
@@ -36,6 +37,20 @@ export async function POST(request: Request) {
                 runMinute: Number(body.runMinute ?? 0),
                 maxDaily: body.maxDaily ? Number(body.maxDaily) : null,
                 options: body.options || {}
+            }
+        });
+
+        await prisma.auditLog.create({
+            data: {
+                actorUserId: session.user.id,
+                action: 'CREATE_CONTENT_SCHEDULE',
+                entityType: 'ContentSchedule',
+                entityId: schedule.id,
+                metadata: {
+                    name: schedule.name,
+                    cadence: schedule.cadence,
+                    options: schedule.options
+                }
             }
         });
 

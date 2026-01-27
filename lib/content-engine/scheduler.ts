@@ -1,6 +1,9 @@
 import { prisma } from '../prisma';
 import { runContentEngine } from './engine';
 import { EngineOptions } from './types';
+import { sendAlert } from './alerts';
+import { syncGscMetrics } from './gsc';
+import { refreshStrategy } from './feedback';
 
 export async function enqueueDueSchedules(now = new Date()) {
     const schedules = await prisma.contentSchedule.findMany({ where: { enabled: true } });
@@ -63,7 +66,22 @@ export async function runDueJobs(limit = 3) {
         if (claimed.count === 0) continue;
 
         try {
-            const result = await runContentEngine(job.options as EngineOptions);
+            const jobType = (job.options as any)?.jobType || 'CONTENT';
+            let result: any = null;
+
+            if (jobType === 'GSC_SYNC') {
+                const days = Number((job.options as any)?.days || 7);
+                result = await syncGscMetrics({ days });
+                if ((job.options as any)?.refreshStrategy) {
+                    const strategy = await refreshStrategy();
+                    result = { ...result, strategy };
+                }
+            } else if (jobType === 'REFRESH_STRATEGY') {
+                result = await refreshStrategy();
+            } else {
+                result = await runContentEngine(job.options as EngineOptions);
+            }
+
             await prisma.contentJob.update({
                 where: { id: job.id },
                 data: {
@@ -79,6 +97,17 @@ export async function runDueJobs(limit = 3) {
                     status: 'FAILED',
                     finishedAt: new Date(),
                     error: String(error?.message || error)
+                }
+            });
+            await sendAlert({
+                title: 'Content job failed',
+                message: `Job ${job.id} failed with ${String(error?.message || error)}`,
+                severity: 'ERROR',
+                metadata: {
+                    jobId: job.id,
+                    scheduleId: job.scheduleId,
+                    runAt: job.runAt.toISOString(),
+                    status: 'FAILED'
                 }
             });
         }
@@ -111,6 +140,7 @@ function normalizeOptions(options: Record<string, any>, maxDaily?: number) {
         mode: 'BALANCED',
         autoPublish: false,
         useFeedback: true,
+        jobType: 'CONTENT',
         ...options
     };
     if (maxDaily && typeof normalized.count === 'number') {

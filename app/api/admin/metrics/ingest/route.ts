@@ -71,6 +71,16 @@ export async function POST(request: Request) {
             strategy = await refreshStrategy();
         }
 
+        await prisma.auditLog.create({
+            data: {
+                actorUserId: null,
+                action: 'INGEST_ARTICLE_METRICS',
+                entityType: 'ArticleMetric',
+                entityId: source,
+                metadata: { upserted, source }
+            }
+        });
+
         return NextResponse.json({ success: true, upserted, strategy });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to ingest metrics' }, { status: 500 });

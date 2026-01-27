@@ -3,8 +3,9 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    let session;
     try {
-        await requireAdmin();
+        session = await requireAdmin();
     } catch {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
@@ -27,6 +28,16 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
             data: updateData
         });
 
+        await prisma.auditLog.create({
+            data: {
+                actorUserId: session.user.id,
+                action: 'UPDATE_CONTENT_SCHEDULE',
+                entityType: 'ContentSchedule',
+                entityId: schedule.id,
+                metadata: updateData
+            }
+        });
+
         return NextResponse.json({ success: true, schedule });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to update schedule' }, { status: 500 });
@@ -34,14 +45,24 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    let session;
     try {
-        await requireAdmin();
+        session = await requireAdmin();
     } catch {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
     try {
         const { id } = await params;
-        await prisma.contentSchedule.delete({ where: { id } });
+        const schedule = await prisma.contentSchedule.delete({ where: { id } });
+        await prisma.auditLog.create({
+            data: {
+                actorUserId: session.user.id,
+                action: 'DELETE_CONTENT_SCHEDULE',
+                entityType: 'ContentSchedule',
+                entityId: schedule.id,
+                metadata: { name: schedule.name }
+            }
+        });
         return NextResponse.json({ success: true });
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to delete schedule' }, { status: 500 });

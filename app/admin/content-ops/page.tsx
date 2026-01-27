@@ -41,11 +41,16 @@ export default function ContentOpsPage() {
     const [useFeedback, setUseFeedback] = useState(true);
     const [reviewType, setReviewType] = useState<'CLINICAL' | 'EDITORIAL'>('CLINICAL');
     const [reviewLabel, setReviewLabel] = useState('Present Health Clinical Team');
+    const [jobType, setJobType] = useState<'CONTENT' | 'GSC_SYNC' | 'REFRESH_STRATEGY'>('CONTENT');
+    const [gscDays, setGscDays] = useState(7);
+    const [refreshAfterSync, setRefreshAfterSync] = useState(true);
     const [timezone, setTimezone] = useState('America/Chicago');
     const [cadence, setCadence] = useState<'DAILY' | 'HOURLY'>('DAILY');
     const [runHour, setRunHour] = useState(8);
     const [runMinute, setRunMinute] = useState(0);
     const [maxDaily, setMaxDaily] = useState(50);
+    const [scheduleName, setScheduleName] = useState('Daily Content Engine');
+    const [selectedScheduleId, setSelectedScheduleId] = useState<string>('');
     const [sources, setSources] = useState({
         trends: true,
         news: true,
@@ -55,6 +60,26 @@ export default function ContentOpsPage() {
         cdc: false,
         curated: true
     });
+
+    const applySchedule = (schedule: Schedule) => {
+        setScheduleName(schedule.name);
+        setTimezone(schedule.timezone);
+        setCadence(schedule.cadence as 'DAILY' | 'HOURLY');
+        setRunHour(schedule.runHour);
+        setRunMinute(schedule.runMinute);
+        setMaxDaily(schedule.maxDaily || 50);
+        const opts = schedule.options || {};
+        setCount(opts.count ?? 20);
+        setMode((opts.mode as any) || 'BALANCED');
+        setAutoPublish(Boolean(opts.autoPublish));
+        setUseFeedback(opts.useFeedback !== false);
+        setReviewType((opts.reviewType as any) || 'CLINICAL');
+        setReviewLabel(opts.reviewLabel || 'Present Health Clinical Team');
+        setJobType((opts.jobType as any) || 'CONTENT');
+        setGscDays(opts.days ?? 7);
+        setRefreshAfterSync(Boolean(opts.refreshStrategy));
+        if (opts.sources) setSources((prev) => ({ ...prev, ...opts.sources }));
+    };
 
     const fetchData = async () => {
         setLoading(true);
@@ -67,21 +92,13 @@ export default function ContentOpsPage() {
             const jobData = await jobRes.json();
             if (scheduleData.success) {
                 setSchedules(scheduleData.schedules);
-                const first = scheduleData.schedules[0];
-                if (first) {
-                    setTimezone(first.timezone);
-                    setCadence(first.cadence as 'DAILY' | 'HOURLY');
-                    setRunHour(first.runHour);
-                    setRunMinute(first.runMinute);
-                    setMaxDaily(first.maxDaily || 50);
-                    const opts = first.options || {};
-                    setCount(opts.count ?? 20);
-                    setMode((opts.mode as any) || 'BALANCED');
-                    setAutoPublish(Boolean(opts.autoPublish));
-                    setUseFeedback(opts.useFeedback !== false);
-                    setReviewType((opts.reviewType as any) || 'CLINICAL');
-                    setReviewLabel(opts.reviewLabel || 'Present Health Clinical Team');
-                    if (opts.sources) setSources((prev) => ({ ...prev, ...opts.sources }));
+                const selected = scheduleData.schedules.find((s: Schedule) => s.id === selectedScheduleId);
+                if (selected) {
+                    applySchedule(selected);
+                } else if (!selectedScheduleId && scheduleData.schedules[0]) {
+                    const first = scheduleData.schedules[0];
+                    setSelectedScheduleId(first.id);
+                    applySchedule(first);
                 }
             }
             if (jobData.success) setJobs(jobData.jobs);
@@ -106,24 +123,27 @@ export default function ContentOpsPage() {
         setSaving(true);
         try {
             const payload = {
-                name: 'Daily Content Engine',
+                name: scheduleName || 'Content Engine Schedule',
                 timezone,
-                    cadence,
-                    runHour,
-                    runMinute,
+                cadence,
+                runHour,
+                runMinute,
                 maxDaily,
                 options: {
+                    jobType,
                     count,
                     mode,
                     autoPublish,
                     useFeedback,
                     reviewType,
                     reviewLabel,
-                    sources
+                    sources,
+                    days: gscDays,
+                    refreshStrategy: refreshAfterSync
                 }
             };
-            if (schedules.length > 0) {
-                await fetch(`/api/admin/content-schedules/${schedules[0].id}`, {
+            if (selectedScheduleId) {
+                await fetch(`/api/admin/content-schedules/${selectedScheduleId}`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
@@ -168,9 +188,35 @@ export default function ContentOpsPage() {
 
             <Card>
                 <CardHeader>
-                    <CardTitle>Daily Schedule</CardTitle>
+                    <CardTitle>Schedule Builder</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label>Schedule</Label>
+                            <select
+                                value={selectedScheduleId}
+                                onChange={(e) => {
+                                    const id = e.target.value;
+                                    setSelectedScheduleId(id);
+                                    const schedule = schedules.find((s) => s.id === id);
+                                    if (schedule) applySchedule(schedule);
+                                }}
+                                className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                            >
+                                <option value="">New schedule</option>
+                                {schedules.map((schedule) => (
+                                    <option key={schedule.id} value={schedule.id}>
+                                        {schedule.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Schedule name</Label>
+                            <Input value={scheduleName} onChange={(e) => setScheduleName(e.target.value)} />
+                        </div>
+                    </div>
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="grid gap-2">
                             <Label>Timezone</Label>
@@ -188,6 +234,14 @@ export default function ContentOpsPage() {
                             <select value={cadence} onChange={(e) => setCadence(e.target.value as 'DAILY' | 'HOURLY')} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
                                 <option value="DAILY">Daily</option>
                                 <option value="HOURLY">Hourly</option>
+                            </select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label>Job type</Label>
+                            <select value={jobType} onChange={(e) => setJobType(e.target.value as any)} className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+                                <option value="CONTENT">Content Generation</option>
+                                <option value="GSC_SYNC">GSC Sync</option>
+                                <option value="REFRESH_STRATEGY">Refresh Strategy</option>
                             </select>
                         </div>
                         <div className="grid gap-2">
@@ -236,34 +290,52 @@ export default function ContentOpsPage() {
                         </div>
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label>Source mix</Label>
-                        <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-                            {([
-                                ['trends', 'Google Trends'],
-                                ['news', 'Google News'],
-                                ['pubmed', 'PubMed'],
-                                ['trials', 'ClinicalTrials.gov'],
-                                ['nih', 'NIH News'],
-                                ['cdc', 'CDC News'],
-                                ['curated', 'Curated Evergreen']
-                            ] as const).map(([key, label]) => (
-                                <label key={key} className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        className="h-4 w-4"
-                                        checked={sources[key]}
-                                        onChange={(e) => setSources(prev => ({ ...prev, [key]: e.target.checked }))}
-                                    />
-                                    {label}
-                                </label>
-                            ))}
+                    {jobType === 'GSC_SYNC' && (
+                        <div className="grid md:grid-cols-2 gap-4">
+                            <div className="grid gap-2">
+                                <Label>GSC lookback (days)</Label>
+                                <Input type="number" min={1} value={gscDays} onChange={(e) => setGscDays(Number(e.target.value))} />
+                            </div>
+                            <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                                <div>
+                                    <Label className="text-sm font-medium">Refresh strategy after sync</Label>
+                                    <p className="text-xs text-muted-foreground">Update weights using new CTR data.</p>
+                                </div>
+                                <Switch checked={refreshAfterSync} onCheckedChange={setRefreshAfterSync} />
+                            </div>
                         </div>
-                    </div>
+                    )}
+
+                    {jobType === 'CONTENT' && (
+                        <div className="grid gap-2">
+                            <Label>Source mix</Label>
+                            <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                                {([
+                                    ['trends', 'Google Trends'],
+                                    ['news', 'Google News'],
+                                    ['pubmed', 'PubMed'],
+                                    ['trials', 'ClinicalTrials.gov'],
+                                    ['nih', 'NIH News'],
+                                    ['cdc', 'CDC News'],
+                                    ['curated', 'Curated Evergreen']
+                                ] as const).map(([key, label]) => (
+                                    <label key={key} className="flex items-center gap-2">
+                                        <input
+                                            type="checkbox"
+                                            className="h-4 w-4"
+                                            checked={sources[key]}
+                                            onChange={(e) => setSources(prev => ({ ...prev, [key]: e.target.checked }))}
+                                        />
+                                        {label}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="flex gap-3">
                         <Button onClick={createSchedule} disabled={saving}>
-                            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Create/Update Schedule'}
+                            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : selectedScheduleId ? 'Update Schedule' : 'Create Schedule'}
                         </Button>
                         <Button variant="outline" onClick={runScheduler}>Run Scheduler Now</Button>
                     </div>
@@ -281,11 +353,21 @@ export default function ContentOpsPage() {
                         <div key={schedule.id} className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
                             <div>
                                 <p className="font-medium">{schedule.name}</p>
-                                <p className="text-xs text-muted-foreground">{schedule.cadence} • {schedule.timezone} • {schedule.runHour.toString().padStart(2, '0')}:{schedule.runMinute.toString().padStart(2, '0')} • Last run: {schedule.lastRunAt ? new Date(schedule.lastRunAt).toLocaleString() : 'Never'}</p>
+                                <p className="text-xs text-muted-foreground">
+                                    {(schedule.options?.jobType || 'CONTENT')} • {schedule.cadence} • {schedule.timezone} • {schedule.runHour.toString().padStart(2, '0')}:{schedule.runMinute.toString().padStart(2, '0')} • Last run: {schedule.lastRunAt ? new Date(schedule.lastRunAt).toLocaleString() : 'Never'}
+                                </p>
                             </div>
-                            <Button size="sm" variant="outline" onClick={() => toggleSchedule(schedule)}>
-                                {schedule.enabled ? 'Disable' : 'Enable'}
-                            </Button>
+                            <div className="flex gap-2">
+                                <Button size="sm" variant="outline" onClick={() => {
+                                    setSelectedScheduleId(schedule.id);
+                                    applySchedule(schedule);
+                                }}>
+                                    Edit
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={() => toggleSchedule(schedule)}>
+                                    {schedule.enabled ? 'Disable' : 'Enable'}
+                                </Button>
+                            </div>
                         </div>
                     ))}
                 </CardContent>

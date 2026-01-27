@@ -24,6 +24,7 @@ export default function AnalyticsPage() {
     const [payload, setPayload] = useState(defaultPayload);
     const [result, setResult] = useState<string>('');
     const [loading, setLoading] = useState(false);
+    const [gscDays, setGscDays] = useState(7);
 
     const ingest = async () => {
         setLoading(true);
@@ -54,7 +55,11 @@ export default function AnalyticsPage() {
     const syncGsc = async () => {
         setLoading(true);
         try {
-            const res = await fetch('/api/admin/metrics/gsc-sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ days: 7 }) });
+            const res = await fetch('/api/admin/metrics/gsc-sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ days: gscDays })
+            });
             const data = await res.json();
             setResult(JSON.stringify(data, null, 2));
         } finally {
@@ -75,15 +80,22 @@ export default function AnalyticsPage() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     <Textarea value={payload} onChange={(e) => setPayload(e.target.value)} className="min-h-[240px] font-mono text-xs" />
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 items-center">
                         <Button onClick={ingest} disabled={loading}>
                             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Send Metrics'}
                         </Button>
                         <Button variant="outline" onClick={refreshStrategy} disabled={loading}>
                             Refresh Strategy
                         </Button>
+                        <input
+                            type="number"
+                            min={1}
+                            className="h-9 w-20 rounded-md border border-input bg-background px-2 text-sm"
+                            value={gscDays}
+                            onChange={(e) => setGscDays(Number(e.target.value))}
+                        />
                         <Button variant="outline" onClick={syncGsc} disabled={loading}>
-                            Sync from GSC
+                            Sync GSC (days)
                         </Button>
                     </div>
                 </CardContent>
