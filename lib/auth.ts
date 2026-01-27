@@ -24,10 +24,16 @@ export const authOptions: NextAuthOptions = {
                     return null;
                 }
 
-                const user = await prisma.user.findUnique({
+                const identifier = credentials.email.trim();
+                if (!identifier) return null;
+
+                const user = await prisma.user.findFirst({
                     where: {
-                        email: credentials.email,
-                    },
+                        OR: [
+                            { email: { equals: identifier, mode: 'insensitive' } },
+                            { name: { equals: identifier, mode: 'insensitive' } }
+                        ]
+                    }
                 });
 
                 if (!user) {
