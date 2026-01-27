@@ -12,6 +12,7 @@ export async function POST(request: Request) {
             count: options.count,
             mode: options.mode,
             autoPublish: options.autoPublish,
+            useFeedback: options.useFeedback,
             reviewLabel: options.reviewLabel,
             reviewType: options.reviewType,
             sources: options.sources

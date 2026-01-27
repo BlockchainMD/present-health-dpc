@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutDashboard, FileText, Settings, ExternalLink } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, ExternalLink, BarChart3 } from 'lucide-react';
 import { protectAdminPage } from '@/lib/authz';
 
 export default async function AdminLayout({
@@ -46,6 +46,20 @@ export default async function AdminLayout({
                     >
                         <FileText className="h-4 w-4" />
                         Published Articles
+                    </Link>
+                    <Link
+                        href="/admin/content-ops"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Settings className="h-4 w-4" />
+                        Content Ops
+                    </Link>
+                    <Link
+                        href="/admin/analytics"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <BarChart3 className="h-4 w-4" />
+                        Analytics
                     </Link>
                     <Link
                         href="/blog"

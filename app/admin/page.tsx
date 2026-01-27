@@ -15,8 +15,18 @@ export default function AdminDashboard() {
     const [count, setCount] = useState(5);
     const [mode, setMode] = useState<'BALANCED' | 'TREND' | 'RESEARCH'>('BALANCED');
     const [autoPublish, setAutoPublish] = useState(false);
+    const [useFeedback, setUseFeedback] = useState(true);
     const [reviewType, setReviewType] = useState<'CLINICAL' | 'EDITORIAL'>('CLINICAL');
     const [reviewLabel, setReviewLabel] = useState('Present Health Clinical Team');
+    const [sources, setSources] = useState({
+        trends: true,
+        news: true,
+        pubmed: true,
+        trials: true,
+        nih: true,
+        cdc: false,
+        curated: true
+    });
 
     useEffect(() => {
         setReviewLabel((prev) => {
@@ -46,8 +56,10 @@ export default function AdminDashboard() {
                         count: batchSize,
                         mode,
                         autoPublish,
+                        useFeedback,
                         reviewType,
-                        reviewLabel
+                        reviewLabel,
+                        sources
                     })
                 });
                 const data = await res.json();
@@ -132,6 +144,30 @@ export default function AdminDashboard() {
                                         </select>
                                     </div>
                                     <div className="grid gap-2">
+                                        <Label>Source mix</Label>
+                                        <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                                            {([
+                                                ['trends', 'Google Trends'],
+                                                ['news', 'Google News'],
+                                                ['pubmed', 'PubMed'],
+                                                ['trials', 'ClinicalTrials.gov'],
+                                                ['nih', 'NIH News'],
+                                                ['cdc', 'CDC News'],
+                                                ['curated', 'Curated Evergreen']
+                                            ] as const).map(([key, label]) => (
+                                                <label key={key} className="flex items-center gap-2">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="h-4 w-4"
+                                                        checked={sources[key]}
+                                                        onChange={(e) => setSources(prev => ({ ...prev, [key]: e.target.checked }))}
+                                                    />
+                                                    {label}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div className="grid gap-2">
                                         <Label htmlFor="reviewLabel">Reviewer label</Label>
                                         <Input
                                             id="reviewLabel"
@@ -161,6 +197,17 @@ export default function AdminDashboard() {
                                             id="autoPublish"
                                             checked={autoPublish}
                                             onCheckedChange={setAutoPublish}
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                                        <div>
+                                            <Label htmlFor="useFeedback" className="text-sm font-medium">Use performance feedback</Label>
+                                            <p className="text-xs text-muted-foreground">Weights topic selection using CTR data.</p>
+                                        </div>
+                                        <Switch
+                                            id="useFeedback"
+                                            checked={useFeedback}
+                                            onCheckedChange={setUseFeedback}
                                         />
                                     </div>
                                 </div>

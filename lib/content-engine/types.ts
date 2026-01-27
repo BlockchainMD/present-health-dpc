@@ -39,6 +39,7 @@ export type EngineOptions = {
     count?: number;
     mode?: 'BALANCED' | 'TREND' | 'RESEARCH';
     autoPublish?: boolean;
+    useFeedback?: boolean;
     reviewLabel?: string;
     reviewType?: 'CLINICAL' | 'EDITORIAL';
     sources?: {

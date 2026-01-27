@@ -5,6 +5,7 @@ import { generateBrief } from './brief';
 import { generateDraft } from './draft';
 import { qaDraft } from './qa';
 import { classifyCluster, slugify } from './taxonomy';
+import { getClusterWeights } from './feedback';
 import { EngineOptions, EngineResult } from './types';
 
 const MAX_PER_RUN = 10;
@@ -36,9 +37,8 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
     if (signals.length === 0) {
         return { created: 0, published: 0, articles: [] };
     }
-    const pool = (options.mode === 'TREND' || options.mode === 'RESEARCH')
-        ? sortByRecency(signals)
-        : shuffle(signals);
+    const clusterWeights = options.useFeedback ? await getClusterWeights() : {};
+    const pool = rankSignals(signals, options.mode || 'BALANCED', clusterWeights);
     const created: EngineResult['articles'] = [];
     let published = 0;
     const clusterCounts: Record<string, number> = {};
@@ -125,21 +125,34 @@ function resolveSources(mode: EngineOptions['mode'], sources: EngineOptions['sou
     return sources;
 }
 
-function shuffle<T>(items: T[]): T[] {
-    const array = [...items];
-    for (let i = array.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
+function rankSignals(signals: Array<{ title: string; publishedAt?: string; kind?: string }>, mode: EngineOptions['mode'], weights: Record<string, number>) {
+    const scored = signals.map(signal => {
+        const cluster = classifyCluster(signal.title);
+        const weight = weights[cluster] || 1;
+        const recency = signal.publishedAt ? recencyScore(signal.publishedAt) : 0.1;
+        const kindScore = signal.kind === 'trend' || signal.kind === 'news' ? 0.3 : signal.kind === 'research' ? 0.2 : 0.1;
+        const base = mode === 'TREND'
+            ? kindScore + recency
+            : mode === 'RESEARCH'
+                ? (signal.kind === 'research' ? 0.4 : 0.1) + recency
+                : 0.2 + recency;
+        const score = base * weight;
+        return { signal, score, recency };
+    });
+
+    return scored
+        .sort((a, b) => (b.score !== a.score ? b.score - a.score : b.recency - a.recency))
+        .map(item => item.signal);
 }
 
-function sortByRecency(signals: Array<{ publishedAt?: string }>): Array<{ publishedAt?: string }> {
-    return [...signals].sort((a, b) => {
-        const aTime = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-        const bTime = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-        return bTime - aTime;
-    });
+function recencyScore(publishedAt: string) {
+    const published = new Date(publishedAt).getTime();
+    if (!published) return 0.1;
+    const ageHours = (Date.now() - published) / (1000 * 60 * 60);
+    if (ageHours <= 24) return 0.5;
+    if (ageHours <= 72) return 0.35;
+    if (ageHours <= 168) return 0.2;
+    return 0.1;
 }
 
 function hashContent(content: string): string {
