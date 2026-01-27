@@ -14,6 +14,9 @@ export async function POST(request: Request) {
         const body = await request.json();
         const source = body.source || 'GSC';
         const metrics = Array.isArray(body.metrics) ? body.metrics : [];
+        if (metrics.length > 5000) {
+            return NextResponse.json({ success: false, error: 'Payload too large' }, { status: 413 });
+        }
         const refresh = Boolean(body.refreshStrategy);
 
         let upserted = 0;

@@ -51,6 +51,17 @@ export default function AnalyticsPage() {
         }
     };
 
+    const syncGsc = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/admin/metrics/gsc-sync', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ days: 7 }) });
+            const data = await res.json();
+            setResult(JSON.stringify(data, null, 2));
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="max-w-4xl mx-auto space-y-6">
             <div>
@@ -70,6 +81,9 @@ export default function AnalyticsPage() {
                         </Button>
                         <Button variant="outline" onClick={refreshStrategy} disabled={loading}>
                             Refresh Strategy
+                        </Button>
+                        <Button variant="outline" onClick={syncGsc} disabled={loading}>
+                            Sync from GSC
                         </Button>
                     </div>
                 </CardContent>
