@@ -9,7 +9,7 @@ export interface DailyMetricStats {
     cost: number;
 }
 
-export async function generateMockMetrics(campaignRunId: string, days: number = 30) {
+export async function generateMockMetrics(campaignRunId: string, days: number = 30, platform: string = 'GOOGLE_ADS') {
     const metrics: any[] = [];
     const now = new Date();
 
@@ -31,7 +31,8 @@ export async function generateMockMetrics(campaignRunId: string, days: number = 
             impressions,
             clicks,
             conversions,
-            cost
+            cost,
+            platform
         });
     }
 
@@ -43,9 +44,10 @@ export async function generateMockMetrics(campaignRunId: string, days: number = 
         metrics.map(data =>
             prisma.campaignMetric.upsert({
                 where: {
-                    campaignRunId_date: {
+                    campaignRunId_date_platform: {
                         campaignRunId: data.campaignRunId,
-                        date: data.date
+                        date: data.date,
+                        platform: data.platform
                     }
                 },
                 update: data,

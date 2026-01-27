@@ -76,6 +76,7 @@ export async function POST(request: Request) {
             budgetDaily: parseFloat(body.budgetDaily) || 50,
             targetCpa: parseFloat(body.targetCpa) || 30,
             geo: body.geo || 'US',
+            geoStates: body.geoStates || [],
             tone: body.tone || 'Professional',
             status: 'DRAFT'
         };

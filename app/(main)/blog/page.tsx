@@ -39,17 +39,17 @@ export default async function BlogPage() {
                                 {format(new Date(article.createdAt), 'MMMM d, yyyy')}
                             </div>
                             <CardTitle className="leading-tight hover:text-primary transition-colors">
-                                <Link href={`/blog/${article.id}`}>
+                                <Link href={`/blog/${article.slug || article.id}`}>
                                     {article.title}
                                 </Link>
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="text-muted-foreground line-clamp-4 text-sm prose prose-sm dark:prose-invert">
-                                <ReactMarkdown>{article.content.substring(0, 200) + '...'}</ReactMarkdown>
+                                <ReactMarkdown>{article.excerpt || article.content.substring(0, 200) + '...'}</ReactMarkdown>
                             </div>
                             <Link
-                                href={`/blog/${article.id}`}
+                                href={`/blog/${article.slug || article.id}`}
                                 className="inline-flex items-center text-primary text-sm font-medium mt-4 hover:underline"
                             >
                                 Read more

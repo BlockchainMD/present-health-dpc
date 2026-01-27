@@ -3,6 +3,31 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { PipelineManager } from '@/lib/ads/pipeline';
 
+/**
+ * Sanitizes content by removing markdown citation patterns like "([Present Health][1])"
+ */
+function sanitizeContent(text: string): string {
+    if (!text) return text;
+    return text.replace(/\s*\(\[[^\]]+\]\[[^\]]+\]\)/g, '');
+}
+
+function sanitizeObject(obj: any): any {
+    if (typeof obj === 'string') {
+        return sanitizeContent(obj);
+    }
+    if (Array.isArray(obj)) {
+        return obj.map(item => sanitizeObject(item));
+    }
+    if (obj && typeof obj === 'object') {
+        const result: any = {};
+        for (const key of Object.keys(obj)) {
+            result[key] = sanitizeObject(obj[key]);
+        }
+        return result;
+    }
+    return obj;
+}
+
 export async function POST(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -12,11 +37,14 @@ export async function POST(
 
     try {
         const body = await request.json();
-        const { adPlan, landingPageSpec } = body;
+        // Sanitize imported content to remove markdown citation patterns
+        const adPlan = sanitizeObject(body.adPlan);
+        const landingPageSpec = sanitizeObject(body.landingPageSpec);
 
         if (!adPlan || !landingPageSpec) {
             return NextResponse.json({ error: 'Invalid input: adPlan and landingPageSpec are required' }, { status: 400 });
         }
+
 
         // 1. Fetch Campaign
         const campaign = await prisma.campaign.findUnique({

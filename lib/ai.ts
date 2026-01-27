@@ -52,7 +52,7 @@ Format:
 `;
 
         const response = await openai.chat.completions.create({
-            model: "gpt-4-turbo",
+            model: "gpt-5.2",
             messages: [
                 { role: "system", content: "You are a health content writer. Always respond with valid JSON only." },
                 { role: "user", content: prompt }

@@ -3,16 +3,45 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { PipelineManager } from '@/lib/ads/pipeline';
 
+/**
+ * Sanitizes content by removing markdown citation patterns like "([Present Health][1])"
+ */
+function sanitizeContent(text: string): string {
+    if (!text) return text;
+    return text.replace(/\s*\(\[[^\]]+\]\[[^\]]+\]\)/g, '');
+}
+
+function sanitizeObject(obj: any): any {
+    if (typeof obj === 'string') {
+        return sanitizeContent(obj);
+    }
+    if (Array.isArray(obj)) {
+        return obj.map(item => sanitizeObject(item));
+    }
+    if (obj && typeof obj === 'object') {
+        const result: any = {};
+        for (const key of Object.keys(obj)) {
+            result[key] = sanitizeObject(obj[key]);
+        }
+        return result;
+    }
+    return obj;
+}
+
 export async function POST(request: Request) {
     try {
         const session = await requireAdmin();
 
         const body = await request.json();
-        const { campaign, adPlan, landingPageSpec } = body;
+        // Sanitize all imported content to remove markdown citation patterns
+        const campaign = sanitizeObject(body.campaign);
+        const adPlan = sanitizeObject(body.adPlan);
+        const landingPageSpec = sanitizeObject(body.landingPageSpec);
 
         if (!campaign || !adPlan || !landingPageSpec) {
             return NextResponse.json({ error: 'Missing core data: campaign, adPlan, and landingPageSpec are required.' }, { status: 400 });
         }
+
 
         if (!campaign.slug) {
             return NextResponse.json({ error: 'Campaign slug is required.' }, { status: 400 });

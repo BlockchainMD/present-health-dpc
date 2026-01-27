@@ -2,10 +2,13 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateMockMetrics } from '@/lib/ads/metrics';
 import { syncMetricsFromGoogleAds } from '@/lib/ads/google-ads';
+import { syncMetricsFromMetaAds } from '@/lib/ads/meta-ads';
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
+        const { searchParams } = new URL(request.url);
+        const platformFilter = searchParams.get('platform'); // 'GOOGLE_ADS' | 'META_ADS'
 
         // Find the deployed or latest run for this campaign
         const campaign = await prisma.campaign.findUnique({
@@ -28,15 +31,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         // Attempt live sync if deployed
         if (run.status === 'DEPLOYED' || run.status === 'ACTIVE') {
             try {
-                await syncMetricsFromGoogleAds(runId);
+                if (!platformFilter || platformFilter === 'GOOGLE_ADS') {
+                    await syncMetricsFromGoogleAds(runId);
+                }
+                if ((!platformFilter || platformFilter === 'META_ADS') && run.metaCampaignId) {
+                    await syncMetricsFromMetaAds(runId);
+                }
             } catch (err) {
                 console.error("[MetricsAPI] Live sync failed, showing existing/mock data:", err);
             }
         }
 
         // Fetch metrics
+        const where: any = { campaignRunId: runId };
+        if (platformFilter) {
+            where.platform = platformFilter;
+        }
+
         let metrics = await prisma.campaignMetric.findMany({
-            where: { campaignRunId: runId },
+            where,
             orderBy: { date: 'asc' }
         });
 

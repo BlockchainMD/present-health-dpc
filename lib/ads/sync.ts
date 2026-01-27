@@ -1,5 +1,6 @@
 import { GoogleAdsApi, enums } from 'google-ads-api';
 import { prisma } from '@/lib/prisma';
+import { syncMetricsFromMetaAds } from './meta-ads';
 
 /**
  * Main metric sync job. 
@@ -33,10 +34,11 @@ export async function syncAllGoogleAdsMetrics() {
     yesterday.setDate(today.getDate() - 1);
 
     // If we have a lastSyncedDate, start from there + 1 day
-    let startDate = cursor.lastSyncedDate
+    const cursorDate = cursor.lastSyncedDate
         ? new Date(cursor.lastSyncedDate)
         : new Date(today);
 
+    const startDate = new Date(cursorDate);
     if (!cursor.lastSyncedDate) {
         startDate.setDate(today.getDate() - 30); // Default to last 30 days if no cursor
     } else {
@@ -115,9 +117,10 @@ export async function syncAllGoogleAdsMetrics() {
 
             await prisma.campaignMetric.upsert({
                 where: {
-                    campaignRunId_date: {
+                    campaignRunId_date_platform: {
                         campaignRunId: run.id,
-                        date: date
+                        date: date,
+                        platform: 'GOOGLE_ADS'
                     }
                 },
                 update: {
@@ -162,4 +165,54 @@ export async function syncAllGoogleAdsMetrics() {
         });
         throw err;
     }
+}
+
+/**
+ * Syncs metrics for all active Meta campaigns
+ */
+export async function syncAllMetaAdsMetrics() {
+    console.log("[Sync] Starting Meta Ads metrics sync...");
+
+    // Find all active runs with a Meta Campaign ID
+    const activeMetaRuns = await prisma.campaignRun.findMany({
+        where: {
+            metaCampaignId: { not: null },
+            campaign: { status: 'ACTIVE' }
+        }
+    });
+
+    console.log(`[Sync] Found ${activeMetaRuns.length} active Meta campaigns to sync.`);
+
+    const results = [];
+    for (const run of activeMetaRuns) {
+        try {
+            await syncMetricsFromMetaAds(run.id);
+            results.push({ runId: run.id, status: 'success' });
+        } catch (err: any) {
+            console.error(`[Sync] Failed to sync Meta metrics for run ${run.id}:`, err);
+            results.push({ runId: run.id, status: 'error', error: err.message });
+        }
+    }
+
+    return {
+        status: 'completed',
+        processed: activeMetaRuns.length,
+        results
+    };
+}
+
+/**
+ * Master sync function for all platforms
+ */
+export async function syncAllPlatformsMetrics() {
+    console.log("[Sync] Master sync starting...");
+
+    const googleResult = await syncAllGoogleAdsMetrics().catch(err => ({ status: 'error', error: err.message }));
+    const metaResult = await syncAllMetaAdsMetrics().catch(err => ({ status: 'error', error: err.message }));
+
+    return {
+        google: googleResult,
+        meta: metaResult,
+        timestamp: new Date()
+    };
 }

@@ -1,41 +1,27 @@
 import { NextResponse } from 'next/server';
-import { fetchTrends } from '@/lib/trends';
-import { prisma } from '@/lib/prisma';
+import { runContentEngine } from '@/lib/content-engine/engine';
 
-export async function POST() {
+export const runtime = 'nodejs';
+
+export async function POST(request: Request) {
     try {
-        // Dynamically import AI module to prevent build-time initialization errors
-        const { generateArticleContent } = await import('@/lib/ai');
+        const body = await request.json().catch(() => ({}));
+        const options = typeof body === 'object' && body !== null ? body : {};
 
-        // 1. Fetch Trends
-        const trends = await fetchTrends();
-
-        // Take top 1 trend
-        const topTrends = trends.slice(0, 1);
-
-        const generatedArticles = [];
-
-        // 2. Generate Content for each
-        for (const trend of topTrends) {
-            const aiContent = await generateArticleContent(trend.title);
-
-            // 3. Save to DB
-            const article = await prisma.article.create({
-                data: {
-                    title: aiContent.title,
-                    content: aiContent.content,
-                    status: 'DRAFT',
-                    sourceUrl: trend.link
-                }
-            });
-
-            generatedArticles.push(article);
-        }
+        const result = await runContentEngine({
+            count: options.count,
+            mode: options.mode,
+            autoPublish: options.autoPublish,
+            reviewLabel: options.reviewLabel,
+            reviewType: options.reviewType,
+            sources: options.sources
+        });
 
         return NextResponse.json({
             success: true,
-            count: generatedArticles.length,
-            articles: generatedArticles
+            count: result.created,
+            published: result.published,
+            articles: result.articles
         });
 
     } catch (error) {

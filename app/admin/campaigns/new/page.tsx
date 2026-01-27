@@ -207,6 +207,7 @@ Return ONLY a JSON object with this exact structure:
             budgetDaily: formData.get('budgetDaily'),
             targetCpa: formData.get('targetCpa'),
             geo: formData.get('geo'),
+            geoStates: (formData.get('geoStates') as string || '').split(',').map(s => s.trim().toUpperCase()).filter(s => s.length === 2),
             tone: formData.get('tone'),
             seedKeywords: (formData.get('seedKeywords') as string || '').split(',').map(s => s.trim()).filter(Boolean),
             benefits: (formData.get('benefits') as string || '').split('\n').map(s => s.trim()).filter(Boolean),
@@ -341,8 +342,20 @@ Return ONLY a JSON object with this exact structure:
                                 <Input id="seedKeywords" name="seedKeywords" placeholder="doctor, medicine" required />
                             </div>
                             <div className="space-y-2">
+                                <Label htmlFor="geoStates">Licensed States (Comma separated, e.g. NY, CA, TX)</Label>
+                                <Input id="geoStates" name="geoStates" placeholder="NY, CA, TX" />
+                            </div>
+                            <div className="space-y-2">
                                 <Label htmlFor="benefits">Benefits (One per line)</Label>
                                 <Textarea id="benefits" name="benefits" placeholder="No wait" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="proofPoints">Proof Points (One per line)</Label>
+                                <Textarea id="proofPoints" name="proofPoints" placeholder="Board-certified doctors" />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="disclaimers">Disclaimers (One per line)</Label>
+                                <Textarea id="disclaimers" name="disclaimers" placeholder="Not insurance" />
                             </div>
                         </CardContent>
                     </Card>

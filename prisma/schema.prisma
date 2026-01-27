@@ -11,9 +11,23 @@ datasource db {
 model Article {
   id        String   @id @default(uuid())
   title     String
+  slug      String?  @unique
   content   String
+  excerpt   String?
+  metaTitle String?
+  metaDescription String?
   status    String   @default("DRAFT")
   sourceUrl String?
+  angle     String?
+  intent    String?
+  cluster   String?
+  riskLevel String   @default("LOW")
+  briefJson Json?
+  evidenceJson Json?
+  contentHash String?
+  reviewedAt DateTime?
+  reviewedByDisplayName String?
+  reviewType String @default("CLINICAL")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -82,6 +96,11 @@ model CampaignRun {
   googleCustomerId       String?
   googleResourceName     String?
   googleSyncStatus       String?
+  // Meta Ads fields
+  metaCampaignId         String?
+  metaAdSetId            String?
+  metaAdsResourceIds     Json?
+  metaSyncStatus         String?
   indexing               String           @default("NOINDEX")
   metricsHistory         CampaignMetric[]
   campaign               Campaign         @relation(fields: [campaignId], references: [id], onDelete: Cascade)
@@ -92,6 +111,7 @@ model CampaignMetric {
   id            String      @id @default(uuid())
   campaignRunId String
   date          DateTime
+  platform      String      @default("GOOGLE_ADS")
   impressions   Int         @default(0)
   clicks        Int         @default(0)
   conversions   Int         @default(0)
@@ -100,7 +120,7 @@ model CampaignMetric {
   updatedAt     DateTime    @updatedAt
   campaignRun   CampaignRun @relation(fields: [campaignRunId], references: [id], onDelete: Cascade)
 
-  @@unique([campaignRunId, date])
+  @@unique([campaignRunId, date, platform])
 }
 
 model Lead {

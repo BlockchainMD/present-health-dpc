@@ -13,8 +13,9 @@ interface Article {
     title: string;
     content: string;
     status: 'DRAFT' | 'PUBLISHED' | 'DISCARDED';
-    sourceUrl: string;
+    sourceUrl?: string | null;
     createdAt: string;
+    slug?: string | null;
 }
 
 export default function PublishedPage() {
@@ -110,7 +111,7 @@ export default function PublishedPage() {
                                 <div className="flex items-center gap-4 text-xs text-muted-foreground mt-2">
                                     <span>Published {new Date(article.createdAt).toLocaleDateString()}</span>
                                     <Link
-                                        href={`/blog/${article.id}`}
+                                        href={`/blog/${article.slug || article.id}`}
                                         target="_blank"
                                         className="text-primary hover:underline flex items-center gap-1"
                                     >

@@ -12,8 +12,14 @@ interface Article {
     title: string;
     content: string;
     status: 'DRAFT' | 'PUBLISHED' | 'DISCARDED';
-    sourceUrl: string;
+    sourceUrl?: string | null;
     createdAt: string;
+    angle?: string | null;
+    intent?: string | null;
+    cluster?: string | null;
+    riskLevel?: string | null;
+    reviewType?: string | null;
+    reviewedByDisplayName?: string | null;
 }
 
 export default function ReviewPage() {
@@ -86,6 +92,14 @@ export default function ReviewPage() {
                                     <CardTitle className="text-xl leading-tight">{article.title}</CardTitle>
                                     <Badge variant="outline">AI Draft</Badge>
                                 </div>
+                                <div className="flex flex-wrap gap-2 text-xs text-muted-foreground mt-2">
+                                    {article.cluster && <span className="rounded-full border px-2 py-0.5">Cluster: {article.cluster}</span>}
+                                    {article.angle && <span className="rounded-full border px-2 py-0.5">Angle: {article.angle}</span>}
+                                    {article.intent && <span className="rounded-full border px-2 py-0.5">Intent: {article.intent}</span>}
+                                    {article.riskLevel && <span className="rounded-full border px-2 py-0.5">Risk: {article.riskLevel}</span>}
+                                    {article.reviewType && <span className="rounded-full border px-2 py-0.5">Review: {article.reviewType}</span>}
+                                    {article.reviewedByDisplayName && <span className="rounded-full border px-2 py-0.5">Label: {article.reviewedByDisplayName}</span>}
+                                </div>
                                 {article.sourceUrl && (
                                     <a
                                         href={article.sourceUrl}
@@ -93,7 +107,13 @@ export default function ReviewPage() {
                                         rel="noopener noreferrer"
                                         className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1"
                                     >
-                                        Source: {new URL(article.sourceUrl).hostname} <ExternalLink className="h-3 w-3" />
+                                        Source: {(() => {
+                                            try {
+                                                return new URL(article.sourceUrl).hostname;
+                                            } catch {
+                                                return article.sourceUrl;
+                                            }
+                                        })()} <ExternalLink className="h-3 w-3" />
                                     </a>
                                 )}
                             </CardHeader>

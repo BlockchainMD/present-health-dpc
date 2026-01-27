@@ -60,12 +60,18 @@ export interface AdPlan {
         headlines: string[]; // 3-15 items
         descriptions: string[]; // 2-4 items
     };
+    meta?: {
+        primaryText: string;
+        headline: string;
+        description: string;
+    };
     keywords: {
         text: string;
         matchType: 'BROAD' | 'PHRASE' | 'EXACT';
     }[];
     negativeKeywords: string[];
     finalUrl: string;
+    imageUrl?: string;
 }
 
 // 5. LandingPageSpec: Content structure for the LP
@@ -118,11 +124,13 @@ export interface ComplianceReport {
 
 // 7. DeploymentRecord: Live platform identifiers
 export interface DeploymentRecord {
-    platform: 'GOOGLE_ADS';
+    platform: 'GOOGLE_ADS' | 'META_ADS';
     externalIds: {
         campaignId?: string;
         adGroupId?: string;
+        adSetId?: string;
         adId?: string;
+        creativeId?: string;
     };
     deployedAt: string;
     checksum: string; // Hash of AdPlan + LandingPageSpec

@@ -1,23 +1,63 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { Sparkles, Loader2, ArrowRight, Rocket, Megaphone } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
     const [isGenerating, setIsGenerating] = useState(false);
-    const [result, setResult] = useState<{ count: number } | null>(null);
+    const [result, setResult] = useState<{ count: number; published: number } | null>(null);
+    const [count, setCount] = useState(5);
+    const [mode, setMode] = useState<'BALANCED' | 'TREND' | 'RESEARCH'>('BALANCED');
+    const [autoPublish, setAutoPublish] = useState(false);
+    const [reviewType, setReviewType] = useState<'CLINICAL' | 'EDITORIAL'>('CLINICAL');
+    const [reviewLabel, setReviewLabel] = useState('Present Health Clinical Team');
+
+    useEffect(() => {
+        setReviewLabel((prev) => {
+            if (reviewType === 'EDITORIAL' && prev === 'Present Health Clinical Team') {
+                return 'Present Health Editorial Team';
+            }
+            if (reviewType === 'CLINICAL' && prev === 'Present Health Editorial Team') {
+                return 'Present Health Clinical Team';
+            }
+            return prev;
+        });
+    }, [reviewType]);
 
     const handleGenerate = async () => {
         setIsGenerating(true);
         try {
-            const res = await fetch('/api/admin/generate', { method: 'POST' });
-            const data = await res.json();
-            if (data.success) {
-                setResult({ count: data.count });
+            let remaining = count;
+            let total = 0;
+            let published = 0;
+
+            while (remaining > 0) {
+                const batchSize = Math.min(10, remaining);
+                const res = await fetch('/api/admin/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        count: batchSize,
+                        mode,
+                        autoPublish,
+                        reviewType,
+                        reviewLabel
+                    })
+                });
+                const data = await res.json();
+                if (!data.success) break;
+                total += data.count;
+                published += data.published || 0;
+                remaining -= batchSize;
             }
+
+            setResult({ count: total, published });
         } catch (error) {
             console.error('Failed to generate', error);
         } finally {
@@ -38,10 +78,10 @@ export default function AdminDashboard() {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
                             <Sparkles className="h-5 w-5 text-primary" />
-                            Trend Generator
+                            Content Engine v2
                         </CardTitle>
                         <CardDescription>
-                            Scrape Google Trends & News to find salient topics, then generate 5 draft articles.
+                            Blend trends, research, and evergreen topics to generate diverse drafts.
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -49,6 +89,9 @@ export default function AdminDashboard() {
                             <div className="space-y-4">
                                 <div className="p-4 bg-background rounded-lg border border-border">
                                     <p className="font-medium text-green-600">Successfully generated {result.count} drafts!</p>
+                                    {result.published > 0 && (
+                                        <p className="text-sm text-muted-foreground">{result.published} auto-published.</p>
+                                    )}
                                 </div>
                                 <Button asChild className="w-full">
                                     <Link href="/admin/review">
@@ -60,21 +103,83 @@ export default function AdminDashboard() {
                                 </Button>
                             </div>
                         ) : (
-                            <Button
-                                onClick={handleGenerate}
-                                disabled={isGenerating}
-                                size="lg"
-                                className="w-full"
-                            >
-                                {isGenerating ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Analyzing Trends...
-                                    </>
-                                ) : (
-                                    "Run Content Engine"
-                                )}
-                            </Button>
+                            <div className="space-y-4">
+                                <div className="grid gap-3">
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="count">Total drafts to generate (runs in batches of 10)</Label>
+                                        <Input
+                                            id="count"
+                                            type="number"
+                                            min={1}
+                                            value={count}
+                                            onChange={(e) => {
+                                                const next = Number(e.target.value);
+                                                setCount(Number.isFinite(next) && next > 0 ? next : 1);
+                                            }}
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="mode">Mode</Label>
+                                        <select
+                                            id="mode"
+                                            value={mode}
+                                            onChange={(e) => setMode(e.target.value as 'BALANCED' | 'TREND' | 'RESEARCH')}
+                                            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                                        >
+                                            <option value="BALANCED">Balanced (best for SEO)</option>
+                                            <option value="TREND">Trend-heavy</option>
+                                            <option value="RESEARCH">Research-heavy</option>
+                                        </select>
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="reviewLabel">Reviewer label</Label>
+                                        <Input
+                                            id="reviewLabel"
+                                            value={reviewLabel}
+                                            onChange={(e) => setReviewLabel(e.target.value)}
+                                            placeholder="Present Health Clinical Team"
+                                        />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label htmlFor="reviewType">Review type</Label>
+                                        <select
+                                            id="reviewType"
+                                            value={reviewType}
+                                            onChange={(e) => setReviewType(e.target.value as 'CLINICAL' | 'EDITORIAL')}
+                                            className="h-10 rounded-md border border-input bg-background px-3 text-sm"
+                                        >
+                                            <option value="CLINICAL">Clinical</option>
+                                            <option value="EDITORIAL">Editorial</option>
+                                        </select>
+                                    </div>
+                                    <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                                        <div>
+                                            <Label htmlFor="autoPublish" className="text-sm font-medium">Auto-publish low-risk</Label>
+                                            <p className="text-xs text-muted-foreground">Only LOW risk drafts publish automatically (daily cap applies).</p>
+                                        </div>
+                                        <Switch
+                                            id="autoPublish"
+                                            checked={autoPublish}
+                                            onCheckedChange={setAutoPublish}
+                                        />
+                                    </div>
+                                </div>
+                                <Button
+                                    onClick={handleGenerate}
+                                    disabled={isGenerating}
+                                    size="lg"
+                                    className="w-full"
+                                >
+                                    {isGenerating ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Generating Drafts...
+                                        </>
+                                    ) : (
+                                        "Run Content Engine"
+                                    )}
+                                </Button>
+                            </div>
                         )}
                     </CardContent>
                 </Card>

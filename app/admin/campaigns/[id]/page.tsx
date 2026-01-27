@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Play, Pause, Trash2, RefreshCw, ExternalLink, CheckCircle, AlertTriangle, Loader2, Rocket, Copy, Upload, Info } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Trash2, RefreshCw, ExternalLink, CheckCircle, AlertTriangle, Loader2, Rocket, Copy, Upload, Info, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -28,11 +28,13 @@ export default function CampaignDetailsPage() {
     const [importing, setImporting] = useState(false);
     const [copySuccess, setCopySuccess] = useState(false);
     const [approving, setApproving] = useState(false);
+    const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['GOOGLE_ADS', 'META_ADS']);
+    const [platformMetrics, setPlatformMetrics] = useState<{ google: any[], meta: any[] }>({ google: [], meta: [] });
 
     useEffect(() => {
         if (id) {
             fetchCampaign();
-            fetchMetrics();
+            fetchPlatformMetrics();
         }
     }, [id]);
 
@@ -52,15 +54,27 @@ export default function CampaignDetailsPage() {
         }
     }
 
-    async function fetchMetrics() {
+    async function fetchPlatformMetrics() {
         try {
-            const res = await fetch(`/api/admin/campaigns/${id}/metrics`);
-            if (res.ok) {
-                const data = await res.json();
-                setMetrics(data);
-            }
+            const [googleRes, metaRes] = await Promise.all([
+                fetch(`/api/admin/campaigns/${id}/metrics?platform=GOOGLE_ADS`),
+                fetch(`/api/admin/campaigns/${id}/metrics?platform=META_ADS`)
+            ]);
+
+            const [googleData, metaData] = await Promise.all([
+                googleRes.ok ? googleRes.json() : [],
+                metaRes.ok ? metaRes.json() : []
+            ]);
+
+            setPlatformMetrics({
+                google: googleData,
+                meta: metaData
+            });
+
+            // For backward compatibility with simpler UI elements
+            setMetrics([...googleData, ...metaData]);
         } catch (err) {
-            console.error('Failed to load metrics');
+            console.error('Failed to load platform metrics');
         }
     }
 
@@ -87,7 +101,7 @@ export default function CampaignDetailsPage() {
     async function handleRegenerateMetrics() {
         try {
             await fetch(`/api/admin/campaigns/${id}/metrics`, { method: 'POST' });
-            fetchMetrics();
+            fetchPlatformMetrics();
         } catch (e) { }
     }
 
@@ -115,11 +129,15 @@ export default function CampaignDetailsPage() {
     }
 
     async function handleDeploy() {
-        if (!confirm('Are you sure you want to go live with this campaign? This will enable it in Google Ads.')) return;
+        if (!confirm('Are you sure you want to go live with this campaign? This will enable it in Google Ads and Meta Ads (if configured).')) return;
         setDeploying(true);
         setError(null);
         try {
-            const res = await fetch(`/api/admin/campaigns/${id}/deploy`, { method: 'POST' });
+            const res = await fetch(`/api/admin/campaigns/${id}/deploy`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ platforms: selectedPlatforms })
+            });
             if (res.ok) {
                 await fetchCampaign(); // Refresh status
             } else {
@@ -214,10 +232,17 @@ export default function CampaignDetailsPage() {
 
     const getGoogleAdsLink = () => {
         if (!hasGoogleIds) return '#';
-        // Extract numeric campaign ID from resource name "customers/{customer_id}/campaigns/{campaign_id}"
         const campaignId = latestRun.googleCampaignId.split('/').pop();
         const customerId = latestRun.googleCustomerId.replace(/-/g, '');
-        return `https://ads.google.com/aw/overview?campaignId=${campaignId}&__c=${customerId}`;
+        return `https://ads.google.com/aw/campaigns?campaignId=${campaignId}&__c=${customerId}`;
+    };
+
+    const hasMetaIds = latestRun?.metaCampaignId && latestRun?.metaAdsResourceIds?.accountId;
+    const getMetaAdsLink = () => {
+        if (!hasMetaIds) return '#';
+        const campaignId = latestRun.metaCampaignId;
+        const accountId = latestRun.metaAdsResourceIds.accountId.replace('act_', '');
+        return `https://www.facebook.com/adsmanager/manage/campaigns?act=${accountId}&selected_campaign_ids=${campaignId}`;
     };
 
     return (
@@ -278,9 +303,39 @@ export default function CampaignDetailsPage() {
                         ) : null;
                     })()}
 
+                    {/* Platform Selector */}
+                    <div className="flex flex-col gap-1.5">
+                        <span className="text-[10px] uppercase font-bold text-muted-foreground ml-1">Deploy To</span>
+                        <div className="flex items-center gap-1 bg-muted/50 p-1 rounded-lg border border-border/50">
+                            <Button
+                                variant={selectedPlatforms.includes('GOOGLE_ADS') ? 'default' : 'ghost'}
+                                size="sm"
+                                className={`h-7 text-xs px-3 transition-all ${selectedPlatforms.includes('GOOGLE_ADS') ? 'shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                                onClick={() => setSelectedPlatforms(prev =>
+                                    prev.includes('GOOGLE_ADS') ? prev.filter(p => p !== 'GOOGLE_ADS') : [...prev, 'GOOGLE_ADS']
+                                )}
+                            >
+                                {selectedPlatforms.includes('GOOGLE_ADS') && <Check className="mr-1.5 h-3 w-3" />}
+                                Google
+                            </Button>
+                            <Button
+                                variant={selectedPlatforms.includes('META_ADS') ? 'default' : 'ghost'}
+                                size="sm"
+                                className={`h-7 text-xs px-3 transition-all ${selectedPlatforms.includes('META_ADS') ? 'shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
+                                onClick={() => setSelectedPlatforms(prev =>
+                                    prev.includes('META_ADS') ? prev.filter(p => p !== 'META_ADS') : [...prev, 'META_ADS']
+                                )}
+                            >
+                                {selectedPlatforms.includes('META_ADS') && <Check className="mr-1.5 h-3 w-3" />}
+                                Meta
+                            </Button>
+                        </div>
+                    </div>
+
+
                     {/* Go Live */}
                     {latestRun && (
-                        <Button onClick={handleDeploy} disabled={deploying || campaign.status === 'ACTIVE'} className={campaign.status === 'ACTIVE' ? "bg-green-600 hover:bg-green-700" : ""}>
+                        <Button onClick={handleDeploy} disabled={deploying || campaign.status === 'ACTIVE' || selectedPlatforms.length === 0} className={campaign.status === 'ACTIVE' ? "bg-green-600 hover:bg-green-700" : ""}>
                             {deploying ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (campaign.status === 'ACTIVE' ? <CheckCircle className="mr-2 h-4 w-4" /> : <Rocket className="mr-2 h-4 w-4" />)}
                             {campaign.status === 'ACTIVE' ? 'Live' : 'Go Live'}
                         </Button>
@@ -382,66 +437,97 @@ export default function CampaignDetailsPage() {
                         <TabsList>
                             <TabsTrigger value="performance">Performance</TabsTrigger>
                             <TabsTrigger value="landing-page">Landing Page</TabsTrigger>
-                            <TabsTrigger value="ads">Google Ads Assets</TabsTrigger>
+                            <TabsTrigger value="ads">Ad Assets</TabsTrigger>
                         </TabsList>
 
                         <TabsContent value="performance" className="space-y-6 mt-6">
-                            <Card>
-                                <CardHeader className="flex flex-row items-center justify-between">
-                                    <div>
-                                        <CardTitle>Clicks & Cost (30 Days)</CardTitle>
-                                        <CardDescription>Daily performance trends.</CardDescription>
-                                    </div>
-                                    {hasGoogleIds && (
-                                        <Button variant="outline" size="sm" asChild>
-                                            <a href={getGoogleAdsLink()} target="_blank" rel="noopener noreferrer">
-                                                <ExternalLink className="mr-2 h-4 w-4" />
-                                                View in Google Ads
-                                            </a>
-                                        </Button>
-                                    )}
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="h-64 flex items-end justify-between gap-1 w-full pt-8">
-                                        {metrics.map((m, i) => (
-                                            <div key={i} className="flex-1 flex flex-col items-center gap-1 group relative">
-                                                {/* Tooltip */}
-                                                <div className="absolute bottom-full mb-2 hidden group-hover:block bg-popover text-popover-foreground text-xs p-2 rounded shadow-lg z-10 whitespace-nowrap">
-                                                    <div>{new Date(m.date).toLocaleDateString()}</div>
-                                                    <div>Clicks: {m.clicks}</div>
-                                                    <div>Cost: ${m.cost}</div>
-                                                </div>
-
-                                                {/* Bars - Overlaying Cost (red) and Clicks (blue) roughly scaled */}
-                                                <div className="w-full flex items-end gap-0.5 h-full">
-                                                    <div
-                                                        className="flex-1 bg-blue-500/80 rounded-t hover:bg-blue-600 transition-all"
-                                                        style={{ height: `${(m.clicks / maxClicks) * 100}%` }}
-                                                    />
-                                                    <div
-                                                        className="flex-1 bg-red-400/50 rounded-t hover:bg-red-500 transition-all"
-                                                        style={{ height: `${(m.cost / maxCost) * 100}%` }}
-                                                    />
-                                                </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {/* Google Ads Performance */}
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between">
+                                        <div>
+                                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                                                Google Ads
+                                            </CardTitle>
+                                            <CardDescription>30-day performance</CardDescription>
+                                        </div>
+                                        {hasGoogleIds && (
+                                            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+                                                <a href={getGoogleAdsLink()} target="_blank" rel="noopener noreferrer">
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </a>
+                                            </Button>
+                                        )}
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="h-40 flex items-end justify-between gap-1 w-full pt-4">
+                                            {platformMetrics.google.map((m, i) => (
+                                                <div key={i} className="flex-1 bg-blue-500/80 rounded-t hover:bg-blue-600 transition-all"
+                                                    style={{ height: `${(m.clicks / Math.max(...platformMetrics.google.map(x => x.clicks), 1)) * 100}%` }}
+                                                />
+                                            ))}
+                                        </div>
+                                        <div className="flex justify-between text-[10px] text-muted-foreground mt-2 uppercase font-medium">
+                                            <span>Start</span>
+                                            <span>End</span>
+                                        </div>
+                                        <div className="mt-4 grid grid-cols-2 gap-4 text-center border-t pt-4">
+                                            <div>
+                                                <div className="text-xs text-muted-foreground">Clicks</div>
+                                                <div className="text-lg font-bold">{platformMetrics.google.reduce((a, b) => a + b.clicks, 0)}</div>
                                             </div>
-                                        ))}
-                                    </div>
-                                    <div className="flex justify-between text-xs text-muted-foreground mt-2 border-t pt-2">
-                                        <span>30 Days Ago</span>
-                                        <span>Today</span>
-                                    </div>
-                                    <div className="flex justify-center gap-6 mt-4 text-xs">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-3 h-3 bg-blue-500/80 rounded-sm"></div>
-                                            <span>Clicks</span>
+                                            <div>
+                                                <div className="text-xs text-muted-foreground">Spend</div>
+                                                <div className="text-lg font-bold">${platformMetrics.google.reduce((a, b) => a + b.cost, 0).toFixed(2)}</div>
+                                            </div>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-3 h-3 bg-red-400/50 rounded-sm"></div>
-                                            <span>Cost</span>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Meta Ads Performance */}
+                                <Card>
+                                    <CardHeader className="flex flex-row items-center justify-between">
+                                        <div>
+                                            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                                                <div className="w-2 h-2 rounded-full bg-pink-500" />
+                                                Meta Ads
+                                            </CardTitle>
+                                            <CardDescription>30-day performance</CardDescription>
                                         </div>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                        {hasMetaIds && (
+                                            <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+                                                <a href={getMetaAdsLink()} target="_blank" rel="noopener noreferrer">
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </a>
+                                            </Button>
+                                        )}
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="h-40 flex items-end justify-between gap-1 w-full pt-4">
+                                            {platformMetrics.meta.map((m, i) => (
+                                                <div key={i} className="flex-1 bg-pink-500/80 rounded-t hover:bg-pink-600 transition-all"
+                                                    style={{ height: `${(m.clicks / Math.max(...platformMetrics.meta.map(x => x.clicks), 1)) * 100}%` }}
+                                                />
+                                            ))}
+                                        </div>
+                                        <div className="flex justify-between text-[10px] text-muted-foreground mt-2 uppercase font-medium">
+                                            <span>Start</span>
+                                            <span>End</span>
+                                        </div>
+                                        <div className="mt-4 grid grid-cols-2 gap-4 text-center border-t pt-4">
+                                            <div>
+                                                <div className="text-xs text-muted-foreground">Clicks</div>
+                                                <div className="text-lg font-bold">{platformMetrics.meta.reduce((a, b) => a + b.clicks, 0)}</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-xs text-muted-foreground">Spend</div>
+                                                <div className="text-lg font-bold">${platformMetrics.meta.reduce((a, b) => a + b.cost, 0).toFixed(2)}</div>
+                                            </div>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </div>
                         </TabsContent>
 
                         <TabsContent value="landing-page" className="mt-6">
@@ -488,11 +574,16 @@ export default function CampaignDetailsPage() {
                             </Card>
                         </TabsContent>
 
-                        <TabsContent value="ads" className="mt-6">
-                            {/* Ads Preview */}
+                        <TabsContent value="ads" className="mt-6 space-y-6">
+                            {/* Google Ads Preview */}
                             <Card>
                                 <CardHeader>
-                                    <CardTitle>Google Ads Assets</CardTitle>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle>Google Ads Assets</CardTitle>
+                                        {latestRun?.googleSyncStatus === 'OK' && (
+                                            <Badge className="bg-green-100 text-green-700">Deployed</Badge>
+                                        )}
+                                    </div>
                                     <CardDescription>Responsive Search Ad (RSA) components</CardDescription>
                                 </CardHeader>
                                 <CardContent>
@@ -532,7 +623,42 @@ export default function CampaignDetailsPage() {
                                         </Tabs>
                                     ) : (
                                         <div className="text-center py-8 text-muted-foreground">
-                                            No ads generated yet. Click "Generate Assets" above.
+                                            No google ads generated yet.
+                                        </div>
+                                    )}
+                                </CardContent>
+                            </Card>
+
+                            {/* Meta Ads Preview */}
+                            <Card>
+                                <CardHeader>
+                                    <div className="flex items-center justify-between">
+                                        <CardTitle>Meta Ads Assets</CardTitle>
+                                        {latestRun?.metaSyncStatus === 'OK' && (
+                                            <Badge className="bg-green-100 text-green-700">Deployed</Badge>
+                                        )}
+                                    </div>
+                                    <CardDescription>Facebook & Instagram ad creative</CardDescription>
+                                </CardHeader>
+                                <CardContent>
+                                    {latestRun?.metaCampaignId ? (
+                                        <div className="space-y-4">
+                                            <div className="p-4 bg-muted rounded-lg border border-border/50">
+                                                <div className="text-xs font-semibold text-muted-foreground uppercase mb-2">Primary Text</div>
+                                                <p className="text-sm">{latestRun.rsaDescriptions[0]}</p>
+                                            </div>
+                                            <div className="p-4 bg-muted rounded-lg border border-border/50">
+                                                <div className="text-xs font-semibold text-muted-foreground uppercase mb-2">Headline</div>
+                                                <p className="text-sm font-medium">{latestRun.rsaHeadlines[0]}</p>
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 bg-muted/50 rounded text-xs">
+                                                <span className="text-muted-foreground">Campaign ID:</span>
+                                                <code className="font-mono">{latestRun.metaCampaignId}</code>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-8 text-muted-foreground">
+                                            Not yet synced to Meta Ads.
                                         </div>
                                     )}
                                 </CardContent>

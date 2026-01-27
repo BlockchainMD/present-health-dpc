@@ -5,20 +5,72 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
+    const article = await prisma.article.findFirst({
+        where: { OR: [{ slug }, { id: slug }] }
+    });
+
+    if (!article || article.status !== 'PUBLISHED') {
+        return {};
+    }
+
+    return {
+        title: article.metaTitle || article.title,
+        description: article.metaDescription || article.excerpt || undefined
+    };
+}
 
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
 
-    const article = await prisma.article.findUnique({
-        where: { id: slug }
+    const article = await prisma.article.findFirst({
+        where: {
+            OR: [
+                { slug },
+                { id: slug }
+            ]
+        }
     });
 
     if (!article || article.status !== 'PUBLISHED') {
         notFound();
     }
 
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: article.title,
+        description: article.metaDescription || article.excerpt || undefined,
+        datePublished: article.createdAt,
+        dateModified: article.updatedAt,
+        author: {
+            '@type': 'Organization',
+            name: 'Present Health'
+        },
+        publisher: {
+            '@type': 'Organization',
+            name: 'Present Health'
+        },
+        review: article.reviewedAt && article.reviewedByDisplayName ? {
+            '@type': 'Review',
+            datePublished: article.reviewedAt,
+            author: {
+                '@type': 'Organization',
+                name: article.reviewedByDisplayName
+            }
+        } : undefined
+    };
+
     return (
         <article className="container px-4 md:px-6 mx-auto py-24 max-w-3xl">
+            <script
+                type="application/ld+json"
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Button variant="ghost" asChild className="mb-8 -ml-4 text-muted-foreground">
                 <Link href="/blog">
                     <ArrowLeft className="mr-2 h-4 w-4" />
@@ -33,7 +85,11 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 <div className="flex items-center gap-4 text-muted-foreground text-sm">
                     <time>{format(new Date(article.createdAt), 'MMMM d, yyyy')}</time>
                     <span>•</span>
-                    <span>By Present Health Team</span>
+                    {article.reviewedAt && article.reviewedByDisplayName ? (
+                        <span>{article.reviewType === 'EDITORIAL' ? 'Editorial review by' : 'Reviewed by'} {article.reviewedByDisplayName}</span>
+                    ) : (
+                        <span>By Present Health Team</span>
+                    )}
                 </div>
             </header>
 

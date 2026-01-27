@@ -12,6 +12,33 @@ import ReactMarkdown from 'react-markdown';
 import { getOrCreateAttributionSession } from '@/lib/attribution';
 import { headers } from 'next/headers';
 
+/**
+ * Sanitizes content by removing markdown citation patterns like "([Present Health][1])"
+ * These are often included by ChatGPT when generating content with source references
+ */
+function sanitizeContent(text: string): string {
+    if (!text) return text;
+    // Remove patterns like "([Present Health][1])" or "([text][number])"
+    return text.replace(/\s*\(\[[^\]]+\]\[[^\]]+\]\)/g, '');
+}
+
+function sanitizeObject(obj: any): any {
+    if (typeof obj === 'string') {
+        return sanitizeContent(obj);
+    }
+    if (Array.isArray(obj)) {
+        return obj.map(item => sanitizeObject(item));
+    }
+    if (obj && typeof obj === 'object') {
+        const result: any = {};
+        for (const key of Object.keys(obj)) {
+            result[key] = sanitizeObject(obj[key]);
+        }
+        return result;
+    }
+    return obj;
+}
+
 // Force dynamic rendering to ensure we get fresh data
 export const dynamic = 'force-dynamic';
 
@@ -83,15 +110,19 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
     const rawContent = campaign.runs[0].landingPageContent;
     let content: any = {};
     try {
-        content = JSON.parse(rawContent || '{}');
+        const parsed = JSON.parse(rawContent || '{}');
+        content = sanitizeObject(parsed); // Remove markdown citation patterns
     } catch (e) {
         console.error("Failed to parse landing page content", e);
         notFound();
     }
 
-    // Defensive defaults for rendering
-    content.benefits = (content.benefits && content.benefits.length > 0) ? content.benefits : (campaign.benefits || []);
-    content.proof = (content.proof && content.proof.length > 0) ? content.proof : (campaign.proofPoints || []);
+    // Defensive defaults for rendering - also sanitize fallbacks from campaign table
+    const sanitizedCampaignBenefits = (campaign.benefits || []).map(b => sanitizeContent(b));
+    const sanitizedCampaignProofPoints = (campaign.proofPoints || []).map(p => sanitizeContent(p));
+    content.benefits = (content.benefits && content.benefits.length > 0) ? content.benefits : sanitizedCampaignBenefits;
+    content.proof = (content.proof && content.proof.length > 0) ? content.proof : sanitizedCampaignProofPoints;
+
 
     if (!content.howItWorks || !Array.isArray(content.howItWorks) || content.howItWorks.length === 0) {
         content.howItWorks = [
@@ -128,7 +159,10 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
             {/* Header */}
             <header className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <div className="font-bold text-xl text-primary">Present Health</div>
+                    <Link href="/" className="flex items-center gap-2">
+                        <Image src="/logo-transparent.png" alt="Present Health" width={32} height={32} />
+                        <span className="font-bold text-xl text-primary">Present Health</span>
+                    </Link>
                     <Button asChild size="sm">
                         <Link href={bookUrl}>Book Intro Call</Link>
                     </Button>
@@ -137,6 +171,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
 
             <main className="flex-1">
                 <Suspense fallback={<div className="h-screen flex items-center justify-center">Loading...</div>}>
+
                     {/* Hero */}
                     <LPAnimations>
                         <section className="relative pt-12 pb-20 md:pt-24 md:pb-32 overflow-hidden bg-background">
@@ -363,6 +398,6 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                     <p>&copy; {new Date().getFullYear()} Present Health. All rights reserved.</p>
                 </div>
             </footer>
-        </div>
+        </div >
     );
 }

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { syncToGoogleAds } from '@/lib/ads/google-ads';
+import { syncToMetaAds } from '@/lib/ads/meta-ads';
 import { requireAdmin } from '@/lib/authz';
 
 export async function POST(
@@ -46,9 +47,28 @@ export async function POST(
             }, { status: 400 });
         }
 
-        // 2. Sync to Google Ads (Live Mode: dryRun = false)
-        console.log(`[Deploy] Deploying campaign ${campaign.slug} (Run: ${latestRun.id})`);
-        const syncResult = await syncToGoogleAds(latestRun.id, false); // dryRun = false
+        // 2. Sync to Platforms (Live Mode: dryRun = false)
+        const body = await request.json().catch(() => ({}));
+        const selectedPlatforms = body.platforms || ['GOOGLE_ADS', 'META_ADS'];
+
+        console.log(`[Deploy] Deploying campaign ${campaign.slug} (Run: ${latestRun.id}) to platforms: ${selectedPlatforms.join(', ')}`);
+
+        // 2b. Clear any simulated metrics before deploying (clean slate for real data)
+        await prisma.campaignMetric.deleteMany({
+            where: { campaignRunId: latestRun.id }
+        });
+        console.log(`[Deploy] Cleared simulated metrics for run ${latestRun.id}`);
+
+        let googleSyncResult = null;
+        if (selectedPlatforms.includes('GOOGLE_ADS')) {
+            googleSyncResult = await syncToGoogleAds(latestRun.id, false);
+        }
+
+        let metaSyncResult = null;
+        if (selectedPlatforms.includes('META_ADS') && process.env.META_ACCESS_TOKEN && process.env.META_AD_ACCOUNT_ID) {
+            console.log(`[Deploy] Deploying to Meta Ads for run ${latestRun.id}`);
+            metaSyncResult = await syncToMetaAds(latestRun.id, false);
+        }
 
         // 4. Update Status
         await prisma.campaign.update({
@@ -66,12 +86,17 @@ export async function POST(
                 metadata: {
                     runId: latestRun.id,
                     assetId: approvedAsset.id,
-                    syncResult
+                    googleSyncResult,
+                    metaSyncResult
                 }
             }
         });
 
-        return NextResponse.json({ success: true, syncResult });
+        return NextResponse.json({
+            success: true,
+            googleSyncResult,
+            metaSyncResult
+        });
 
     } catch (error: any) {
         console.error('Deploy error:', error);

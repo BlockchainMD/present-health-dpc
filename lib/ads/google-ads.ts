@@ -81,12 +81,18 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
             headlines: [...new Set(safeHeadlines)].slice(0, 15),
             descriptions: [...new Set(safeDescriptions)].slice(0, 4)
         },
+        meta: {
+            primaryText: safeDescriptions[0] || "Experience healthcare designed around you. Direct access to your personal physician.",
+            headline: safeHeadlines[0] || "Present Health DPC",
+            description: safeDescriptions[1] || "Simple, transparent monthly membership. No insurance hassles."
+        },
         keywords: campaign.seedKeywords.map(kw => ({
             text: kw,
             matchType: 'PHRASE'
         })),
         negativeKeywords: GLOBAL_NEGATIVE_KEYWORDS,
-        finalUrl: `https://presenthealthmd.com/lp/${campaign.slug}`
+        finalUrl: `https://presenthealthmd.com/lp/${campaign.slug}`,
+        imageUrl: "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=1000" // Professional Doctor Portrait
     };
 }
 

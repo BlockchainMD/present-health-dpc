@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Google Ads API Design Documentation - Present Health</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            line-height: 1.6;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 40px;
+            color: #1a1a1a;
+            background: #fff;
+        }
+
+        h1 {
+            color: #000;
+            border-bottom: 3px solid #FF4F00;
+            /* International Orange */
+            padding-bottom: 15px;
+            font-size: 2.2em;
+            letter-spacing: -0.02em;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-top: 40px;
+            border-left: 4px solid #000;
+            padding-left: 15px;
+        }
+
+        .screenshot {
+            border: 1px solid #e1e4e8;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 25px 0;
+            background: #f6f8fa;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .caption {
+            font-style: italic;
+            color: #586069;
+            text-align: center;
+            margin-top: 12px;
+            font-size: 0.9em;
+        }
+
+        .metadata {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 40px;
+            border: 1px solid #eee;
+        }
+
+        .metadata strong {
+            color: #2c3e50;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .compliance-note {
+            background: #fff9e6;
+            border-left: 4px solid #ffcc00;
+            padding: 15px;
+            margin: 20px 0;
+            font-size: 0.95em;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Google Ads API Design Documentation</h1>
+
+    <div class="metadata">
+        <strong>Tool Name:</strong> Present Health Internal Campaign Manager<br>
+        <strong>Company:</strong> Present Health (Virtual Direct Primary Care)<br>
+        <strong>Developer Token:</strong> 0l8PbISJSdL6N_vKJN9gVg<br>
+        <strong>MCC ID:</strong> 346-662-8621<br>
+        <strong>Developer Contact:</strong> jonrouwhorst@gmail.com
+    </div>
+
+    <h2>1. Executive Summary</h2>
+    <p>Present Health is a Direct Primary Care platform. Our internal tool automates the creation and management of
+        Google Search campaigns to match clinical availability with patient demand. The tool leverages the Google Ads
+        API for campaign provisioning, asset management (RSA), and reporting. All campaigns are created in a
+        <strong>PAUSED</strong> state for final medical compliance review before going live.
+    </p>
+
+    <h2>2. Internal User Dashboard</h2>
+    <p>The admin dashboard provides a centralized view for our operations team to manage marketing experiments across
+        different clinical service areas.</p>
+    <div class="screenshot">
+        <img src="file:///Users/jonathanrouwhorst/.gemini/antigravity/brain/a0dbc443-b6be-4976-8bec-9a656b1f60aa/admin_campaigns_dashboard_1768594690932.png"
+            alt="Admin Dashboard">
+        <div class="caption">Figure 1: Internal dashboard showing real-time campaign status and clinical service
+            categories.</div>
+    </div>
+
+    <h2>3. Campaign Specification & Provisioning</h2>
+    <p>We define granular "Campaign Specs" (persona, budget, geography). Clicking "Go Live" triggers a sequence of API
+        calls to create the Campaign, Ad Group, and Keyword resources.</p>
+    <div class="screenshot">
+        <img src="file:///Users/jonathanrouwhorst/.gemini/antigravity/brain/a0dbc443-b6be-4976-8bec-9a656b1f60aa/campaign_detail_page_1768594697634.png"
+            alt="Campaign Detail">
+        <div class="caption">Figure 2: Detail view for a "Virtual DPC" campaign, allowing for budget and CPA
+            optimization.</div>
+    </div>
+
+    <h2>4. Responsive Search Ad (RSA) & Compliance</h2>
+    <p>Our tool generates Responsive Search Ads (RSAs) using approved medical copy. The API allows our team to sync
+        these directly to the account after they pass our internal compliance filters.</p>
+
+    <div class="compliance-note">
+        <strong>Note on Compliance:</strong> As a healthcare provider, all ad copy is checked against a denylist of
+        restricted terms before the API request is constructed.
+    </div>
+
+    <div class="screenshot">
+        <img src="file:///Users/jonathanrouwhorst/.gemini/antigravity/brain/a0dbc443-b6be-4976-8bec-9a656b1f60aa/google_ads_headlines_1768594731360.png"
+            alt="Ad Headlines">
+        <div class="caption">Figure 3: Review interface for generated Search Ad headlines.</div>
+    </div>
+
+    <div class="screenshot">
+        <img src="file:///Users/jonathanrouwhorst/.gemini/antigravity/brain/a0dbc443-b6be-4976-8bec-9a656b1f60aa/google_ads_descriptions_1768594746375.png"
+            alt="Ad Descriptions">
+        <div class="caption">Figure 4: Review interface for ad descriptions.</div>
+    </div>
+
+    <h2>5. Technical Architecture</h2>
+    <ul>
+        <li><strong>Infrastructure:</strong> Next.js frontend deployed on Google Cloud Run.</li>
+        <li><strong>API Integration:</strong> Node.js `google-ads-api` client library using OAuth2.0.</li>
+        <li><strong>Data Integrity:</strong> Prisma ORM tracks Google Resource IDs to prevent duplicate provisioning.
+        </li>
+        <li><strong>Scalability:</strong> Built for internal use by a team of 5+ marketing and clinical operations
+            staff.</li>
+    </ul>
+</body>
+
+</html>
