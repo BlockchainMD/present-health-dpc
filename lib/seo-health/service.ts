@@ -160,8 +160,8 @@ async function inspectUrls(urls: string[]) {
                 url,
                 indexed,
                 verdict,
-                coverageState: status?.coverageState,
-                lastCrawlTime: status?.lastCrawlTime
+                coverageState: status?.coverageState ?? undefined,
+                lastCrawlTime: status?.lastCrawlTime ?? undefined
             };
         } catch (error: any) {
             const message = error?.message || 'Unknown error';
