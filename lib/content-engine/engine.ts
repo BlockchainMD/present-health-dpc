@@ -32,114 +32,133 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
         autoPublishRemaining = Math.max(0, maxAutoPublishPerDay - publishedToday);
     }
 
-    const signals = await fetchTopicSignals({
+    let signals = await fetchTopicSignals({
         sources,
         limit: Math.max(count * 4, 30)
     });
+    if (signals.length === 0) {
+        signals = await fetchTopicSignals({
+            sources: { curated: true },
+            limit: Math.max(count * 4, 30)
+        });
+    }
     if (signals.length === 0) {
         return { created: 0, published: 0, articles: [] };
     }
     const clusterWeights = options.useFeedback ? await getClusterWeights() : {};
     const pool = rankSignals(signals, options.mode || 'BALANCED', clusterWeights);
-    const created: EngineResult['articles'] = [];
-    let published = 0;
-    const clusterCounts: Record<string, number> = {};
-    const MAX_PER_CLUSTER = 2;
-    const DPC_KEYWORDS = ['direct primary care', 'hsa', 'fsa', 'telehealth vs', 'telehealth vs in-person'];
-    const MAX_DPC_PER_RUN = 1;
-    let dpcCount = 0;
+    const attemptGenerate = async (allowExisting: boolean) => {
+        const created: EngineResult['articles'] = [];
+        let published = 0;
+        const clusterCounts: Record<string, number> = {};
+        const MAX_PER_CLUSTER = 2;
+        const DPC_KEYWORDS = ['direct primary care', 'hsa', 'fsa', 'telehealth vs', 'telehealth vs in-person'];
+        const MAX_DPC_PER_RUN = 1;
+        let dpcCount = 0;
 
-    for (const signal of pool) {
-        if (created.length >= count) break;
-        const cluster = classifyCluster(signal.title);
-        if ((clusterCounts[cluster] || 0) >= MAX_PER_CLUSTER) continue;
-        const lowerTitle = signal.title.toLowerCase();
-        const isDpcTopic = DPC_KEYWORDS.some(keyword => lowerTitle.includes(keyword));
-        if (isDpcTopic && dpcCount >= MAX_DPC_PER_RUN) continue;
+        for (const signal of pool) {
+            if (created.length >= count) break;
+            const cluster = classifyCluster(signal.title);
+            if ((clusterCounts[cluster] || 0) >= MAX_PER_CLUSTER) continue;
+            const lowerTitle = signal.title.toLowerCase();
+            const isDpcTopic = DPC_KEYWORDS.some(keyword => lowerTitle.includes(keyword));
+            if (isDpcTopic && dpcCount >= MAX_DPC_PER_RUN) continue;
 
-        let brief = await generateBrief(signal);
-        let existing = await prisma.article.findFirst({
-            where: {
-                OR: [
-                    { slug: brief.slug || undefined },
-                    { title: brief.title }
-                ]
-            }
-        });
-        if (existing) {
-            const ageDays = (Date.now() - existing.createdAt.getTime()) / (1000 * 60 * 60 * 24);
-            if (ageDays < refreshDays) continue;
-
-            const refreshedTitle = `${brief.title}: ${brief.angle}`;
-            const refreshedSlug = slugify(refreshedTitle);
-            const slugConflict = await prisma.article.findFirst({ where: { slug: refreshedSlug } });
-            if (slugConflict) continue;
-
-            brief = {
-                ...brief,
-                title: refreshedTitle,
-                slug: refreshedSlug,
-                metaTitle: refreshedTitle
-            };
-        }
-
-        const draft = await generateDraft(brief);
-        const qa = qaDraft(brief, draft);
-        const contentHash = hashContent(qa.content);
-        const duplicate = await prisma.article.findFirst({ where: { contentHash } });
-        if (duplicate) continue;
-        let finalSlug = slugify(qa.title || brief.title);
-        if (finalSlug) {
-            const slugExists = await prisma.article.findFirst({ where: { slug: finalSlug } });
-            if (slugExists) {
-                finalSlug = slugify(`${finalSlug}-${Date.now().toString(36).slice(-4)}`);
-            }
-        }
-        if (!finalSlug) {
-            finalSlug = slugify(`${brief.title}-${Date.now().toString(36).slice(-4)}`);
-        }
-
-        const reviewType = options.reviewType === 'EDITORIAL' ? 'EDITORIAL' : 'CLINICAL';
-        const reviewLabel = options.reviewLabel
-            || (reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
-
-        const autoPublish = options.autoPublish && brief.riskLevel === 'LOW' && autoPublishRemaining > 0;
-        if (autoPublish) autoPublishRemaining -= 1;
-
-        const article = await prisma.article.create({
-            data: {
-                title: qa.title || brief.title,
-                slug: finalSlug,
-                content: qa.content,
-                excerpt: qa.excerpt,
-                metaTitle: qa.metaTitle,
-                metaDescription: qa.metaDescription,
-                status: autoPublish ? 'PUBLISHED' : 'DRAFT',
-                sourceUrl: signal.url,
-                angle: brief.angle,
-                intent: brief.intent,
-                cluster: brief.cluster,
-                riskLevel: brief.riskLevel,
-                briefJson: brief as any,
-                evidenceJson: {
-                    sources: [
-                        { title: signal.title, url: signal.url, source: signal.source, kind: signal.kind }
+            let brief = await generateBrief(signal);
+            const existing = await prisma.article.findFirst({
+                where: {
+                    OR: [
+                        { slug: brief.slug || undefined },
+                        { title: brief.title }
                     ]
-                } as any,
-                contentHash,
-                reviewedByDisplayName: reviewLabel,
-                reviewType,
-                reviewedAt: autoPublish ? new Date() : null
-            }
-        });
+                }
+            });
+            if (existing) {
+                const ageDays = (Date.now() - existing.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+                if (!allowExisting && ageDays < refreshDays) continue;
 
-        created.push({ id: article.id, title: article.title });
-        clusterCounts[cluster] = (clusterCounts[cluster] || 0) + 1;
-        if (isDpcTopic) dpcCount += 1;
-        if (autoPublish) published += 1;
+                const refreshedTitle = `${brief.title}: ${brief.angle}`;
+                const refreshedSlug = slugify(refreshedTitle);
+                const slugConflict = await prisma.article.findFirst({ where: { slug: refreshedSlug } });
+                if (!allowExisting && slugConflict) continue;
+
+                brief = {
+                    ...brief,
+                    title: refreshedTitle,
+                    slug: refreshedSlug,
+                    metaTitle: refreshedTitle
+                };
+            }
+
+            const draft = await generateDraft(brief);
+            const qa = qaDraft(brief, draft);
+            const contentHash = hashContent(qa.content);
+            const duplicate = await prisma.article.findFirst({ where: { contentHash } });
+            if (duplicate && !allowExisting) continue;
+            if (duplicate && allowExisting) {
+                qa.content = `${qa.content}\n\n## Variant focus\nThis version emphasizes: ${brief.angle}.`;
+            }
+
+            let finalSlug = slugify(qa.title || brief.title);
+            if (finalSlug) {
+                const slugExists = await prisma.article.findFirst({ where: { slug: finalSlug } });
+                if (slugExists) {
+                    finalSlug = slugify(`${finalSlug}-${Date.now().toString(36).slice(-4)}`);
+                }
+            }
+            if (!finalSlug) {
+                finalSlug = slugify(`${brief.title}-${Date.now().toString(36).slice(-4)}`);
+            }
+
+            const reviewType = options.reviewType === 'EDITORIAL' ? 'EDITORIAL' : 'CLINICAL';
+            const reviewLabel = options.reviewLabel
+                || (reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
+
+            const autoPublish = options.autoPublish && brief.riskLevel === 'LOW' && autoPublishRemaining > 0;
+            if (autoPublish) autoPublishRemaining -= 1;
+
+            const article = await prisma.article.create({
+                data: {
+                    title: qa.title || brief.title,
+                    slug: finalSlug,
+                    content: qa.content,
+                    excerpt: qa.excerpt,
+                    metaTitle: qa.metaTitle,
+                    metaDescription: qa.metaDescription,
+                    status: autoPublish ? 'PUBLISHED' : 'DRAFT',
+                    sourceUrl: signal.url,
+                    angle: brief.angle,
+                    intent: brief.intent,
+                    cluster: brief.cluster,
+                    riskLevel: brief.riskLevel,
+                    briefJson: brief as any,
+                    evidenceJson: {
+                        sources: [
+                            { title: signal.title, url: signal.url, source: signal.source, kind: signal.kind }
+                        ]
+                    } as any,
+                    contentHash: hashContent(qa.content),
+                    reviewedByDisplayName: reviewLabel,
+                    reviewType,
+                    reviewedAt: autoPublish ? new Date() : null
+                }
+            });
+
+            created.push({ id: article.id, title: article.title });
+            clusterCounts[cluster] = (clusterCounts[cluster] || 0) + 1;
+            if (isDpcTopic) dpcCount += 1;
+            if (autoPublish) published += 1;
+        }
+
+        return { created, published };
+    };
+
+    let result = await attemptGenerate(false);
+    if (result.created.length === 0) {
+        result = await attemptGenerate(true);
     }
 
-    return { created: created.length, published, articles: created };
+    return { created: result.created.length, published: result.published, articles: result.created };
 }
 
 function resolveSources(mode: EngineOptions['mode'], sources: EngineOptions['sources']) {
