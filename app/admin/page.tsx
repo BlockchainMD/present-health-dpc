@@ -12,6 +12,7 @@ import Link from 'next/link';
 export default function AdminDashboard() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [result, setResult] = useState<{ count: number; published: number; warnings?: string[] } | null>(null);
+    const [seoHealth, setSeoHealth] = useState<{ status: 'GREEN' | 'YELLOW' | 'RED'; indexRate: number; updatedAt?: string } | null>(null);
     const [count, setCount] = useState(5);
     const [mode, setMode] = useState<'BALANCED' | 'TREND' | 'RESEARCH'>('BALANCED');
     const [autoPublish, setAutoPublish] = useState(false);
@@ -39,6 +40,25 @@ export default function AdminDashboard() {
             return prev;
         });
     }, [reviewType]);
+
+    useEffect(() => {
+        const loadSeoHealth = async () => {
+            try {
+                const res = await fetch('/api/admin/seo-health');
+                const data = await res.json();
+                if (data.success) {
+                    setSeoHealth({
+                        status: data.report.status,
+                        indexRate: data.report.indexRate,
+                        updatedAt: data.meta?.updatedAt
+                    });
+                }
+            } catch {
+                // Ignore SEO health errors on dashboard.
+            }
+        };
+        loadSeoHealth();
+    }, []);
 
     const handleGenerate = async () => {
         setIsGenerating(true);
@@ -94,6 +114,24 @@ export default function AdminDashboard() {
                 <h2 className="text-3xl font-bold tracking-tight">Content Engine</h2>
                 <p className="text-muted-foreground">Manage your AI-driven content pipeline.</p>
             </div>
+
+            {seoHealth && seoHealth.status !== 'GREEN' && (
+                <Card className={seoHealth.status === 'RED' ? 'border-red-500/40' : 'border-yellow-500/40'}>
+                    <CardContent className="py-4 text-sm flex flex-col gap-1">
+                        <div className="font-semibold">
+                            SEO Health: {seoHealth.status} • Index rate {seoHealth.indexRate}%
+                        </div>
+                        <p className="text-muted-foreground">
+                            {seoHealth.status === 'RED'
+                                ? 'Publishing may be paused. Review SEO Health for details.'
+                                : 'Keep an eye on indexing. Review SEO Health for details.'}
+                        </p>
+                        {seoHealth.updatedAt && (
+                            <p className="text-xs text-muted-foreground">Updated {new Date(seoHealth.updatedAt).toLocaleString()}</p>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
 
             <div className="grid md:grid-cols-2 gap-6">
                 {/* Generator Card */}

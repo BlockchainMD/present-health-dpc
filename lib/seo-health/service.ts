@@ -1,6 +1,7 @@
 import { google } from 'googleapis';
 import { subDays } from 'date-fns';
 import { prisma } from '@/lib/prisma';
+import { sendAlert } from '@/lib/content-engine/alerts';
 
 type ServiceAccount = {
     client_email: string;
@@ -49,6 +50,7 @@ export type SeoHealthSnapshot = {
 
 const CONFIG_KEY = 'seoHealth:config';
 const SNAPSHOT_KEY = 'seoHealth:latest';
+const SCHEDULE_KEY = 'seoHealth:scheduleId';
 
 const DEFAULT_CONFIG: SeoHealthConfig = {
     sampleSize: 50,
@@ -89,6 +91,112 @@ export async function updateSeoHealthConfig(patch: Partial<SeoHealthConfig>) {
         create: { key: CONFIG_KEY, value: next as any }
     });
     return next;
+}
+
+async function ensureSeoHealthSchedule() {
+    try {
+        const stored = await prisma.contentStrategy.findUnique({ where: { key: SCHEDULE_KEY } });
+        const scheduleId = stored?.value && typeof stored.value === 'object' ? (stored.value as any).id : null;
+        if (scheduleId) {
+            const existing = await prisma.contentSchedule.findUnique({ where: { id: scheduleId } });
+            if (existing) return existing;
+        }
+
+        const schedule = await prisma.contentSchedule.create({
+            data: {
+                name: 'SEO Health Snapshot',
+                enabled: true,
+                timezone: 'America/Chicago',
+                cadence: 'DAILY',
+                runHour: 6,
+                runMinute: 30,
+                maxDaily: null,
+                options: {
+                    jobType: 'SEO_HEALTH'
+                }
+            }
+        });
+
+        await prisma.contentStrategy.upsert({
+            where: { key: SCHEDULE_KEY },
+            update: { value: { id: schedule.id } as any },
+            create: { key: SCHEDULE_KEY, value: { id: schedule.id } as any }
+        });
+
+        return schedule;
+    } catch (error) {
+        console.warn('Failed to ensure SEO health schedule.', error);
+        return null;
+    }
+}
+
+async function applySeoHealthPolicy(report: SeoHealthReport, config: SeoHealthConfig) {
+    if (!config.pauseDraftsOnRed) return;
+
+    const schedules = await prisma.contentSchedule.findMany();
+    let paused = 0;
+    let resumed = 0;
+    const now = new Date().toISOString();
+
+    for (const schedule of schedules) {
+        const opts = schedule.options && typeof schedule.options === 'object' && !Array.isArray(schedule.options)
+            ? { ...(schedule.options as any) }
+            : {};
+        const jobType = opts.jobType || 'CONTENT';
+        if (jobType !== 'CONTENT') continue;
+
+        const wasPausedBySeo = Boolean(opts.seoHealthPaused);
+
+        if (report.status === 'RED') {
+            if (schedule.enabled && !wasPausedBySeo) {
+                await prisma.contentSchedule.update({
+                    where: { id: schedule.id },
+                    data: {
+                        enabled: false,
+                        options: {
+                            ...opts,
+                            seoHealthPaused: true,
+                            seoHealthPausedAt: now,
+                            seoHealthPrevEnabled: true
+                        }
+                    }
+                });
+                paused += 1;
+            }
+        } else if (wasPausedBySeo) {
+            const shouldEnable = opts.seoHealthPrevEnabled !== false;
+            await prisma.contentSchedule.update({
+                where: { id: schedule.id },
+                data: {
+                    enabled: shouldEnable,
+                    options: {
+                        ...opts,
+                        seoHealthPaused: false,
+                        seoHealthPausedAt: null,
+                        seoHealthPrevEnabled: false
+                    }
+                }
+            });
+            resumed += 1;
+        }
+    }
+
+    if (paused > 0) {
+        await sendAlert({
+            title: 'SEO health paused content schedules',
+            message: `Paused ${paused} content schedules due to RED status.`,
+            severity: 'WARN',
+            metadata: { paused, status: report.status }
+        });
+    }
+    if (resumed > 0) {
+        await sendAlert({
+            title: 'SEO health resumed content schedules',
+            message: `Resumed ${resumed} content schedules after recovery.`,
+            severity: 'INFO',
+            metadata: { resumed, status: report.status }
+        });
+    }
 }
 
 function getServiceAccount(): ServiceAccount {
@@ -377,8 +485,10 @@ async function saveSnapshot(report: SeoHealthReport, config: SeoHealthConfig) {
 
 export async function refreshSeoHealthSnapshot(): Promise<SeoHealthSnapshot> {
     const config = await getSeoHealthConfig();
+    await ensureSeoHealthSchedule();
     const report = await computeSeoHealthReport(config);
     const updatedAt = await saveSnapshot(report, config);
+    await applySeoHealthPolicy(report, config);
     return { report, updatedAt, cached: false, stale: false, config };
 }
 
