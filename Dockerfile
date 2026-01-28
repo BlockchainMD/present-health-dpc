@@ -38,6 +38,9 @@ ENV NEXT_PUBLIC_BUILD_ID=$NEXT_PUBLIC_BUILD_ID
 ARG NEXT_PUBLIC_BUILD_TIME
 ENV NEXT_PUBLIC_BUILD_TIME=$NEXT_PUBLIC_BUILD_TIME
 
+# Increase Node heap for Next.js build in Cloud Build
+ENV NODE_OPTIONS=--max-old-space-size=4096
+
 RUN \
   if [ -f yarn.lock ]; then yarn run build; \
   elif [ -f package-lock.json ]; then npm run build; \
