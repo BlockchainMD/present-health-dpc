@@ -6,7 +6,7 @@ import { generateDraft } from './draft';
 import { qaDraft } from './qa';
 import { classifyCluster, slugify } from './taxonomy';
 import { getClusterWeights } from './feedback';
-import { EngineOptions, EngineResult } from './types';
+import { EngineOptions, EngineResult, TopicSignal } from './types';
 
 const MAX_PER_RUN = 10;
 const DEFAULT_MAX_AUTO_PUBLISH_PER_DAY = 20;
@@ -125,7 +125,7 @@ function resolveSources(mode: EngineOptions['mode'], sources: EngineOptions['sou
     return sources;
 }
 
-function rankSignals(signals: Array<{ title: string; publishedAt?: string; kind?: string }>, mode: EngineOptions['mode'], weights: Record<string, number>) {
+function rankSignals(signals: TopicSignal[], mode: EngineOptions['mode'], weights: Record<string, number>) {
     const scored = signals.map(signal => {
         const cluster = classifyCluster(signal.title);
         const weight = weights[cluster] || 1;
