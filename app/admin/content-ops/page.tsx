@@ -41,7 +41,7 @@ export default function ContentOpsPage() {
     const [useFeedback, setUseFeedback] = useState(true);
     const [reviewType, setReviewType] = useState<'CLINICAL' | 'EDITORIAL'>('CLINICAL');
     const [reviewLabel, setReviewLabel] = useState('Present Health Clinical Team');
-    const [jobType, setJobType] = useState<'CONTENT' | 'GSC_SYNC' | 'REFRESH_STRATEGY'>('CONTENT');
+    const [jobType, setJobType] = useState<'CONTENT' | 'GSC_SYNC' | 'REFRESH_STRATEGY' | 'SEO_HEALTH'>('CONTENT');
     const [gscDays, setGscDays] = useState(7);
     const [refreshAfterSync, setRefreshAfterSync] = useState(true);
     const [timezone, setTimezone] = useState('America/Chicago');
@@ -242,6 +242,7 @@ export default function ContentOpsPage() {
                                 <option value="CONTENT">Content Generation</option>
                                 <option value="GSC_SYNC">GSC Sync</option>
                                 <option value="REFRESH_STRATEGY">Refresh Strategy</option>
+                                <option value="SEO_HEALTH">SEO Health Snapshot</option>
                             </select>
                         </div>
                         <div className="grid gap-2">
@@ -330,6 +331,12 @@ export default function ContentOpsPage() {
                                     </label>
                                 ))}
                             </div>
+                        </div>
+                    )}
+
+                    {jobType === 'SEO_HEALTH' && (
+                        <div className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground">
+                            This schedule refreshes the SEO Health snapshot using Google Search Console data.
                         </div>
                     )}
 

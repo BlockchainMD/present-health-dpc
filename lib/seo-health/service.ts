@@ -28,11 +28,68 @@ export type SeoHealthReport = {
     window: { startDate: string; endDate: string };
 };
 
-const INSPECTION_SAMPLE = 50;
-const INSPECTION_DAYS = 7;
-const TRAFFIC_DAYS = 3;
-const INSPECTION_CONCURRENCY = 5;
-const INSPECTION_DAILY_LIMIT = Number(process.env.GSC_INSPECTION_DAILY_LIMIT || 2000);
+export type SeoHealthConfig = {
+    sampleSize: number;
+    inspectionDays: number;
+    trafficDays: number;
+    autoRefreshHours: number;
+    inspectionDailyLimit: number;
+    inspectionConcurrency: number;
+    stopPublishingOnRed: boolean;
+    pauseDraftsOnRed: boolean;
+};
+
+export type SeoHealthSnapshot = {
+    report: SeoHealthReport;
+    updatedAt: string;
+    cached: boolean;
+    stale: boolean;
+    config: SeoHealthConfig;
+};
+
+const CONFIG_KEY = 'seoHealth:config';
+const SNAPSHOT_KEY = 'seoHealth:latest';
+
+const DEFAULT_CONFIG: SeoHealthConfig = {
+    sampleSize: 50,
+    inspectionDays: 7,
+    trafficDays: 3,
+    autoRefreshHours: 12,
+    inspectionDailyLimit: Number(process.env.GSC_INSPECTION_DAILY_LIMIT || 2000),
+    inspectionConcurrency: 5,
+    stopPublishingOnRed: true,
+    pauseDraftsOnRed: false
+};
+
+function normalizeConfig(input?: Partial<SeoHealthConfig>): SeoHealthConfig {
+    const next = { ...DEFAULT_CONFIG, ...(input || {}) };
+    return {
+        sampleSize: Math.max(1, Math.min(200, Number(next.sampleSize) || DEFAULT_CONFIG.sampleSize)),
+        inspectionDays: Math.max(1, Math.min(30, Number(next.inspectionDays) || DEFAULT_CONFIG.inspectionDays)),
+        trafficDays: Math.max(1, Math.min(30, Number(next.trafficDays) || DEFAULT_CONFIG.trafficDays)),
+        autoRefreshHours: Math.max(1, Math.min(72, Number(next.autoRefreshHours) || DEFAULT_CONFIG.autoRefreshHours)),
+        inspectionDailyLimit: Math.max(1, Number(next.inspectionDailyLimit) || DEFAULT_CONFIG.inspectionDailyLimit),
+        inspectionConcurrency: Math.max(1, Math.min(10, Number(next.inspectionConcurrency) || DEFAULT_CONFIG.inspectionConcurrency)),
+        stopPublishingOnRed: Boolean(next.stopPublishingOnRed),
+        pauseDraftsOnRed: Boolean(next.pauseDraftsOnRed)
+    };
+}
+
+export async function getSeoHealthConfig(): Promise<SeoHealthConfig> {
+    const stored = await prisma.contentStrategy.findUnique({ where: { key: CONFIG_KEY } });
+    return normalizeConfig(stored?.value as Partial<SeoHealthConfig> | undefined);
+}
+
+export async function updateSeoHealthConfig(patch: Partial<SeoHealthConfig>) {
+    const current = await getSeoHealthConfig();
+    const next = normalizeConfig({ ...current, ...patch });
+    await prisma.contentStrategy.upsert({
+        where: { key: CONFIG_KEY },
+        update: { value: next as any },
+        create: { key: CONFIG_KEY, value: next as any }
+    });
+    return next;
+}
 
 function getServiceAccount(): ServiceAccount {
     const raw = process.env.GSC_SERVICE_ACCOUNT_JSON
@@ -135,14 +192,14 @@ async function mapWithConcurrency<T, R>(items: T[], limit: number, fn: (item: T)
     return results;
 }
 
-async function inspectUrls(urls: string[]) {
+async function inspectUrls(urls: string[], config: SeoHealthConfig) {
     const auth = buildAuth();
     const searchconsole = google.searchconsole({ version: 'v1', auth });
     const siteUrl = getSiteUrl();
     const warnings: string[] = [];
     let rateLimited = false;
 
-    const results = await mapWithConcurrency(urls, INSPECTION_CONCURRENCY, async (url): Promise<InspectionResult> => {
+    const results = await mapWithConcurrency(urls, config.inspectionConcurrency, async (url): Promise<InspectionResult> => {
         if (rateLimited) {
             return { url, indexed: false, error: 'Skipped due to rate limit' };
         }
@@ -176,11 +233,11 @@ async function inspectUrls(urls: string[]) {
     return { results, warnings };
 }
 
-async function fetchTrafficTotals() {
+async function fetchTrafficTotals(days: number) {
     const auth = buildAuth();
     const searchconsole = google.searchconsole({ version: 'v1', auth });
     const siteUrl = getSiteUrl();
-    const window = buildDateRange(TRAFFIC_DAYS);
+    const window = buildDateRange(days);
 
     const response = await searchconsole.searchanalytics.query({
         siteUrl,
@@ -210,7 +267,7 @@ function computeStatus(indexRate: number): SeoHealthReport['status'] {
     return 'RED';
 }
 
-async function reserveInspectionQuota(requested: number) {
+async function reserveInspectionQuota(requested: number, limit: number) {
     const dateKey = new Date().toISOString().slice(0, 10);
     const key = `gscInspectionUsage:${dateKey}`;
 
@@ -219,7 +276,7 @@ async function reserveInspectionQuota(requested: number) {
         const used = typeof existing?.value === 'object' && existing?.value
             ? Number((existing.value as any).count || 0)
             : 0;
-        const remaining = Math.max(0, INSPECTION_DAILY_LIMIT - used);
+        const remaining = Math.max(0, limit - used);
         const allowed = Math.min(requested, remaining);
         const nextUsed = used + allowed;
 
@@ -232,15 +289,15 @@ async function reserveInspectionQuota(requested: number) {
         return { allowed, remaining, used };
     } catch (error) {
         console.warn('Quota tracking failed, proceeding without reservation.', error);
-        return { allowed: requested, remaining: INSPECTION_DAILY_LIMIT, used: 0 };
+        return { allowed: requested, remaining: limit, used: 0 };
     }
 }
 
-export async function getSeoHealthReport(): Promise<SeoHealthReport> {
-    const { allowed, remaining } = await reserveInspectionQuota(INSPECTION_SAMPLE);
-    const urls = allowed > 0 ? await getRecentUrls(INSPECTION_DAYS, allowed) : [];
+async function computeSeoHealthReport(config: SeoHealthConfig): Promise<SeoHealthReport> {
+    const { allowed, remaining } = await reserveInspectionQuota(config.sampleSize, config.inspectionDailyLimit);
+    const urls = allowed > 0 ? await getRecentUrls(config.inspectionDays, allowed) : [];
     if (urls.length === 0) {
-        const traffic = await fetchTrafficTotals();
+        const traffic = await fetchTrafficTotals(config.trafficDays);
         const warningList = [];
         if (allowed === 0) {
             warningList.push('Inspection quota exhausted for today; skipping URL inspection.');
@@ -261,8 +318,8 @@ export async function getSeoHealthReport(): Promise<SeoHealthReport> {
     }
 
     const [{ results, warnings: inspectWarnings }, traffic] = await Promise.all([
-        inspectUrls(urls),
-        fetchTrafficTotals()
+        inspectUrls(urls, config),
+        fetchTrafficTotals(config.trafficDays)
     ]);
 
     const indexedCount = results.filter(result => result.indexed).length;
@@ -278,7 +335,7 @@ export async function getSeoHealthReport(): Promise<SeoHealthReport> {
         }));
 
     const warningList = [...inspectWarnings];
-    if (allowed < INSPECTION_SAMPLE) {
+    if (allowed < config.sampleSize) {
         warningList.push(`Inspection sample reduced to ${allowed} to respect the daily quota.`);
     }
     if (remaining <= 0) {
@@ -299,4 +356,46 @@ export async function getSeoHealthReport(): Promise<SeoHealthReport> {
         warnings: warningList,
         window: traffic.window
     };
+}
+
+async function loadSnapshot() {
+    const stored = await prisma.contentStrategy.findUnique({ where: { key: SNAPSHOT_KEY } });
+    const value = stored?.value as any;
+    if (!value?.report || !value?.updatedAt) return null;
+    return { report: value.report as SeoHealthReport, updatedAt: String(value.updatedAt) };
+}
+
+async function saveSnapshot(report: SeoHealthReport, config: SeoHealthConfig) {
+    const updatedAt = new Date().toISOString();
+    await prisma.contentStrategy.upsert({
+        where: { key: SNAPSHOT_KEY },
+        update: { value: { report, updatedAt, config } as any },
+        create: { key: SNAPSHOT_KEY, value: { report, updatedAt, config } as any }
+    });
+    return updatedAt;
+}
+
+export async function refreshSeoHealthSnapshot(): Promise<SeoHealthSnapshot> {
+    const config = await getSeoHealthConfig();
+    const report = await computeSeoHealthReport(config);
+    const updatedAt = await saveSnapshot(report, config);
+    return { report, updatedAt, cached: false, stale: false, config };
+}
+
+export async function getSeoHealthSnapshot(options: { refresh?: boolean; refreshIfStale?: boolean } = {}): Promise<SeoHealthSnapshot> {
+    const config = await getSeoHealthConfig();
+    if (options.refresh) {
+        return refreshSeoHealthSnapshot();
+    }
+
+    const cached = await loadSnapshot();
+    if (cached) {
+        const ageHours = (Date.now() - new Date(cached.updatedAt).getTime()) / (1000 * 60 * 60);
+        const stale = ageHours > config.autoRefreshHours;
+        if (!stale || !options.refreshIfStale) {
+            return { report: cached.report, updatedAt: cached.updatedAt, cached: true, stale, config };
+        }
+    }
+
+    return refreshSeoHealthSnapshot();
 }

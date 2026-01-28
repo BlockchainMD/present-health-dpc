@@ -33,7 +33,8 @@ export async function POST(request: NextRequest) {
             success: true,
             count: result.created,
             published: result.published,
-            articles: result.articles
+            articles: result.articles,
+            warnings: result.warnings || []
         });
     } catch (error) {
         console.error('Generation error:', error);

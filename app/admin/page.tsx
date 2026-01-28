@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 export default function AdminDashboard() {
     const [isGenerating, setIsGenerating] = useState(false);
-    const [result, setResult] = useState<{ count: number; published: number } | null>(null);
+    const [result, setResult] = useState<{ count: number; published: number; warnings?: string[] } | null>(null);
     const [count, setCount] = useState(5);
     const [mode, setMode] = useState<'BALANCED' | 'TREND' | 'RESEARCH'>('BALANCED');
     const [autoPublish, setAutoPublish] = useState(false);
@@ -66,10 +66,21 @@ export default function AdminDashboard() {
                 if (!data.success) break;
                 total += data.count;
                 published += data.published || 0;
+                if (data.warnings?.length) {
+                    setResult(prev => ({
+                        count: prev?.count || 0,
+                        published: prev?.published || 0,
+                        warnings: [...(prev?.warnings || []), ...data.warnings]
+                    }));
+                }
                 remaining -= batchSize;
             }
 
-            setResult({ count: total, published });
+            setResult((prev) => ({
+                count: total,
+                published,
+                warnings: prev?.warnings || []
+            }));
         } catch (error) {
             console.error('Failed to generate', error);
         } finally {
@@ -103,6 +114,13 @@ export default function AdminDashboard() {
                                     <p className="font-medium text-green-600">Successfully generated {result.count} drafts!</p>
                                     {result.published > 0 && (
                                         <p className="text-sm text-muted-foreground">{result.published} auto-published.</p>
+                                    )}
+                                    {result.warnings && result.warnings.length > 0 && (
+                                        <div className="mt-2 space-y-1 text-xs text-amber-700">
+                                            {result.warnings.map((warning, index) => (
+                                                <p key={`${warning}-${index}`}>{warning}</p>
+                                            ))}
+                                        </div>
                                     )}
                                 </div>
                                 <Button asChild className="w-full">

@@ -4,6 +4,7 @@ import { EngineOptions } from './types';
 import { sendAlert } from './alerts';
 import { syncGscMetrics } from './gsc';
 import { refreshStrategy } from './feedback';
+import { refreshSeoHealthSnapshot } from '../seo-health/service';
 
 export async function enqueueDueSchedules(now = new Date()) {
     const schedules = await prisma.contentSchedule.findMany({ where: { enabled: true } });
@@ -76,6 +77,8 @@ export async function runDueJobs(limit = 3) {
                     const strategy = await refreshStrategy();
                     result = { ...result, strategy };
                 }
+            } else if (jobType === 'SEO_HEALTH') {
+                result = await refreshSeoHealthSnapshot();
             } else if (jobType === 'REFRESH_STRATEGY') {
                 result = await refreshStrategy();
             } else {

@@ -7,6 +7,7 @@ import { qaDraft } from './qa';
 import { classifyCluster, slugify } from './taxonomy';
 import { getClusterWeights } from './feedback';
 import { EngineOptions, EngineResult, TopicSignal } from './types';
+import { getSeoHealthSnapshot } from '../seo-health/service';
 
 const MAX_PER_RUN = 10;
 const DEFAULT_MAX_AUTO_PUBLISH_PER_DAY = 20;
@@ -20,9 +21,31 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
     const refreshDays = Number(process.env.CONTENT_ENGINE_REFRESH_DAYS || DEFAULT_REFRESH_DAYS);
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
+    const warnings: string[] = [];
+    let autoPublishEnabled = Boolean(options.autoPublish);
     let autoPublishRemaining = maxAutoPublishPerDay;
 
-    if (options.autoPublish) {
+    try {
+        const seoSnapshot = await getSeoHealthSnapshot({ refreshIfStale: autoPublishEnabled });
+        if (seoSnapshot.stale) {
+            warnings.push('SEO health snapshot is stale; results may be delayed.');
+        }
+        if (seoSnapshot.report.status === 'RED') {
+            warnings.push('SEO health status is RED.');
+            if (seoSnapshot.config.pauseDraftsOnRed) {
+                return { created: 0, published: 0, articles: [], warnings };
+            }
+            if (seoSnapshot.config.stopPublishingOnRed && autoPublishEnabled) {
+                autoPublishEnabled = false;
+                warnings.push('Auto-publishing disabled due to RED SEO health status.');
+            }
+        }
+    } catch (error) {
+        console.warn('SEO health check failed; proceeding without gating.', error);
+        warnings.push('SEO health check failed; proceeding without gating.');
+    }
+
+    if (autoPublishEnabled) {
         const publishedToday = await prisma.article.count({
             where: {
                 status: 'PUBLISHED',
@@ -114,7 +137,7 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
             const reviewLabel = options.reviewLabel
                 || (reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
 
-            const autoPublish = options.autoPublish && brief.riskLevel === 'LOW' && autoPublishRemaining > 0;
+            const autoPublish = autoPublishEnabled && brief.riskLevel === 'LOW' && autoPublishRemaining > 0;
             if (autoPublish) autoPublishRemaining -= 1;
 
             const article = await prisma.article.create({
@@ -158,7 +181,7 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
         result = await attemptGenerate(true);
     }
 
-    return { created: result.created.length, published: result.published, articles: result.created };
+    return { created: result.created.length, published: result.published, articles: result.created, warnings };
 }
 
 function resolveSources(mode: EngineOptions['mode'], sources: EngineOptions['sources']) {

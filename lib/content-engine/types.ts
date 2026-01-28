@@ -57,4 +57,5 @@ export type EngineResult = {
     created: number;
     published: number;
     articles: Array<{ id: string; title: string }>;
+    warnings?: string[];
 };

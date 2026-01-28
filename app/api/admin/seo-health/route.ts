@@ -1,10 +1,10 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/authz';
-import { getSeoHealthReport } from '@/lib/seo-health/service';
+import { getSeoHealthSnapshot } from '@/lib/seo-health/service';
 
 export const runtime = 'nodejs';
 
-export async function GET(_request: NextRequest) {
+export async function GET(request: NextRequest) {
     try {
         await requireAdmin();
     } catch {
@@ -12,8 +12,18 @@ export async function GET(_request: NextRequest) {
     }
 
     try {
-        const report = await getSeoHealthReport();
-        return NextResponse.json({ success: true, report });
+        const refresh = new URL(request.url).searchParams.get('refresh') === '1';
+        const snapshot = await getSeoHealthSnapshot({ refresh, refreshIfStale: true });
+        return NextResponse.json({
+            success: true,
+            report: snapshot.report,
+            meta: {
+                updatedAt: snapshot.updatedAt,
+                cached: snapshot.cached,
+                stale: snapshot.stale,
+                config: snapshot.config
+            }
+        });
     } catch (error: any) {
         console.error('SEO health error:', error);
         return NextResponse.json(
