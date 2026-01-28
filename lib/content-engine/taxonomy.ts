@@ -101,6 +101,16 @@ export function normalizeTitle(title: string): string {
     return title.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, ' ').trim();
 }
 
+export function cleanTopicTitle(title: string): string {
+    if (!title) return '';
+    let cleaned = title.trim();
+    cleaned = cleaned.replace(/^[“”"']+|[“”"']+$/g, '');
+    cleaned = cleaned.replace(/\s+with\s+Dr\.?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2}/g, '');
+    cleaned = cleaned.replace(/\s*[-–—|]\s*[^-–—|]{2,}$/g, '');
+    cleaned = cleaned.replace(/\s{2,}/g, ' ').trim();
+    return cleaned || title;
+}
+
 export function slugify(input: string): string {
     return input
         .toLowerCase()

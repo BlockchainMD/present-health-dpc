@@ -65,28 +65,35 @@ Return JSON only:
 }
 
 function buildFallbackContent(brief: Brief): string {
+    const secondary = brief.secondaryQuestions.filter(Boolean);
+    const faqQuestion = secondary[0] || brief.primaryQuestion;
+    const angleLine = brief.angle ? `Focus: ${brief.angle}.` : 'Focus: practical, evidence-informed actions.';
+    const intentLine = brief.intent ? `Intent: ${brief.intent}.` : 'Intent: actionable guidance.';
+
     return `# ${brief.title}
 
 ## TL;DR
 ${brief.metaDescription}
 
-## Key points
+## Why this matters
+- ${angleLine}
+- ${intentLine}
 - ${brief.primaryQuestion}
-- ${brief.secondaryQuestions[0] || 'Focus on practical steps'}
 
 ## Action steps this week
 ${brief.actionSteps.map(step => `- ${step}`).join('\n')}
 
 ## When to seek care
 - If symptoms are severe, sudden, or worsening.
-- If symptoms interfere with daily life or sleep.
+- If symptoms interfere with daily life, function, or sleep.
+- If you feel unsure or the pattern is changing.
 
 ## FAQ
-**Q: ${brief.primaryQuestion}**
-A: Start with one or two small actions and reassess after a week.
+**Q: ${faqQuestion}**
+A: Start with one or two small actions, track how you feel for a week, and adjust as needed.
 
 ## Ready for guidance?
-Present Health offers virtual primary care with a focus on prevention and clarity. Book a free intro call to learn more.
+Present Health offers virtual primary care focused on clarity and prevention. Book a free intro call to learn more.
 `;
 }
 

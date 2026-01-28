@@ -33,7 +33,7 @@ export function qaDraft(brief: Brief, draft: Draft): Draft {
 }
 
 function removeNames(content: string): string {
-    return content.replace(/Dr\.?\s+[A-Z][a-z]+/g, 'a clinician');
+    return content.replace(/Dr\.?\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+){0,2}/g, 'a clinician');
 }
 
 function limitBrandMentions(content: string): string {

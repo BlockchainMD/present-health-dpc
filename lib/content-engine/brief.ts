@@ -1,34 +1,36 @@
 import OpenAI from 'openai';
 import { Brief, TopicSignal } from './types';
-import { classifyCluster, estimateRisk, pickAngle, pickIntent, slugify } from './taxonomy';
+import { classifyCluster, estimateRisk, pickAngle, pickIntent, slugify, cleanTopicTitle } from './taxonomy';
 
 export async function generateBrief(signal: TopicSignal): Promise<Brief> {
-    const cluster = classifyCluster(signal.title);
-    const riskLevel = estimateRisk(signal.title);
-    const angle = pickAngle(signal.title);
-    const intent = pickIntent(signal.title);
-    const slug = slugify(signal.title);
+    const cleanedTitle = cleanTopicTitle(signal.title);
+    const topic = trimTopic(cleanedTitle, 90);
+    const cluster = classifyCluster(cleanedTitle);
+    const riskLevel = estimateRisk(cleanedTitle);
+    const angle = pickAngle(cleanedTitle);
+    const intent = pickIntent(cleanedTitle);
+    const slug = slugify(cleanedTitle);
 
     const wordCountTarget = 650 + (slug.length * 13) % 250;
     const fallback: Brief = {
-        title: signal.title,
+        title: cleanedTitle || signal.title,
         slug,
         angle,
         audience: 'Health-conscious adults',
         intent,
         cluster,
         riskLevel,
-        primaryQuestion: `What should I know about ${signal.title}?`,
+        primaryQuestion: `What should I know about ${topic}?`,
         secondaryQuestions: [
-            `Why does ${signal.title} matter?`,
-            `What can I do this week regarding ${signal.title}?`
+            `Why does ${topic} matter?`,
+            `What can I do this week regarding ${topic}?`
         ],
         outline: ['TL;DR', 'Key facts', 'Action steps', 'When to seek care', 'FAQ', 'CTA'],
         actionSteps: ['Pick one small change to start this week', 'Track progress for 7 days', 'Ask a clinician if symptoms persist'],
         safetyNotes: ['Do not provide medical diagnosis or individualized advice', 'Encourage seeking care for alarming symptoms'],
-        keywords: [signal.title.toLowerCase()],
-        metaTitle: `${signal.title} - Practical Guide`,
-        metaDescription: `A concise, actionable guide to ${signal.title} with practical steps and when to seek care.`,
+        keywords: [topic.toLowerCase()],
+        metaTitle: trimMetaTitle(`${topic}: Practical guide`),
+        metaDescription: trimMetaDescription(`A concise, actionable guide to ${topic} with practical steps and when to seek care.`),
         wordCountTarget,
         ctaType: 'BOOK_CALL'
     };
@@ -40,7 +42,7 @@ export async function generateBrief(signal: TopicSignal): Promise<Brief> {
     const prompt = `
 You are a senior health content strategist for Present Health. Create a brief for an article with high SEO value and high diversity.
 
-Topic: "${signal.title}"
+Topic: "${cleanedTitle || signal.title}"
 Source: ${signal.source}
 Cluster: ${cluster}
 Angle preference: ${angle}
@@ -109,4 +111,17 @@ function safeJsonParse(text: string): any | null {
     } catch {
         return null;
     }
+}
+
+function trimTopic(topic: string, max: number) {
+    if (topic.length <= max) return topic;
+    return `${topic.slice(0, max - 1).trim()}…`;
+}
+
+function trimMetaTitle(title: string) {
+    return title.length <= 60 ? title : `${title.slice(0, 57).trim()}…`;
+}
+
+function trimMetaDescription(desc: string) {
+    return desc.length <= 155 ? desc : `${desc.slice(0, 152).trim()}…`;
 }

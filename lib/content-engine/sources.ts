@@ -1,6 +1,6 @@
 import Parser from 'rss-parser';
 import { TopicSignal } from './types';
-import { normalizeTitle } from './taxonomy';
+import { normalizeTitle, cleanTopicTitle } from './taxonomy';
 
 const parser = new Parser();
 
@@ -123,7 +123,7 @@ async function fetchGoogleTrends(): Promise<TopicSignal[]> {
     try {
         const feed = await parser.parseURL('https://trends.google.com/trends/trendingsearches/daily/rss?geo=US');
         return feed.items.map(item => ({
-            title: item.title || 'Untitled trend',
+            title: cleanTopicTitle(item.title || 'Untitled trend'),
             url: item.link || '',
             publishedAt: item.pubDate || new Date().toISOString(),
             source: 'Google Trends',
@@ -143,9 +143,12 @@ async function fetchGoogleNews(queries: string[]): Promise<TopicSignal[]> {
             const encodedQuery = encodeURIComponent(query);
             const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${encodedQuery}&hl=en-US&gl=US&ceid=US:en`);
             feed.items.slice(0, 3).forEach(item => {
+                const title = cleanTopicTitle(item.title || 'Untitled news');
+                const url = item.link || '';
+                if (isBlockedNewsSource(title, url)) return;
                 results.push({
-                    title: item.title || 'Untitled news',
-                    url: item.link || '',
+                    title,
+                    url,
                     publishedAt: item.pubDate || new Date().toISOString(),
                     source: `Google News (${query})`,
                     kind: 'news'
@@ -168,7 +171,7 @@ async function fetchPubMed(queries: string[]): Promise<TopicSignal[]> {
             const feed = await parser.parseURL(`https://pubmed.ncbi.nlm.nih.gov/?term=${encodedQuery}&format=rss`);
             feed.items.slice(0, 3).forEach(item => {
                 results.push({
-                    title: item.title || 'Untitled study',
+                    title: cleanTopicTitle(item.title || 'Untitled study'),
                     url: item.link || '',
                     publishedAt: item.pubDate || new Date().toISOString(),
                     source: `PubMed (${query})`,
@@ -199,7 +202,7 @@ async function fetchClinicalTrials(queries: string[]): Promise<TopicSignal[]> {
                 const nctId = study?.protocolSection?.identificationModule?.nctId;
                 if (!title) continue;
                 results.push({
-                    title: title,
+                    title: cleanTopicTitle(title),
                     url: nctId ? `https://clinicaltrials.gov/study/${nctId}` : '',
                     publishedAt: new Date().toISOString(),
                     source: `ClinicalTrials.gov (${query})`,
@@ -218,7 +221,7 @@ async function fetchNihNews(): Promise<TopicSignal[]> {
     try {
         const feed = await parser.parseURL('https://www.nih.gov/news-events/news-releases/rss.xml');
         return feed.items.slice(0, 5).map(item => ({
-            title: item.title || 'NIH update',
+            title: cleanTopicTitle(item.title || 'NIH update'),
             url: item.link || '',
             publishedAt: item.pubDate || new Date().toISOString(),
             source: 'NIH News Releases',
@@ -234,7 +237,7 @@ async function fetchCdcNews(): Promise<TopicSignal[]> {
     try {
         const feed = await parser.parseURL('https://tools.cdc.gov/api/v2/resources/media/403372.rss');
         return feed.items.slice(0, 5).map(item => ({
-            title: item.title || 'CDC update',
+            title: cleanTopicTitle(item.title || 'CDC update'),
             url: item.link || '',
             publishedAt: item.pubDate || new Date().toISOString(),
             source: 'CDC Newsroom',
@@ -248,10 +251,25 @@ async function fetchCdcNews(): Promise<TopicSignal[]> {
 
 function fetchCuratedTopics(): TopicSignal[] {
     return CURATED_TOPICS.map(topic => ({
-        title: topic,
+        title: cleanTopicTitle(topic),
         url: '',
         publishedAt: new Date().toISOString(),
         source: 'Curated',
         kind: 'curated'
     }));
+}
+
+function isBlockedNewsSource(title: string, url: string): boolean {
+    const combined = `${title} ${url}`.toLowerCase();
+    const blocked = [
+        'prnewswire',
+        'pr newswire',
+        'businesswire',
+        'globenewswire',
+        'prweb',
+        'marketwatch',
+        'seekingalpha',
+        'investor'
+    ];
+    return blocked.some(term => combined.includes(term));
 }
