@@ -22,7 +22,7 @@ export async function enqueueDueSchedules(now = new Date()) {
         if (now < scheduledTime) continue;
         if (schedule.lastRunAt && schedule.lastRunAt >= scheduledTime) continue;
 
-        const options = normalizeOptions(schedule.options || {}, schedule.maxDaily || undefined);
+        const options = normalizeOptions(schedule.options, schedule.maxDaily || undefined);
 
         await prisma.$transaction([
             prisma.contentJob.create({
@@ -134,14 +134,17 @@ function fromTimeZone(dateInTz: Date, now: Date, timezone: string) {
     return new Date(dateInTz.getTime() + offset);
 }
 
-function normalizeOptions(options: Record<string, any>, maxDaily?: number) {
+function normalizeOptions(options: unknown, maxDaily?: number) {
+    const base = options && typeof options === 'object' && !Array.isArray(options)
+        ? options as Record<string, any>
+        : {};
     const normalized: Record<string, any> = {
         count: 20,
         mode: 'BALANCED',
         autoPublish: false,
         useFeedback: true,
         jobType: 'CONTENT',
-        ...options
+        ...base
     };
     if (maxDaily && typeof normalized.count === 'number') {
         normalized.count = Math.min(normalized.count, maxDaily);
