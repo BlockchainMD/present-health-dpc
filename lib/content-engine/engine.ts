@@ -10,12 +10,14 @@ import { EngineOptions, EngineResult, TopicSignal } from './types';
 
 const MAX_PER_RUN = 10;
 const DEFAULT_MAX_AUTO_PUBLISH_PER_DAY = 20;
+const DEFAULT_REFRESH_DAYS = 30;
 
 export async function runContentEngine(options: EngineOptions = {}): Promise<EngineResult> {
     const requested = typeof options.count === 'number' ? options.count : 5;
     const count = Math.min(Math.max(requested, 1), MAX_PER_RUN);
     const sources = resolveSources(options.mode || 'BALANCED', options.sources || {});
     const maxAutoPublishPerDay = Number(process.env.CONTENT_ENGINE_MAX_AUTO_PUBLISH_PER_DAY || DEFAULT_MAX_AUTO_PUBLISH_PER_DAY);
+    const refreshDays = Number(process.env.CONTENT_ENGINE_REFRESH_DAYS || DEFAULT_REFRESH_DAYS);
     const todayStart = new Date();
     todayStart.setHours(0, 0, 0, 0);
     let autoPublishRemaining = maxAutoPublishPerDay;
@@ -55,8 +57,8 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
         const isDpcTopic = DPC_KEYWORDS.some(keyword => lowerTitle.includes(keyword));
         if (isDpcTopic && dpcCount >= MAX_DPC_PER_RUN) continue;
 
-        const brief = await generateBrief(signal);
-        const existing = await prisma.article.findFirst({
+        let brief = await generateBrief(signal);
+        let existing = await prisma.article.findFirst({
             where: {
                 OR: [
                     { slug: brief.slug || undefined },
@@ -64,14 +66,38 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                 ]
             }
         });
-        if (existing) continue;
+        if (existing) {
+            const ageDays = (Date.now() - existing.createdAt.getTime()) / (1000 * 60 * 60 * 24);
+            if (ageDays < refreshDays) continue;
+
+            const refreshedTitle = `${brief.title}: ${brief.angle}`;
+            const refreshedSlug = slugify(refreshedTitle);
+            const slugConflict = await prisma.article.findFirst({ where: { slug: refreshedSlug } });
+            if (slugConflict) continue;
+
+            brief = {
+                ...brief,
+                title: refreshedTitle,
+                slug: refreshedSlug,
+                metaTitle: refreshedTitle
+            };
+        }
 
         const draft = await generateDraft(brief);
         const qa = qaDraft(brief, draft);
         const contentHash = hashContent(qa.content);
         const duplicate = await prisma.article.findFirst({ where: { contentHash } });
         if (duplicate) continue;
-        const finalSlug = slugify(qa.title || brief.title);
+        let finalSlug = slugify(qa.title || brief.title);
+        if (finalSlug) {
+            const slugExists = await prisma.article.findFirst({ where: { slug: finalSlug } });
+            if (slugExists) {
+                finalSlug = slugify(`${finalSlug}-${Date.now().toString(36).slice(-4)}`);
+            }
+        }
+        if (!finalSlug) {
+            finalSlug = slugify(`${brief.title}-${Date.now().toString(36).slice(-4)}`);
+        }
 
         const reviewType = options.reviewType === 'EDITORIAL' ? 'EDITORIAL' : 'CLINICAL';
         const reviewLabel = options.reviewLabel
