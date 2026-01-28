@@ -8,7 +8,8 @@ async function getBypassAdminUser() {
     const bypass = process.env.ADMIN_BYPASS_TOKEN;
     if (!bypass) return null;
 
-    const cookie = cookies().get("admin_bypass")?.value;
+    const cookieStore = await cookies();
+    const cookie = cookieStore.get("admin_bypass")?.value;
     if (!cookie || cookie !== bypass) return null;
 
     return prisma.user.findFirst({
