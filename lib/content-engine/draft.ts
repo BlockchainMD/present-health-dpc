@@ -22,6 +22,7 @@ Rules:
 - Do NOT mention any clinician names or personal names.
 - Do NOT include medical diagnosis or individualized advice.
 - Mention Present Health only in the final CTA section.
+- Include 1-2 subtle sentences in the body that connect the topic to the value of direct primary care (e.g., continuity, access, longer visits), without sounding salesy and without naming Present Health.
 - Keep word count around ${brief.wordCountTarget} (600-900 ok).
 - Avoid hype, avoid guarantees, avoid prescriptions/medication language.
 

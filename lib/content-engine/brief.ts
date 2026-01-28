@@ -49,6 +49,7 @@ Rules:
 - Do NOT mention any clinician names or personal names.
 - Do NOT over-index on DPC or insurance; save Present Health mention for the CTA only.
 - Keep it concise and actionable.
+- Include a subtle, topic-relevant DPC value hook in the outline or action steps (e.g., continuity, longer visits, direct access) without naming Present Health.
 - Output valid JSON only.
 
 Return JSON with:
