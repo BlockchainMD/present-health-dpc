@@ -43,7 +43,7 @@ export async function PATCH(
             reviewedAt?: Date;
         } = {};
         if (status !== undefined) {
-            const allowed = new Set(['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+            const allowed = new Set(['DRAFT', 'PUBLISHED', 'ARCHIVED', 'DISCARDED']);
             if (!allowed.has(status)) {
                 return NextResponse.json({ success: false, error: 'Invalid status' }, { status: 400 });
             }

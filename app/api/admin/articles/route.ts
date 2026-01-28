@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status');
 
     try {
-        const allowed = new Set(['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+        const allowed = new Set(['DRAFT', 'PUBLISHED', 'ARCHIVED', 'DISCARDED']);
         const where = status && allowed.has(status) ? { status } : {};
 
         const articles = await prisma.article.findMany({
