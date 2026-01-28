@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { validateCampaignSpec } from '@/lib/ads/compliance';
 import { requireAdmin } from '@/lib/authz';
@@ -34,7 +34,7 @@ export async function GET() {
     }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         await requireAdmin();
     } catch {

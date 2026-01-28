@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { enqueueDueSchedules, runDueJobs } from '@/lib/content-engine/scheduler';
 import { requireAdmin } from '@/lib/authz';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const authorized = await verifyCronAuth(request);
         if (!authorized) {
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 }
 
-async function verifyCronAuth(request: Request) {
+async function verifyCronAuth(request: NextRequest) {
     const secret = process.env.CONTENT_ENGINE_CRON_SECRET;
     if (secret) {
         const header = request.headers.get('x-cron-secret');

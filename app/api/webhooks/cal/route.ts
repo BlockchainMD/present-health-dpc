@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { uploadConversionToGoogleAds } from '@/lib/ads/google-ads';
 import { recordConversionEvent } from '@/lib/conversion';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const authorized = await verifyWebhookAuth(request);
         if (!authorized) {
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     }
 }
 
-async function verifyWebhookAuth(request: Request) {
+async function verifyWebhookAuth(request: NextRequest) {
     const secret = process.env.CAL_WEBHOOK_SECRET;
     if (!secret) return true;
     const header = request.headers.get('x-webhook-secret');

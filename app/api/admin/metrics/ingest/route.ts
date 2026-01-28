@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { refreshStrategy } from '@/lib/content-engine/feedback';
 import { requireAdmin } from '@/lib/authz';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const authorized = await verifyMetricsAuth(request);
         if (!authorized) {
@@ -99,7 +99,7 @@ function toNumber(value: any, fallback = 0) {
     return Number.isFinite(num) ? num : fallback;
 }
 
-async function verifyMetricsAuth(request: Request) {
+async function verifyMetricsAuth(request: NextRequest) {
     const secret = process.env.CONTENT_ENGINE_METRICS_SECRET || process.env.CONTENT_ENGINE_CRON_SECRET;
     if (secret) {
         const header = request.headers.get('x-metrics-secret');

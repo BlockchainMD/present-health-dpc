@@ -1,12 +1,12 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { syncToGoogleAds } from '@/lib/ads/google-ads';
 import { syncToMetaAds } from '@/lib/ads/meta-ads';
 import { requireAdmin } from '@/lib/authz';
 
 export async function POST(
-    request: Request,
-    { params }: { params: { id: string } }
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     let session;
     try {
@@ -14,7 +14,7 @@ export async function POST(
     } catch {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { id } = params;
+    const { id } = await params;
 
     try {
         // 1. Fetch Campaign and Latest Run

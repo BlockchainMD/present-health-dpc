@@ -1,18 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateMockMetrics } from '@/lib/ads/metrics';
 import { syncMetricsFromGoogleAds } from '@/lib/ads/google-ads';
 import { syncMetricsFromMetaAds } from '@/lib/ads/meta-ads';
 import { requireAdmin } from '@/lib/authz';
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await requireAdmin();
     } catch {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     try {
-        const { id } = params;
+        const { id } = await params;
         const { searchParams } = new URL(request.url);
         const platformFilter = searchParams.get('platform'); // 'GOOGLE_ADS' | 'META_ADS'
         if (platformFilter && !['GOOGLE_ADS', 'META_ADS'].includes(platformFilter)) {
@@ -75,7 +75,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 }
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     // Regenerate mock data action
     try {
         await requireAdmin();
@@ -83,7 +83,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json().catch(() => ({}));
         const platform = body.platform || 'GOOGLE_ADS';
         if (!['GOOGLE_ADS', 'META_ADS'].includes(platform)) {

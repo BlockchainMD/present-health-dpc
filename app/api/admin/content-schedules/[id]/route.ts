@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 
@@ -11,7 +11,7 @@ function isValidTimeZone(value: string) {
     }
 }
 
-export async function PATCH(request: Request, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     let session;
     try {
         session = await requireAdmin();
@@ -19,7 +19,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json().catch(() => null);
         if (!body || typeof body !== 'object') {
             return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
@@ -84,7 +84,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     let session;
     try {
         session = await requireAdmin();
@@ -92,7 +92,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
     try {
-        const { id } = params;
+        const { id } = await params;
         const schedule = await prisma.contentSchedule.delete({ where: { id } });
         await prisma.auditLog.create({
             data: {

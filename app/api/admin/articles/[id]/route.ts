@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 
 export async function PATCH(
-    request: Request,
-    { params }: { params: { id: string } }
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await requireAdmin();
@@ -12,7 +12,7 @@ export async function PATCH(
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
     try {
-        const { id } = params;
+        const { id } = await params;
         const body = await request.json().catch(() => null);
         if (!body || typeof body !== 'object') {
             return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
@@ -108,8 +108,8 @@ export async function PATCH(
 }
 
 export async function DELETE(
-    request: Request,
-    { params }: { params: { id: string } }
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         await requireAdmin();
@@ -117,7 +117,7 @@ export async function DELETE(
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
     try {
-        const { id } = params;
+        const { id } = await params;
 
         await prisma.article.delete({
             where: { id }

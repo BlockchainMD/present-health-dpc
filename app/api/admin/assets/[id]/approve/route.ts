@@ -1,10 +1,10 @@
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 
 export async function POST(
-    request: Request,
-    { params }: { params: { id: string } }
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
 ) {
     let session;
     try {
@@ -12,7 +12,7 @@ export async function POST(
     } catch {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const { id } = params;
+    const { id } = await params;
 
     try {
         // 2. Find Assistant

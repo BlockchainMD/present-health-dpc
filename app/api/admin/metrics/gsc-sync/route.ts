@@ -1,11 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/authz';
 import { syncGscMetrics } from '@/lib/content-engine/gsc';
 import { prisma } from '@/lib/prisma';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const authorized = await verifyMetricsAuth(request);
         if (!authorized) {
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     }
 }
 
-async function verifyMetricsAuth(request: Request) {
+async function verifyMetricsAuth(request: NextRequest) {
     const secret = process.env.CONTENT_ENGINE_METRICS_SECRET || process.env.CONTENT_ENGINE_CRON_SECRET;
     if (secret) {
         const header = request.headers.get('x-metrics-secret');

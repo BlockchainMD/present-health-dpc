@@ -1,10 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { runContentEngine } from '@/lib/content-engine/engine';
 import { requireAdmin } from '@/lib/authz';
 
 export const runtime = 'nodejs';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         await requireAdmin();
     } catch {

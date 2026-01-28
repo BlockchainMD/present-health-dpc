@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getOrCreateAttributionSession, linkAttributionSessionToLead } from '@/lib/attribution';
 import { recordConversionEvent } from '@/lib/conversion';
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const body = await request.json().catch(() => null);
         if (!body || typeof body !== 'object') {

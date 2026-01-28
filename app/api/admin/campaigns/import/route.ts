@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { PipelineManager } from '@/lib/ads/pipeline';
@@ -36,7 +36,7 @@ function sanitizeObject(obj: any): any {
     return obj;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
     try {
         const session = await requireAdmin();
 
