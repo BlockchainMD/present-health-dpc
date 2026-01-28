@@ -1,6 +1,6 @@
-import OpenAI from 'openai';
 import { Brief, TopicSignal } from './types';
 import { classifyCluster, estimateRisk, pickAngle, pickIntent, slugify, cleanTopicTitle } from './taxonomy';
+import { generateJson } from './gemini';
 
 export async function generateBrief(signal: TopicSignal): Promise<Brief> {
     const cleanedTitle = cleanTopicTitle(signal.title);
@@ -34,10 +34,6 @@ export async function generateBrief(signal: TopicSignal): Promise<Brief> {
         wordCountTarget,
         ctaType: 'BOOK_CALL'
     };
-
-    if (!process.env.OPENAI_API_KEY) return fallback;
-
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const prompt = `
 You are a senior health content strategist for Present Health. Create a brief for an article with high SEO value and high diversity.
@@ -78,18 +74,7 @@ Return JSON with:
 `;
 
     try {
-        const response = await openai.chat.completions.create({
-            model: 'gpt-5.2',
-            messages: [
-                { role: 'developer', content: 'Return valid JSON only.' },
-                { role: 'user', content: prompt }
-            ],
-            response_format: { type: 'json_object' },
-            temperature: 0.4
-        } as any);
-
-        const text = response.choices[0]?.message?.content || '';
-        const parsed = safeJsonParse(text);
+        const parsed = await generateJson<any>(prompt, 0.4);
         if (!parsed) return fallback;
 
         return {
@@ -102,14 +87,6 @@ Return JSON with:
     } catch (error) {
         console.error('Brief generation failed', error);
         return fallback;
-    }
-}
-
-function safeJsonParse(text: string): any | null {
-    try {
-        return JSON.parse(text);
-    } catch {
-        return null;
     }
 }
 

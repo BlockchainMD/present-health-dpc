@@ -1,5 +1,5 @@
-import OpenAI from 'openai';
 import { Brief, Draft } from './types';
+import { generateJson } from './gemini';
 
 export async function generateDraft(brief: Brief): Promise<Draft> {
     const fallback: Draft = {
@@ -9,10 +9,6 @@ export async function generateDraft(brief: Brief): Promise<Draft> {
         metaDescription: brief.metaDescription,
         content: buildFallbackContent(brief)
     };
-
-    if (!process.env.OPENAI_API_KEY) return fallback;
-
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
     const prompt = `
 Write a concise, high-utility health article based on this brief.
@@ -40,18 +36,7 @@ Return JSON only:
 `;
 
     try {
-        const response = await openai.chat.completions.create({
-            model: 'gpt-5.2',
-            messages: [
-                { role: 'developer', content: 'You write factual, concise health content. Return JSON only.' },
-                { role: 'user', content: prompt }
-            ],
-            response_format: { type: 'json_object' },
-            temperature: 0.5
-        } as any);
-
-        const text = response.choices[0]?.message?.content || '';
-        const parsed = safeJsonParse(text);
+        const parsed = await generateJson<any>(prompt, 0.5);
         if (!parsed) return fallback;
 
         return {
@@ -95,12 +80,4 @@ A: Start with one or two small actions, track how you feel for a week, and adjus
 ## Ready for guidance?
 Present Health offers virtual primary care focused on clarity and prevention. Book a free intro call to learn more.
 `;
-}
-
-function safeJsonParse(text: string): any | null {
-    try {
-        return JSON.parse(text);
-    } catch {
-        return null;
-    }
 }
