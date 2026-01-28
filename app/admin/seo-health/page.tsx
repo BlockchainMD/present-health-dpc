@@ -92,7 +92,7 @@ export default function SeoHealthPage() {
                 <Card>
                     <CardContent className="py-8 text-center space-y-4">
                         <p className="text-sm text-destructive">{error}</p>
-                        <Button onClick={loadReport}>
+                        <Button onClick={() => loadReport()}>
                             <RefreshCw className="h-4 w-4 mr-2" />
                             Retry
                         </Button>
