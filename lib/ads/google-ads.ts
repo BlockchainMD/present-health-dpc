@@ -399,15 +399,17 @@ export async function syncMetricsFromGoogleAds(runId: string) {
                 dailyStats.map(data =>
                     prisma.campaignMetric.upsert({
                         where: {
-                            campaignRunId_date: {
+                            campaignRunId_date_platform: {
                                 campaignRunId: run.id,
-                                date: data.date
+                                date: data.date,
+                                platform: "GOOGLE_ADS"
                             }
                         },
                         update: data,
                         create: {
                             ...data,
-                            campaignRunId: run.id
+                            campaignRunId: run.id,
+                            platform: "GOOGLE_ADS"
                         }
                     })
                 )
