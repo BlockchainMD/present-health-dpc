@@ -192,7 +192,7 @@ async function fetchTrafficTotals() {
     });
 
     const rows = response.data?.rows || [];
-    const totals = rows.reduce(
+    const totals = rows.reduce<{ impressions: number; clicks: number }>(
         (acc, row) => {
             acc.impressions += row.impressions || 0;
             acc.clicks += row.clicks || 0;
