@@ -8,10 +8,10 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin";
-    url.search = "";
-    const response = NextResponse.redirect(url);
+    const host = request.headers.get("x-forwarded-host") || request.headers.get("host");
+    const proto = request.headers.get("x-forwarded-proto") || "https";
+    const base = host ? `${proto}://${host}` : request.nextUrl.origin;
+    const response = NextResponse.redirect(new URL("/admin", base));
     response.cookies.set({
         name: "admin_bypass",
         value: token,
