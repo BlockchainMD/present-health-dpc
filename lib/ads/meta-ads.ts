@@ -6,9 +6,6 @@
  */
 
 import bizSdk from 'facebook-nodejs-business-sdk';
-import { writeFileSync, unlinkSync } from 'fs';
-import { join } from 'path';
-import { tmpdir } from 'os';
 import { prisma } from '@/lib/prisma';
 import { updateCampaignRunSnapshot } from './metrics';
 
@@ -65,6 +62,9 @@ export async function uploadAdImage(imageUrl: string): Promise<string> {
         // Download image and convert to base64
         console.log(`[MetaAds] Downloading remote image: ${imageUrl}`);
         const response = await fetch(imageUrl);
+        if (!response.ok) {
+            throw new Error(`Failed to download image (${response.status})`);
+        }
         const buffer = await response.arrayBuffer();
         const base64Image = Buffer.from(buffer).toString('base64');
         console.log(`[MetaAds] Downloaded ${buffer.byteLength} bytes, uploading to Meta...`);
@@ -222,6 +222,7 @@ export async function syncToMetaAds(runId: string, dryRun: boolean = true) {
                 },
                 age_min: 25,
                 age_max: 65,
+                interests: interests.map(id => ({ id: String(id) }))
             },
         };
 

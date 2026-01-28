@@ -30,16 +30,24 @@ function sanitizeObject(obj: any): any {
 
 export async function POST(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    const session = await requireAdmin();
-    const { id } = await params;
+    let session;
+    try {
+        session = await requireAdmin();
+    } catch {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const { id } = params;
 
     try {
-        const body = await request.json();
+        const body = await request.json().catch(() => null);
+        if (!body || typeof body !== 'object') {
+            return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+        }
         // Sanitize imported content to remove markdown citation patterns
-        const adPlan = sanitizeObject(body.adPlan);
-        const landingPageSpec = sanitizeObject(body.landingPageSpec);
+        const adPlan = sanitizeObject((body as any).adPlan);
+        const landingPageSpec = sanitizeObject((body as any).landingPageSpec);
 
         if (!adPlan || !landingPageSpec) {
             return NextResponse.json({ error: 'Invalid input: adPlan and landingPageSpec are required' }, { status: 400 });
@@ -75,14 +83,17 @@ export async function POST(
         await PipelineManager.saveArtifact(run.id, 'AD_PLAN', adPlan);
 
         // 4. Update CampaignRun with all fields
+        const keywords = Array.isArray(adPlan.keywords) ? adPlan.keywords : [];
+        const rsa = adPlan.rsa || { headlines: [], descriptions: [] };
         const updatedRun = await prisma.campaignRun.update({
             where: { id: run.id },
             data: {
                 landingPageContent: JSON.stringify(landingPageSpec),
-                chosenKeywords: adPlan.keywords.map((k: any) => k.text),
-                matchTypes: adPlan.keywords.map((k: any) => k.matchType),
-                rsaHeadlines: adPlan.rsa.headlines,
-                rsaDescriptions: adPlan.rsa.descriptions,
+                chosenKeywords: keywords.map((k: any) => k.text || k.keyword || '').filter(Boolean),
+                matchTypes: keywords.map((k: any) => k.matchType || k.match_type || 'PHRASE'),
+                rsaHeadlines: Array.isArray(rsa.headlines) ? rsa.headlines : [],
+                rsaDescriptions: Array.isArray(rsa.descriptions) ? rsa.descriptions : [],
+                finalUrl: adPlan.finalUrl || `https://presenthealthmd.com/lp/${campaign.landingSlug}`,
                 status: 'READY_FOR_REVIEW'
             }
         });

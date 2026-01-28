@@ -5,21 +5,30 @@ import { recordConversionEvent } from '@/lib/conversion';
 
 export async function POST(request: Request) {
     try {
-        const body = await request.json();
-        const { runId, gclid, email, metadata } = body;
+        const body = await request.json().catch(() => null);
+        if (!body || typeof body !== 'object') {
+            return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+        }
+        const { runId, gclid, email, metadata } = body as any;
+        const normalizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : undefined;
+        const safeMetadata = metadata && typeof metadata === 'object' ? metadata : {};
 
         if (!runId) {
             return NextResponse.json({ error: 'Missing runId' }, { status: 400 });
+        }
+        const runExists = await prisma.campaignRun.findUnique({ where: { id: runId }, select: { id: true } });
+        if (!runExists) {
+            return NextResponse.json({ error: 'Invalid runId' }, { status: 404 });
         }
 
         // Create or Update Lead
         // If email is provided, we try to find an existing lead for this run
         let lead;
-        if (email) {
+        if (normalizedEmail) {
             lead = await prisma.lead.findFirst({
                 where: {
                     campaignRunId: runId,
-                    email: email
+                    email: normalizedEmail
                 }
             });
         }
@@ -29,7 +38,7 @@ export async function POST(request: Request) {
                 where: { id: lead.id },
                 data: {
                     gclid: gclid || lead.gclid,
-                    metadata: { ...(lead.metadata as any || {}), ...(metadata || {}) },
+                    metadata: { ...(lead.metadata as any || {}), ...safeMetadata },
                     updatedAt: new Date()
                 }
             });
@@ -38,8 +47,8 @@ export async function POST(request: Request) {
                 data: {
                     campaignRunId: runId,
                     gclid,
-                    email,
-                    metadata: metadata || {},
+                    email: normalizedEmail,
+                    metadata: safeMetadata,
                     status: 'PENDING'
                 }
             });
@@ -63,7 +72,7 @@ export async function POST(request: Request) {
                 type: 'LEAD_CREATED',
                 attributionSessionId: sessionId,
                 leadId: lead.id,
-                metadata: { ...metadata, source: 'LeadsAPI' }
+                metadata: { ...safeMetadata, source: 'LeadsAPI' }
             });
         }
 

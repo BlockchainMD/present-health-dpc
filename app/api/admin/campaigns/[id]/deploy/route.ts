@@ -6,10 +6,15 @@ import { requireAdmin } from '@/lib/authz';
 
 export async function POST(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    const session = await requireAdmin();
-    const { id } = await params;
+    let session;
+    try {
+        session = await requireAdmin();
+    } catch {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const { id } = params;
 
     try {
         // 1. Fetch Campaign and Latest Run
@@ -49,7 +54,9 @@ export async function POST(
 
         // 2. Sync to Platforms (Live Mode: dryRun = false)
         const body = await request.json().catch(() => ({}));
-        const selectedPlatforms = body.platforms || ['GOOGLE_ADS', 'META_ADS'];
+        const requested = Array.isArray(body.platforms) ? body.platforms : [];
+        const selectedPlatforms = (requested.length ? requested : ['GOOGLE_ADS', 'META_ADS'])
+            .filter((p: any) => p === 'GOOGLE_ADS' || p === 'META_ADS');
 
         console.log(`[Deploy] Deploying campaign ${campaign.slug} (Run: ${latestRun.id}) to platforms: ${selectedPlatforms.join(', ')}`);
 
@@ -74,6 +81,10 @@ export async function POST(
         await prisma.campaign.update({
             where: { id: campaign.id },
             data: { status: 'ACTIVE' }
+        });
+        await prisma.campaignRun.update({
+            where: { id: latestRun.id },
+            data: { status: 'DEPLOYED' }
         });
 
         // 5. Record Audit Log

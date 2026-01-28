@@ -5,10 +5,14 @@ import { getFullPromptContext } from '@/lib/ads/brand-context';
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: { id: string } }
 ) {
-  await requireAdmin();
-  const { id } = await params;
+  try {
+    await requireAdmin();
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const { id } = params;
 
   try {
     const campaign = await prisma.campaign.findUnique({

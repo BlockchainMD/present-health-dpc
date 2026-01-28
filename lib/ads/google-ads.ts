@@ -9,6 +9,11 @@ interface AdAssets {
 export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     const headlines: string[] = [];
     const descriptions: string[] = [];
+    const benefits = Array.isArray(campaign.benefits) ? campaign.benefits : [];
+    const proofPoints = Array.isArray(campaign.proofPoints) ? campaign.proofPoints : [];
+    const seedKeywords = Array.isArray(campaign.seedKeywords) ? campaign.seedKeywords : [];
+    const intent = campaign.intent || '';
+    const persona = campaign.persona || '';
 
     // --- HEADLINES (Max 30 chars) ---
     // 1. Brand
@@ -17,11 +22,11 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     headlines.push("Meet Dr. J");
 
     // 2. Intent/Persona (Truncated to 30 chars if needed)
-    if (campaign.intent.length <= 30) headlines.push(campaign.intent);
-    if (campaign.persona.length <= 30) headlines.push(`Care for ${campaign.persona}`);
+    if (intent && intent.length <= 30) headlines.push(intent);
+    if (persona && persona.length <= 30) headlines.push(`Care for ${persona}`);
 
     // 3. Benefits (From Campaign Spec)
-    campaign.benefits.forEach((b: string) => {
+    benefits.forEach((b: string) => {
         if (b.length <= 30) headlines.push(b);
     });
 
@@ -32,7 +37,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
 
     // --- DESCRIPTIONS (Max 90 chars) ---
     // 1. Proof Points
-    campaign.proofPoints.forEach((p: string) => {
+    proofPoints.forEach((p: string) => {
         if (p.length <= 90) descriptions.push(p);
     });
 
@@ -86,7 +91,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
             headline: safeHeadlines[0] || "Present Health DPC",
             description: safeDescriptions[1] || "Simple, transparent monthly membership. No insurance hassles."
         },
-        keywords: campaign.seedKeywords.map(kw => ({
+        keywords: seedKeywords.map(kw => ({
             text: kw,
             matchType: 'PHRASE'
         })),
@@ -111,7 +116,7 @@ import { GoogleAdsApi, enums } from 'google-ads-api';
 import { prisma } from '@/lib/prisma';
 
 const GLOBAL_NEGATIVE_KEYWORDS = [
-    "job", "vacancy", "career", "salary", "hiring", "intership",
+    "job", "vacancy", "career", "salary", "hiring", "internship",
     "free", "cheap", "discount", "coupon",
     "amazon", "facebook", "google", "yelp",
     "science", "research", "study", "university", "college"

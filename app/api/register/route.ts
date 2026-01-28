@@ -7,9 +7,19 @@ import { recordConversionEvent } from "@/lib/conversion";
 export async function POST(req: Request) {
     try {
         console.log("Register API called");
-        const body = await req.json();
+        const body = await req.json().catch(() => null);
+        if (!body || typeof body !== 'object') {
+            return NextResponse.json(
+                { message: "Invalid JSON body" },
+                { status: 400 }
+            );
+        }
         console.log("Request body parsed:", { ...body, password: "***" });
-        const { firstName, lastName, email, password } = body;
+        const firstName = typeof body.firstName === 'string' ? body.firstName.trim() : '';
+        const lastName = typeof body.lastName === 'string' ? body.lastName.trim() : '';
+        const emailRaw = typeof body.email === 'string' ? body.email.trim() : '';
+        const email = emailRaw.toLowerCase();
+        const password = typeof body.password === 'string' ? body.password : '';
 
         if (!firstName || !lastName || !email || !password) {
             console.log("Missing fields");

@@ -11,7 +11,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
         const body = await request.json().catch(() => ({}));
-        const jobLimit = body.jobLimit ? Number(body.jobLimit) : 3;
+        const parsedLimit = Number(body.jobLimit ?? 3);
+        const jobLimit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 10) : 3;
 
         const enqueued = await enqueueDueSchedules();
         const processed = await runDueJobs(jobLimit);

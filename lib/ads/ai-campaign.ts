@@ -92,7 +92,11 @@ RETURN VALID JSON ONLY:
         } as any);
 
         const text = response.choices[0]?.message?.content || "{}";
-        spec = JSON.parse(text);
+        try {
+            spec = JSON.parse(text);
+        } catch {
+            spec = {};
+        }
 
         // 4. Validate and Retry if needed
         const compliance = validateCampaignSpec(spec);
@@ -151,18 +155,21 @@ RETURN VALID JSON ONLY:
     if (spec.seedKeywords) spec.seedKeywords = spec.seedKeywords.map(sanitizeString);
     if (spec.intent) spec.intent = sanitizeString(spec.intent);
 
+    const budgetDaily = Number(spec.budgetDaily);
+    const targetCpa = Number(spec.targetCpa);
+
     return {
         slug: spec.slug,
         persona: spec.persona,
         intent: spec.intent,
-        seedKeywords: spec.seedKeywords || [],
+        seedKeywords: Array.isArray(spec.seedKeywords) ? spec.seedKeywords : [],
         strategy: spec.strategy || strategy,
         layoutType: spec.layoutType || (strategy === 'EDUCATIONAL' ? 'EDUCATIONAL' : 'CONVERSION'),
-        benefits: spec.benefits,
-        proofPoints: spec.proofPoints,
-        disclaimers: spec.disclaimers,
-        budgetDaily: spec.budgetDaily || 50,
-        targetCpa: spec.targetCpa || 30,
+        benefits: Array.isArray(spec.benefits) ? spec.benefits : [],
+        proofPoints: Array.isArray(spec.proofPoints) ? spec.proofPoints : [],
+        disclaimers: Array.isArray(spec.disclaimers) ? spec.disclaimers : [],
+        budgetDaily: Number.isFinite(budgetDaily) ? budgetDaily : 50,
+        targetCpa: Number.isFinite(targetCpa) ? targetCpa : 30,
         geo: spec.geo || 'US',
         tone: spec.tone || 'Empathetic & Professional'
     };

@@ -117,9 +117,15 @@ export async function runDueJobs(limit = 3) {
 }
 
 function computeScheduledTime(cadence: string, timezone: string, hour: number, minute: number, now: Date) {
-    const tzNow = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+    let tzNow: Date;
+    try {
+        tzNow = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+    } catch {
+        tzNow = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+    }
     const scheduled = new Date(tzNow);
-    if (cadence === 'HOURLY') {
+    const cadenceMode = cadence === 'HOURLY' ? 'HOURLY' : 'DAILY';
+    if (cadenceMode === 'HOURLY') {
         scheduled.setHours(tzNow.getHours(), minute, 0, 0);
     } else {
         scheduled.setHours(hour, minute, 0, 0);
@@ -129,7 +135,12 @@ function computeScheduledTime(cadence: string, timezone: string, hour: number, m
 }
 
 function fromTimeZone(dateInTz: Date, now: Date, timezone: string) {
-    const tzNow = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+    let tzNow: Date;
+    try {
+        tzNow = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+    } catch {
+        tzNow = new Date(now.toLocaleString('en-US', { timeZone: 'UTC' }));
+    }
     const offset = now.getTime() - tzNow.getTime();
     return new Date(dateInTz.getTime() + offset);
 }

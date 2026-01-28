@@ -73,8 +73,9 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
         if (duplicate) continue;
         const finalSlug = slugify(qa.title || brief.title);
 
+        const reviewType = options.reviewType === 'EDITORIAL' ? 'EDITORIAL' : 'CLINICAL';
         const reviewLabel = options.reviewLabel
-            || (options.reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
+            || (reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
 
         const autoPublish = options.autoPublish && brief.riskLevel === 'LOW' && autoPublishRemaining > 0;
         if (autoPublish) autoPublishRemaining -= 1;
@@ -101,7 +102,7 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                 } as any,
                 contentHash,
                 reviewedByDisplayName: reviewLabel,
-                reviewType: options.reviewType || 'CLINICAL',
+                reviewType,
                 reviewedAt: autoPublish ? new Date() : null
             }
         });

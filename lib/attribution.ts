@@ -22,6 +22,13 @@ function hashString(str: string): string {
     return crypto.createHash('sha256').update(str).digest('hex').slice(0, 32);
 }
 
+function normalizeHash(value?: string): string | undefined {
+    if (!value) return undefined;
+    const trimmed = value.trim();
+    if (/^[a-f0-9]{32}$/i.test(trimmed)) return trimmed.toLowerCase();
+    return hashString(trimmed);
+}
+
 export async function extractAttributionFromRequest(req: Request): Promise<AttributionData> {
     const url = new URL(req.url);
     const searchParams = url.searchParams;
@@ -73,8 +80,8 @@ export async function getOrCreateAttributionSession(req?: Request, dataOverride?
                 utmContent: data.utmContent,
                 landingPath: data.landingPath,
                 referrer: data.referrer,
-                userAgentHash: data.userAgentHash ? (req ? hashString(data.userAgentHash) : data.userAgentHash) : undefined,
-                ipHash: data.ipHash ? (req ? hashString(data.ipHash) : data.ipHash) : undefined,
+                userAgentHash: normalizeHash(data.userAgentHash),
+                ipHash: normalizeHash(data.ipHash),
             }
         });
 
@@ -109,8 +116,8 @@ export async function getOrCreateAttributionSession(req?: Request, dataOverride?
         data: {
             landingPath: data.landingPath,
             referrer: data.referrer,
-            userAgentHash: data.userAgentHash ? (req ? hashString(data.userAgentHash) : data.userAgentHash) : undefined,
-            ipHash: data.ipHash ? (req ? hashString(data.ipHash) : data.ipHash) : undefined,
+            userAgentHash: normalizeHash(data.userAgentHash),
+            ipHash: normalizeHash(data.ipHash),
         }
     });
 
@@ -141,4 +148,3 @@ export async function linkAttributionSessionToLead(sessionId: string, leadId: st
         data: { leadId }
     });
 }
-

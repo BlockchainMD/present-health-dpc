@@ -4,10 +4,15 @@ import { NextResponse } from 'next/server';
 
 export async function POST(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    const session = await requireAdmin();
-    const { id } = await params;
+    let session;
+    try {
+        session = await requireAdmin();
+    } catch {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const { id } = params;
 
     try {
         // 2. Find Assistant

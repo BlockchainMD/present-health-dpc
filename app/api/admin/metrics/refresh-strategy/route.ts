@@ -10,6 +10,10 @@ export async function POST() {
         const strategy = await refreshStrategy();
         return NextResponse.json({ success: true, strategy });
     } catch (error) {
-        return NextResponse.json({ success: false, error: 'Failed to refresh strategy' }, { status: 500 });
+        const message = error instanceof Error && error.message.includes('Unauthorized')
+            ? 'Unauthorized'
+            : 'Failed to refresh strategy';
+        const status = message === 'Unauthorized' ? 401 : 500;
+        return NextResponse.json({ success: false, error: message }, { status });
     }
 }

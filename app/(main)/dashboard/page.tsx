@@ -41,7 +41,7 @@ export default async function DashboardPage() {
                         <CardDescription>Current Plan</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        <div className={`text - 2xl font - bold ${statusColor} capitalize`}>{status}</div>
+                        <div className={`text-2xl font-bold ${statusColor} capitalize`}>{status}</div>
                         <p className="text-sm text-muted-foreground mt-2">
                             {status === 'active' ? 'Auto-renews monthly' : 'No active subscription'}
                         </p>

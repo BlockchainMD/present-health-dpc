@@ -20,13 +20,13 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             cta: "Book a Free Intro Conversation"
         },
         educationalBriefing: undefined,
-        benefits: campaign.benefits || [],
+        benefits: Array.isArray(campaign.benefits) ? campaign.benefits : [],
         howItWorks: [
             { title: "Book", desc: "Schedule a free intro call." },
             { title: "Meet", desc: "Talk to Dr. J directly." },
             { title: "Join", desc: "Sign up for membership." }
         ],
-        proof: campaign.proofPoints || [],
+        proof: Array.isArray(campaign.proofPoints) ? campaign.proofPoints : [],
         pricing: {
             headline: "Simple Monthly Membership",
             subheadline: "Direct access. Transparent pricing. No insurance required.",

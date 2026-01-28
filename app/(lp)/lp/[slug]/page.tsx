@@ -43,12 +43,12 @@ function sanitizeObject(obj: any): any {
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-    params: Promise<{ slug: string }>;
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+    params: { slug: string };
+    searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: PageProps) {
-    const { slug } = await params;
+    const { slug } = params;
     const run = await prisma.campaignRun.findFirst({
         where: { campaign: { landingSlug: slug } },
         orderBy: { createdAt: 'desc' },
@@ -71,18 +71,25 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function LandingPage({ params, searchParams }: PageProps) {
-    const { slug } = await params;
-    const { gclid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = await searchParams;
+    const { slug } = params;
+    const pick = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
+    const { gclid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = searchParams;
+    const gclidValue = pick(gclid);
+    const utmSource = pick(utm_source);
+    const utmMedium = pick(utm_medium);
+    const utmCampaign = pick(utm_campaign);
+    const utmTerm = pick(utm_term);
+    const utmContent = pick(utm_content);
 
     // Trigger Attribution Session
     const headerList = await headers();
     await getOrCreateAttributionSession(undefined, {
-        gclid: gclid as string,
-        utmSource: utm_source as string,
-        utmMedium: utm_medium as string,
-        utmCampaign: utm_campaign as string,
-        utmTerm: utm_term as string,
-        utmContent: utm_content as string,
+        gclid: gclidValue,
+        utmSource,
+        utmMedium,
+        utmCampaign,
+        utmTerm,
+        utmContent,
         landingPath: `/lp/${slug}`,
         referrer: headerList.get('referer') || undefined,
         userAgentHash: headerList.get('user-agent') || undefined, // Hashed in helper

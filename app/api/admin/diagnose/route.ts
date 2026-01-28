@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/authz';
 
 export async function GET() {
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     const diagnostics: any = {
         timestamp: new Date().toISOString(),
         tests: []

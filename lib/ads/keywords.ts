@@ -17,10 +17,14 @@ export function generateKeywords(seedKeywords: string[]): { keyword: string, mat
     const keywords: Set<string> = new Set();
 
     // 1. Add Seeds directly
-    seedKeywords.forEach(k => keywords.add(k.toLowerCase().trim()));
+    seedKeywords
+        .filter(k => typeof k === 'string' && k.trim().length > 0)
+        .forEach(k => keywords.add(k.toLowerCase().trim()));
 
     // 2. Generate Combinations
-    seedKeywords.forEach(seed => {
+    seedKeywords
+        .filter(seed => typeof seed === 'string' && seed.trim().length > 0)
+        .forEach(seed => {
         const cleanSeed = seed.toLowerCase().trim();
         INTENT_MODIFIERS.forEach(mod => {
             keywords.add(`${cleanSeed} ${mod}`);

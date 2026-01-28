@@ -13,7 +13,8 @@ export async function POST(request: Request) {
         }
 
         const body = await request.json().catch(() => ({}));
-        const days = Number(body.days || 7);
+        const requestedDays = Number(body.days || 7);
+        const days = Number.isFinite(requestedDays) && requestedDays > 0 ? Math.min(requestedDays, 90) : 7;
         const result = await syncGscMetrics({ days });
         await prisma.auditLog.create({
             data: {

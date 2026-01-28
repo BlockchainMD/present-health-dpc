@@ -33,6 +33,22 @@ export async function syncGscMetrics(options: { days?: number; startDate?: Date;
     const rows = response.data.rows || [];
     let upserted = 0;
 
+    const slugs = new Set<string>();
+    for (const row of rows) {
+        const page = row.keys?.[0] as string | undefined;
+        if (!page) continue;
+        const slug = extractSlug(page);
+        if (slug) slugs.add(slug);
+    }
+
+    const articles = slugs.size
+        ? await prisma.article.findMany({
+            where: { slug: { in: Array.from(slugs) } },
+            select: { id: true, slug: true }
+        })
+        : [];
+    const articleBySlug = new Map(articles.map(a => [a.slug!, a]));
+
     for (const row of rows) {
         const page = row.keys?.[0] as string | undefined;
         const date = row.keys?.[1] as string | undefined;
@@ -41,11 +57,7 @@ export async function syncGscMetrics(options: { days?: number; startDate?: Date;
         const slug = extractSlug(page);
         if (!slug) continue;
 
-        const article = await prisma.article.findFirst({
-            where: {
-                OR: [{ slug }, { id: slug }]
-            }
-        });
+        const article = articleBySlug.get(slug);
         if (!article) continue;
 
         const impressions = Math.round(row.impressions || 0);
@@ -53,18 +65,21 @@ export async function syncGscMetrics(options: { days?: number; startDate?: Date;
         const ctr = row.ctr ?? (impressions > 0 ? clicks / impressions : 0);
         const position = row.position || 0;
 
+        const parsedDate = new Date(date);
+        if (Number.isNaN(parsedDate.getTime())) continue;
+
         await prisma.articleMetric.upsert({
             where: {
                 articleId_date_source: {
                     articleId: article.id,
-                    date: new Date(date),
+                    date: parsedDate,
                     source: 'GSC'
                 }
             },
             update: { impressions, clicks, ctr, position },
             create: {
                 articleId: article.id,
-                date: new Date(date),
+                date: parsedDate,
                 source: 'GSC',
                 impressions,
                 clicks,

@@ -1,13 +1,15 @@
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import { ArrowLeft, Mail } from "lucide-react";
 
 interface PageProps {
-    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+    searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export default async function BookPage({ searchParams }: PageProps) {
-    const { runId, gclid } = await searchParams;
+    const pick = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
+    const { runId, gclid } = searchParams;
+    const runIdValue = pick(runId);
+    const gclidValue = pick(gclid);
 
     // Construct Cal.com URL with UTMs for attribution
     // We'll use utm_source=presenthealth and utm_medium=ad
@@ -16,9 +18,9 @@ export default async function BookPage({ searchParams }: PageProps) {
     const calUrl = new URL(calBaseUrl);
     calUrl.searchParams.set("utm_source", "presenthealth");
     calUrl.searchParams.set("utm_medium", "ad");
-    if (runId) calUrl.searchParams.set("utm_campaign", runId as string);
-    if (gclid) calUrl.searchParams.set("utm_term", gclid as string);
-    if (runId) calUrl.searchParams.set("utm_content", runId as string);
+    if (runIdValue) calUrl.searchParams.set("utm_campaign", runIdValue);
+    if (gclidValue) calUrl.searchParams.set("utm_term", gclidValue);
+    if (runIdValue) calUrl.searchParams.set("utm_content", runIdValue);
 
     return (
         <div className="min-h-screen bg-background">

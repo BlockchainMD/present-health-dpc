@@ -1,18 +1,25 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { uploadConversionToGoogleAds } from '@/lib/ads/google-ads';
-import { cookies } from 'next/headers';
 import { recordConversionEvent } from '@/lib/conversion';
 
 export async function POST(request: Request) {
     try {
-        const payload = await request.json();
+        const authorized = await verifyWebhookAuth(request);
+        if (!authorized) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+        const payload = await request.json().catch(() => null);
+        if (!payload || typeof payload !== 'object') {
+            return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+        }
         console.log('[CalWebhook] Received:', JSON.stringify(payload, null, 2));
 
         // Extract email from Cal.com payload
         // Structure varies by event, but usually it's in payload.attendees or payload.order
         const attendee = payload.payload?.attendees?.[0] || payload.attendees?.[0];
-        const email = attendee?.email || payload.payload?.email || payload.email;
+        const emailRaw = attendee?.email || payload.payload?.email || payload.email;
+        const email = typeof emailRaw === 'string' ? emailRaw.trim().toLowerCase() : undefined;
 
         if (!email) {
             console.warn('[CalWebhook] No email found in payload');
@@ -72,4 +79,12 @@ export async function POST(request: Request) {
         console.error('[CalWebhook] Error:', error);
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }
+}
+
+async function verifyWebhookAuth(request: Request) {
+    const secret = process.env.CAL_WEBHOOK_SECRET;
+    if (!secret) return true;
+    const header = request.headers.get('x-webhook-secret');
+    const bearer = request.headers.get('authorization')?.replace('Bearer ', '');
+    return header === secret || bearer === secret;
 }

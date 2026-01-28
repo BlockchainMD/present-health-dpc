@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from '@/lib/authz';
 
 export async function PATCH(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
     try {
-        const { id } = await params;
-        const body = await request.json();
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    try {
+        const { id } = params;
+        const body = await request.json().catch(() => null);
+        if (!body || typeof body !== 'object') {
+            return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
+        }
         const {
             status,
             title,
@@ -33,15 +42,32 @@ export async function PATCH(
             reviewType?: string;
             reviewedAt?: Date;
         } = {};
-        if (status !== undefined) updateData.status = status;
-        if (title !== undefined) updateData.title = title;
+        if (status !== undefined) {
+            const allowed = new Set(['DRAFT', 'PUBLISHED', 'ARCHIVED']);
+            if (!allowed.has(status)) {
+                return NextResponse.json({ success: false, error: 'Invalid status' }, { status: 400 });
+            }
+            updateData.status = status;
+        }
+        if (title !== undefined) updateData.title = typeof title === 'string' ? title.trim() : title;
         if (content !== undefined) updateData.content = content;
-        if (slug !== undefined) updateData.slug = slug;
-        if (excerpt !== undefined) updateData.excerpt = excerpt;
-        if (metaTitle !== undefined) updateData.metaTitle = metaTitle;
-        if (metaDescription !== undefined) updateData.metaDescription = metaDescription;
+        if (slug !== undefined) {
+            const trimmed = typeof slug === 'string' ? slug.trim() : '';
+            if (!trimmed) {
+                return NextResponse.json({ success: false, error: 'Slug cannot be empty' }, { status: 400 });
+            }
+            updateData.slug = trimmed;
+        }
+        if (excerpt !== undefined) updateData.excerpt = typeof excerpt === 'string' ? excerpt.trim() : excerpt;
+        if (metaTitle !== undefined) updateData.metaTitle = typeof metaTitle === 'string' ? metaTitle.trim() : metaTitle;
+        if (metaDescription !== undefined) updateData.metaDescription = typeof metaDescription === 'string' ? metaDescription.trim() : metaDescription;
         if (reviewedByDisplayName !== undefined) updateData.reviewedByDisplayName = reviewedByDisplayName;
-        if (reviewType !== undefined) updateData.reviewType = reviewType;
+        if (reviewType !== undefined) {
+            if (!['CLINICAL', 'EDITORIAL'].includes(reviewType)) {
+                return NextResponse.json({ success: false, error: 'Invalid reviewType' }, { status: 400 });
+            }
+            updateData.reviewType = reviewType;
+        }
 
         if (status === 'PUBLISHED') {
             let effectiveReviewType = reviewType;
@@ -66,7 +92,13 @@ export async function PATCH(
         });
 
         return NextResponse.json({ success: true, article });
-    } catch (error) {
+    } catch (error: any) {
+        if (error?.code === 'P2002') {
+            return NextResponse.json(
+                { success: false, error: 'Slug already exists' },
+                { status: 409 }
+            );
+        }
         console.error('PATCH error:', error);
         return NextResponse.json(
             { success: false, error: 'Failed to update article' },
@@ -77,10 +109,15 @@ export async function PATCH(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
     try {
-        const { id } = await params;
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    }
+    try {
+        const { id } = params;
 
         await prisma.article.delete({
             where: { id }

@@ -1,17 +1,21 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateLandingPageSpec } from '@/lib/ads/generator';
-import { generateKeywords } from '@/lib/ads/keywords';
 import { generateAdPlan } from '@/lib/ads/google-ads';
 import { PipelineManager } from '@/lib/ads/pipeline';
 import { requireAdmin } from '@/lib/authz';
 
 export async function POST(
     request: Request,
-    { params }: { params: Promise<{ id: string }> }
+    { params }: { params: { id: string } }
 ) {
-    const session = await requireAdmin();
-    const { id } = await params;
+    let session;
+    try {
+        session = await requireAdmin();
+    } catch {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    const { id } = params;
 
     try {
         // 1. Fetch Campaign
@@ -55,6 +59,7 @@ export async function POST(
                 matchTypes: adPlan.keywords.map(k => k.matchType),
                 rsaHeadlines: adPlan.rsa.headlines,
                 rsaDescriptions: adPlan.rsa.descriptions,
+                finalUrl: adPlan.finalUrl,
                 status: 'READY_FOR_REVIEW'
             }
         });

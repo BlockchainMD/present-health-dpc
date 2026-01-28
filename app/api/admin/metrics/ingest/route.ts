@@ -11,8 +11,13 @@ export async function POST(request: Request) {
         if (!authorized) {
             return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
-        const body = await request.json();
-        const source = body.source || 'GSC';
+        const body = await request.json().catch(() => null);
+        if (!body || typeof body !== 'object') {
+            return NextResponse.json({ success: false, error: 'Invalid JSON body' }, { status: 400 });
+        }
+        const source = typeof body.source === 'string' && body.source.trim()
+            ? body.source.trim().slice(0, 32)
+            : 'GSC';
         const metrics = Array.isArray(body.metrics) ? body.metrics : [];
         if (metrics.length > 5000) {
             return NextResponse.json({ success: false, error: 'Payload too large' }, { status: 413 });
@@ -22,11 +27,13 @@ export async function POST(request: Request) {
         let upserted = 0;
 
         for (const item of metrics) {
+            if (!item || typeof item !== 'object') continue;
             const date = item.date ? new Date(item.date) : new Date();
-            const impressions = Number(item.impressions || 0);
-            const clicks = Number(item.clicks || 0);
-            const ctr = item.ctr !== undefined ? Number(item.ctr) : (impressions > 0 ? clicks / impressions : 0);
-            const position = Number(item.position || 0);
+            if (Number.isNaN(date.getTime())) continue;
+            const impressions = toNumber(item.impressions);
+            const clicks = toNumber(item.clicks);
+            const ctr = item.ctr !== undefined ? toNumber(item.ctr) : (impressions > 0 ? clicks / impressions : 0);
+            const position = toNumber(item.position);
 
             let articleId = item.articleId;
             if (!articleId && item.slug) {
@@ -85,6 +92,11 @@ export async function POST(request: Request) {
     } catch (error) {
         return NextResponse.json({ success: false, error: 'Failed to ingest metrics' }, { status: 500 });
     }
+}
+
+function toNumber(value: any, fallback = 0) {
+    const num = Number(value);
+    return Number.isFinite(num) ? num : fallback;
 }
 
 async function verifyMetricsAuth(request: Request) {

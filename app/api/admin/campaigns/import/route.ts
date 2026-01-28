@@ -3,6 +3,14 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { PipelineManager } from '@/lib/ads/pipeline';
 
+function normalizeSlug(value: string) {
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 /**
  * Sanitizes content by removing markdown citation patterns like "([Present Health][1])"
  */
@@ -32,48 +40,55 @@ export async function POST(request: Request) {
     try {
         const session = await requireAdmin();
 
-        const body = await request.json();
+        const body = await request.json().catch(() => null);
+        if (!body || typeof body !== 'object') {
+            return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+        }
         // Sanitize all imported content to remove markdown citation patterns
-        const campaign = sanitizeObject(body.campaign);
-        const adPlan = sanitizeObject(body.adPlan);
-        const landingPageSpec = sanitizeObject(body.landingPageSpec);
+        const campaign = sanitizeObject((body as any).campaign);
+        const adPlan = sanitizeObject((body as any).adPlan);
+        const landingPageSpec = sanitizeObject((body as any).landingPageSpec);
 
         if (!campaign || !adPlan || !landingPageSpec) {
             return NextResponse.json({ error: 'Missing core data: campaign, adPlan, and landingPageSpec are required.' }, { status: 400 });
         }
 
 
-        if (!campaign.slug) {
+        const slug = typeof campaign.slug === 'string' ? normalizeSlug(campaign.slug) : '';
+        if (!slug) {
             return NextResponse.json({ error: 'Campaign slug is required.' }, { status: 400 });
         }
 
         // Check if slug already exists
-        const existing = await prisma.campaign.findUnique({
-            where: { slug: campaign.slug }
-        });
+        const existing = await prisma.campaign.findUnique({ where: { slug } });
 
         if (existing) {
             return NextResponse.json({
-                error: `A campaign with the slug "${campaign.slug}" already exists. Please use a unique slug.`
+                error: `A campaign with the slug "${slug}" already exists. Please use a unique slug.`
             }, { status: 409 });
         }
 
         // 1. Sanitize Campaign Data
-        const safeBudget = parseFloat(campaign.budgetDaily);
-        const safeCpa = parseFloat(campaign.targetCpa);
+        const safeBudget = Number(campaign.budgetDaily);
+        const safeCpa = Number(campaign.targetCpa);
+
+        const landingSlug = campaign.landingSlug ? normalizeSlug(campaign.landingSlug) : slug;
+        if (!landingSlug) {
+            return NextResponse.json({ error: 'Landing slug is required.' }, { status: 400 });
+        }
 
         const newCampaign = await prisma.campaign.create({
             data: {
-                slug: campaign.slug,
+                slug,
                 persona: campaign.persona || 'Unknown Persona',
                 intent: campaign.intent || 'Unknown Intent',
-                landingSlug: campaign.landingSlug || campaign.slug,
+                landingSlug,
                 seedKeywords: Array.isArray(campaign.seedKeywords) ? campaign.seedKeywords : [],
                 benefits: Array.isArray(campaign.benefits) ? campaign.benefits : [],
                 proofPoints: Array.isArray(campaign.proofPoints) ? campaign.proofPoints : [],
                 disclaimers: Array.isArray(campaign.disclaimers) ? campaign.disclaimers : [],
-                budgetDaily: isNaN(safeBudget) ? 50.0 : safeBudget,
-                targetCpa: isNaN(safeCpa) ? 30.0 : safeCpa,
+                budgetDaily: Number.isFinite(safeBudget) ? safeBudget : 50.0,
+                targetCpa: Number.isFinite(safeCpa) ? safeCpa : 30.0,
                 geo: campaign.geo || 'US',
                 geoStates: Array.isArray(campaign.geoStates) ? campaign.geoStates : [],
                 tone: campaign.tone || 'Professional',
@@ -100,6 +115,7 @@ export async function POST(request: Request) {
                 }),
                 rsaHeadlines: Array.isArray(rsa.headlines) ? rsa.headlines : [],
                 rsaDescriptions: Array.isArray(rsa.descriptions) ? rsa.descriptions : [],
+                finalUrl: adPlan.finalUrl || `https://presenthealthmd.com/lp/${landingSlug}`,
             }
         });
 
@@ -129,6 +145,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json(newCampaign);
     } catch (error: any) {
+        if (error?.code === 'P2002') {
+            return NextResponse.json({ error: 'Slug already exists' }, { status: 409 });
+        }
         if (error.message?.includes('Unauthorized')) {
             return NextResponse.json({ error: error.message }, { status: 403 });
         }

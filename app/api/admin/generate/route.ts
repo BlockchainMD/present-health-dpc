@@ -13,14 +13,19 @@ export async function POST(request: Request) {
     try {
         const body = await request.json().catch(() => ({}));
         const options = typeof body === 'object' && body !== null ? body : {};
+        const count = typeof options.count === 'number' ? options.count : Number(options.count);
+        const safeCount = Number.isFinite(count) ? Math.min(Math.max(count, 1), 10) : undefined;
+
+        const mode = ['BALANCED', 'TREND', 'RESEARCH'].includes(options.mode) ? options.mode : undefined;
+        const reviewType = ['CLINICAL', 'EDITORIAL'].includes(options.reviewType) ? options.reviewType : undefined;
 
         const result = await runContentEngine({
-            count: options.count,
-            mode: options.mode,
+            count: safeCount,
+            mode,
             autoPublish: options.autoPublish,
             useFeedback: options.useFeedback,
             reviewLabel: options.reviewLabel,
-            reviewType: options.reviewType,
+            reviewType,
             sources: options.sources
         });
 

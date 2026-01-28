@@ -3,8 +3,20 @@ import { prisma } from '@/lib/prisma';
 import { validateCampaignSpec } from '@/lib/ads/compliance';
 import { requireAdmin } from '@/lib/authz';
 
+function normalizeSlug(value: string) {
+    return value
+        .toLowerCase()
+        .trim()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+}
+
 export async function GET() {
-    await requireAdmin();
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     try {
         const campaigns = await prisma.campaign.findMany({
             orderBy: { updatedAt: 'desc' },
@@ -23,7 +35,11 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-    await requireAdmin();
+    try {
+        await requireAdmin();
+    } catch {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     console.log('[POST /api/admin/campaigns] Request received');
     try {
         const bodyText = await request.text();
@@ -50,6 +66,17 @@ export async function POST(request: Request) {
         }
         console.log('[POST /api/admin/campaigns] Validation passed');
 
+        const slug = normalizeSlug(body.slug);
+        const landingSlug = normalizeSlug(body.landingSlug);
+        if (!slug || !landingSlug) {
+            return NextResponse.json({ error: 'Invalid slug' }, { status: 400 });
+        }
+
+        const existing = await prisma.campaign.findUnique({ where: { slug } });
+        if (existing) {
+            return NextResponse.json({ error: 'Slug already exists' }, { status: 409 });
+        }
+
         // 2. Compliance Check (Pre-screen)
         console.log('[POST /api/admin/campaigns] Running compliance check...');
         const compliance = validateCampaignSpec(body);
@@ -64,17 +91,19 @@ export async function POST(request: Request) {
 
         // 3. Create Campaign
         console.log('[POST /api/admin/campaigns] Calling prisma.campaign.create...');
+        const budgetDaily = Number(body.budgetDaily);
+        const targetCpa = Number(body.targetCpa);
         const campaignData = {
-            slug: body.slug,
+            slug,
             persona: body.persona,
             intent: body.intent,
-            seedKeywords: body.seedKeywords || [],
-            benefits: body.benefits || [],
-            proofPoints: body.proofPoints || [],
-            disclaimers: body.disclaimers || [],
-            landingSlug: body.landingSlug,
-            budgetDaily: parseFloat(body.budgetDaily) || 50,
-            targetCpa: parseFloat(body.targetCpa) || 30,
+            seedKeywords: Array.isArray(body.seedKeywords) ? body.seedKeywords : [],
+            benefits: Array.isArray(body.benefits) ? body.benefits : [],
+            proofPoints: Array.isArray(body.proofPoints) ? body.proofPoints : [],
+            disclaimers: Array.isArray(body.disclaimers) ? body.disclaimers : [],
+            landingSlug,
+            budgetDaily: Number.isFinite(budgetDaily) ? budgetDaily : 50,
+            targetCpa: Number.isFinite(targetCpa) ? targetCpa : 30,
             geo: body.geo || 'US',
             geoStates: body.geoStates || [],
             tone: body.tone || 'Professional',
@@ -89,6 +118,9 @@ export async function POST(request: Request) {
 
         return NextResponse.json(campaign);
     } catch (error: any) {
+        if (error?.code === 'P2002') {
+            return NextResponse.json({ error: 'Slug already exists' }, { status: 409 });
+        }
         console.error('[POST /api/admin/campaigns] ERROR:', error);
         console.error('[POST /api/admin/campaigns] ERROR STACK:', error.stack);
         return NextResponse.json({ error: 'Failed to create campaign', details: error.message }, { status: 500 });
