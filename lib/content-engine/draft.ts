@@ -23,7 +23,10 @@ Rules:
 - Do NOT include medical diagnosis or individualized advice.
 - Mention Present Health only in the final CTA section.
 - Include 1-2 subtle sentences in the body that connect the topic to the value of direct primary care (e.g., continuity, access, longer visits), without sounding salesy and without naming Present Health.
-- Keep word count around ${brief.wordCountTarget} (600-900 ok).
+- Make the writing punchy and concise: short paragraphs, active voice, minimal filler.
+- Keep word count around ${brief.wordCountTarget} (550-850 ok).
+- Front-load value (no long scene-setting). Make every section practical and skimmable.
+- Use SEO best practices: primary keyword in H1 + early paragraph, natural keyword variants in headings, and a compact FAQ with 3-5 questions.
 - Avoid hype, avoid guarantees, avoid prescriptions/medication language.
 
 Return JSON only:

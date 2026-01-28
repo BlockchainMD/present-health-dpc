@@ -48,7 +48,8 @@ Risk level: ${riskLevel}
 Rules:
 - Do NOT mention any clinician names or personal names.
 - Do NOT over-index on DPC or insurance; save Present Health mention for the CTA only.
-- Keep it concise and actionable.
+- Keep it concise, punchy, and actionable. Prefer short headings and tight phrasing.
+- Optimize for SEO with a clear primary keyword, 3-6 secondary keywords, and "People Also Ask" style questions.
 - Include a subtle, topic-relevant DPC value hook in the outline or action steps (e.g., continuity, longer visits, direct access) without naming Present Health.
 - Output valid JSON only.
 
