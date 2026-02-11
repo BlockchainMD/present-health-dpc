@@ -1,8 +1,24 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
+import { UnifiedLeadMembershipTier } from "@prisma/client";
 import { getOrCreateAttributionSession } from "@/lib/attribution";
 import { recordConversionEvent } from "@/lib/conversion";
+import { normalizeCoverageType } from "@/lib/pricing";
+import { resolveServedState } from "@/lib/state-availability";
+import { upsertUnifiedLeadFromWebsiteRegistration } from "@/lib/unified-leads";
+
+function mapPlanToTier(plan: "individual" | "couple" | "family") {
+    if (plan === "couple") return UnifiedLeadMembershipTier.COUPLE;
+    if (plan === "family") return UnifiedLeadMembershipTier.FAMILY;
+    return UnifiedLeadMembershipTier.INDIVIDUAL;
+}
+
+function mapTierToMonthlyRate(tier: UnifiedLeadMembershipTier) {
+    if (tier === UnifiedLeadMembershipTier.COUPLE) return 179;
+    if (tier === UnifiedLeadMembershipTier.FAMILY) return 249;
+    return 99;
+}
 
 export async function POST(req: Request) {
     try {
@@ -20,11 +36,26 @@ export async function POST(req: Request) {
         const emailRaw = typeof body.email === 'string' ? body.email.trim() : '';
         const email = emailRaw.toLowerCase();
         const password = typeof body.password === 'string' ? body.password : '';
+        const stateRaw = typeof body.state === "string" ? body.state.trim() : "";
+        const plan = normalizeCoverageType(body.plan);
+        const membershipTier = mapPlanToTier(plan);
+        const monthlyMembershipRate = mapTierToMonthlyRate(membershipTier);
 
-        if (!firstName || !lastName || !email || !password) {
+        if (!firstName || !lastName || !email || !password || !stateRaw) {
             console.log("Missing fields");
             return NextResponse.json(
                 { message: "Missing required fields" },
+                { status: 400 }
+            );
+        }
+
+        const servedState = await resolveServedState(stateRaw);
+        if (!servedState) {
+            return NextResponse.json(
+                {
+                    message:
+                        "Present Health is not yet available in your state. Join the waitlist and we will notify you when access opens.",
+                },
                 { status: 400 }
             );
         }
@@ -45,12 +76,26 @@ export async function POST(req: Request) {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         console.log("Checking for existing lead...");
-        const lead = await prisma.lead.findFirst({
+        const campaignLead = await prisma.lead.findFirst({
             where: { email },
             orderBy: { createdAt: "desc" },
         });
 
         const sessionId = await getOrCreateAttributionSession(req);
+
+        const unifiedLeadResult = await upsertUnifiedLeadFromWebsiteRegistration(
+            {
+                email,
+                firstName,
+                lastName,
+                state: servedState.name,
+                sourcePage: "/register",
+                sourceRecordId: `register:${email}`,
+                membershipTier,
+                monthlyMembershipRate,
+            },
+            true
+        );
 
         console.log("Creating user in DB...");
         const user = await prisma.user.create({
@@ -58,7 +103,7 @@ export async function POST(req: Request) {
                 name: `${firstName} ${lastName}`,
                 email,
                 password: hashedPassword,
-                leadId: lead?.id,
+                leadId: campaignLead?.id,
                 attributionSessionId: sessionId,
             },
         });
@@ -69,7 +114,14 @@ export async function POST(req: Request) {
             type: 'REGISTERED',
             attributionSessionId: sessionId,
             userId: user.id,
-            metadata: { source: 'RegisterAPI', leadId: lead?.id }
+            leadId: campaignLead?.id,
+            metadata: {
+                source: "RegisterAPI",
+                leadId: campaignLead?.id,
+                unifiedLeadId: unifiedLeadResult.leadId || null,
+                state: servedState.name,
+                plan,
+            },
         });
 
         return NextResponse.json(
