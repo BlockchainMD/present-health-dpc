@@ -156,6 +156,8 @@ export async function POST(req: Request) {
         });
         console.log("User created:", user.id);
 
+        const unifiedLeadId = "leadId" in unifiedLeadResult ? unifiedLeadResult.leadId : null;
+
         // Record Conversion Event
         await recordConversionEvent({
             type: 'REGISTERED',
@@ -165,7 +167,7 @@ export async function POST(req: Request) {
             metadata: {
                 source: "RegisterAPI",
                 leadId: campaignLead?.id,
-                unifiedLeadId: unifiedLeadResult.leadId || null,
+                unifiedLeadId,
                 state: servedState.name,
                 plan,
             },
