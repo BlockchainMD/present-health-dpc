@@ -15,6 +15,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
+import { buildHomepageSchemas } from "@/lib/schema";
 
 // ============================================================================
 // HERO - OPTIMIZED (V3 Base + V1 Access Icons)
@@ -482,8 +484,10 @@ function StickyCTA() {
 // MAIN PAGE
 // ============================================================================
 export default function Home() {
+  const schemaBlocks = buildHomepageSchemas();
   return (
     <>
+      <SchemaBlocks blocks={schemaBlocks} idPrefix="home" />
       <HeroOptimized />
       <FounderQuote />
       <ComparisonSection />

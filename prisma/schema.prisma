@@ -8,29 +8,203 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum CitationCategory {
+  CLINICAL
+  BRAND
+  BUSINESS
+  PRESS
+}
+
+enum CitationStatus {
+  ACTIVE
+  PENDING
+  NEEDS_UPDATE
+  NOT_LISTED
+}
+
+enum ContentBriefIntent {
+  INFORMATIONAL
+  TRANSACTIONAL
+  COMMERCIAL
+  NAVIGATIONAL
+}
+
+enum ContentBriefStatus {
+  DRAFT
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ContentSafetyReviewStatus {
+  PASS
+  NEEDS_FIX
+  OVERRIDDEN
+}
+
+enum ContentRefreshWorkflowStatus {
+  NEEDS_REFRESH
+  REFRESH_IN_PROGRESS
+  REFRESHED
+}
+
+enum ContentRefreshClassification {
+  URGENT
+  MONITOR
+  HEALTHY
+}
+
+enum ContentRefreshHistoryType {
+  DETECTION
+  STATUS_CHANGE
+  REFRESH_COMPLETED
+  BRIEF_GENERATED
+}
+
+enum ReviewPlatform {
+  GOOGLE
+  YELP
+  HEALTHGRADES
+  ZOCDOC
+  FACEBOOK
+  OTHER
+}
+
+enum ReviewResponseStatus {
+  PENDING
+  DRAFTED
+  RESPONDED
+  SKIPPED
+}
+
+enum PressReleaseStatus {
+  DRAFT
+  APPROVED
+  SUBMITTED
+  PUBLISHED
+}
+
+enum PrOpportunityType {
+  PODCAST
+  INTERVIEW
+  GUEST_POST
+  MEDIA_MENTION
+  AWARD
+}
+
+enum PrPitchStatus {
+  IDENTIFIED
+  PITCHED
+  ACCEPTED
+  COMPLETED
+  DECLINED
+}
+
+enum PrMentionType {
+  MEDIA_MENTION
+  BACKLINK
+  PODCAST_APPEARANCE
+  PRESS_RELEASE_PICKUP
+}
+
+enum EmployerProspectSource {
+  MANUAL
+  INBOUND
+  AI_RESEARCHED
+}
+
+enum EmployerProspectStatus {
+  PROSPECT
+  CONTACTED
+  MEETING_SCHEDULED
+  PROPOSAL_SENT
+  NEGOTIATING
+  WON
+  LOST
+}
+
+enum UnifiedLeadSource {
+  CHATBOT
+  EMPLOYER_INQUIRY
+  WAITLIST
+  CONTACT_FORM
+  MANUAL
+}
+
+enum UnifiedLeadStatus {
+  NEW
+  CONTACTED
+  CONSULTATION_SCHEDULED
+  ENROLLED
+  LOST
+}
+
+enum UnifiedLeadMembershipTier {
+  INDIVIDUAL
+  COUPLE
+  FAMILY
+  EMPLOYER
+  CUSTOM
+}
+
+enum AutoResponseSource {
+  GENERAL_CONTACT
+  CHATBOT_LEAD
+  EMPLOYER_INQUIRY
+  STATE_WAITLIST
+}
+
+enum AutoResponseStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+  UNSUBSCRIBED
+}
+
 model Article {
-  id        String   @id @default(uuid())
-  title     String
-  slug      String?  @unique
-  content   String
-  excerpt   String?
-  metaTitle String?
-  metaDescription String?
-  status    String   @default("DRAFT")
-  sourceUrl String?
-  angle     String?
-  intent    String?
-  cluster   String?
-  riskLevel String   @default("LOW")
-  briefJson Json?
-  evidenceJson Json?
-  contentHash String?
-  reviewedAt DateTime?
+  id                    String          @id @default(uuid())
+  title                 String
+  slug                  String?         @unique
+  content               String
+  excerpt               String?
+  metaTitle             String?
+  metaDescription       String?
+  category              String?
+  featuredImage         String?
+  schemaType            String?
+  faqs                  Json?
+  status                String          @default("DRAFT")
+  publishedAt           DateTime?
+  sourceUrl             String?
+  angle                 String?
+  intent                String?
+  cluster               String?
+  riskLevel             String          @default("LOW")
+  briefJson             Json?
+  evidenceJson          Json?
+  contentHash           String?
+  reviewedAt            DateTime?
   reviewedByDisplayName String?
-  reviewType String @default("CLINICAL")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  metrics   ArticleMetric[]
+  reviewType            String          @default("CLINICAL")
+  authorPhysicianId     String?
+  refreshRequested      Boolean         @default(false)
+  refreshStatus         ContentRefreshWorkflowStatus @default(REFRESHED)
+  refreshStatusUpdatedAt DateTime       @default(now())
+  nextRefreshDueAt      DateTime?
+  lastRefreshedAt       DateTime?
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+  metrics               ArticleMetric[]
+  safetyReviews         ContentSafetyReview[]
+  repurposeAsset        ContentRepurposeAsset?
+  refreshSnapshots      ContentRefreshSnapshot[]
+  refreshBriefs         ContentRefreshBrief[]
+  refreshHistory        ContentRefreshHistory[]
+  authorPhysician       Physician?      @relation(fields: [authorPhysicianId], references: [id], onDelete: SetNull)
+
+  @@index([status, publishedAt])
+  @@index([category, status])
 }
 
 model ArticleMetric {
@@ -49,35 +223,601 @@ model ArticleMetric {
   @@unique([articleId, date, source])
 }
 
+model Physician {
+  id                 String    @id @default(uuid())
+  name               String
+  slug               String    @unique
+  credentials        String?
+  boardCertification String?
+  bio                String?
+  photoUrl           String?
+  statesLicensed     String[]  @default([])
+  npiNumber          String?
+  yearsExperience    Int?
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  authoredArticles   Article[]
+  assignedLeads      UnifiedLead[]
+}
+
+model State {
+  id                           String   @id @default(uuid())
+  name                         String
+  slug                         String   @unique
+  isActive                     Boolean  @default(true)
+  metaTitle                    String?
+  metaDescription              String?
+  telehealthRegulationsSummary String?
+  rxLogistics                  String?
+  labOptions                   String?
+  emergencyProtocol            String?
+  faqs                         Json?
+  hsaNotes                     String?
+  createdAt                    DateTime @default(now())
+  updatedAt                    DateTime @updatedAt
+}
+
+model WaitlistSignup {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  stateInterest String?
+  submittedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([submittedAt])
+}
+
+model EmployerInquiry {
+  id            String   @id @default(uuid())
+  companyName   String
+  contactName   String
+  email         String
+  phone         String?
+  employeeCount Int?
+  employeeCountRange String?
+  message       String?
+  status        String   @default("NEW")
+  submittedAt   DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([email])
+  @@index([submittedAt])
+  @@index([status, submittedAt])
+}
+
+model AutoResponseTemplate {
+  id                      String             @id @default(uuid())
+  source                  AutoResponseSource @unique
+  enabled                 Boolean            @default(true)
+  delayMinutes            Int                @default(0)
+  subjectTemplate         String
+  bodyTemplate            String
+  followUpEnabled         Boolean            @default(false)
+  followUpDelayHours      Int                @default(72)
+  followUpSubjectTemplate String?
+  followUpBodyTemplate    String?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
+}
+
+model AutoResponseEmailLog {
+  id                    String                @id @default(uuid())
+  source                AutoResponseSource
+  status                AutoResponseStatus    @default(PENDING)
+  leadRefType           String?
+  leadRefId             String?
+  recipientEmail        String
+  recipientFirstName    String?
+  subject               String?
+  bodyText              String?
+  bodyHtml              String?
+  templateData          Json?
+  provider              String?
+  providerMessageId     String?
+  unsubscribeTokenHash  String?
+  errorMessage          String?
+  scheduledFor          DateTime?
+  sentAt                DateTime?
+  openedAt              DateTime?
+  clickedAt             DateTime?
+  isFollowUp            Boolean               @default(false)
+  parentEmailId         String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+  parentEmail           AutoResponseEmailLog? @relation("AutoResponseFollowUps", fields: [parentEmailId], references: [id], onDelete: SetNull)
+  followUpEmails        AutoResponseEmailLog[] @relation("AutoResponseFollowUps")
+
+  @@index([status, scheduledFor])
+  @@index([source, createdAt(sort: Desc)])
+  @@index([recipientEmail, createdAt(sort: Desc)])
+  @@index([leadRefType, leadRefId])
+  @@index([parentEmailId])
+}
+
+model AutoResponseUnsubscribe {
+  id        String             @id @default(uuid())
+  email     String
+  source    AutoResponseSource?
+  createdAt DateTime           @default(now())
+
+  @@unique([email, source])
+  @@index([email])
+}
+
+model EmployerProspect {
+  id                 String                 @id @default(uuid())
+  companyName        String
+  industry           String?
+  estimatedEmployees Int?
+  locationState      String?
+  contactName        String?
+  contactEmail       String?
+  contactTitle       String?
+  source             EmployerProspectSource @default(MANUAL)
+  status             EmployerProspectStatus @default(PROSPECT)
+  lastContactDate    DateTime?
+  nextFollowUpDate   DateTime?
+  notes              String?
+  dealValueEstimate  Int?
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
+
+  @@index([status, updatedAt])
+  @@index([nextFollowUpDate, status])
+  @@index([source, createdAt])
+  @@index([companyName])
+}
+
+model EmployerTestimonial {
+  id         String   @id @default(uuid())
+  companyName String
+  quote      String
+  personName String?
+  personTitle String?
+  logoUrl    String?
+  sortOrder  Int      @default(0)
+  isActive   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([isActive, sortOrder])
+}
+
+model CitationDirectory {
+  id                   String           @id @default(uuid())
+  platformName         String           @unique
+  platformUrl          String?
+  listingUrl           String?
+  category             CitationCategory
+  nameAsListed         String?
+  addressAsListed      String?
+  phoneAsListed        String?
+  websiteAsListed      String?
+  status               CitationStatus   @default(NOT_LISTED)
+  lastVerifiedDate     DateTime?
+  nextVerificationDate DateTime?
+  reminderIntervalDays Int              @default(90)
+  notes                String?
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+
+  @@index([status, updatedAt])
+  @@index([category, platformName])
+  @@index([nextVerificationDate])
+}
+
+model PublicReview {
+  id                String               @id @default(uuid())
+  platform          ReviewPlatform
+  reviewerName      String
+  rating            Int
+  reviewText        String
+  reviewDate        DateTime
+  reviewUrl         String?
+  responseStatus    ReviewResponseStatus @default(PENDING)
+  responseText      String?
+  responseApprovedAt DateTime?
+  respondedDate     DateTime?
+  draftGeneratedAt  DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  @@index([platform, reviewDate])
+  @@index([responseStatus, reviewDate])
+  @@index([reviewDate])
+}
+
+model PressRelease {
+  id                String             @id @default(uuid())
+  headlineTopic     String
+  targetAngle       String?
+  keyFacts          String?
+  headline          String
+  subheadline       String?
+  datelineCity      String?
+  datelineDate      DateTime?
+  leadParagraph     String?
+  body              String
+  physicianQuote    String?
+  boilerplate       String?
+  mediaContactName  String?
+  mediaContactEmail String?
+  mediaContactPhone String?
+  status            PressReleaseStatus @default(DRAFT)
+  submittedOutlets  String[]           @default([])
+  publishedUrls     String[]           @default([])
+  scheduledFor      DateTime?
+  submittedAt       DateTime?
+  publishedAt       DateTime?
+  llmProvider       String?
+  llmModel          String?
+  llmPrompt         String?
+  llmResponse       String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  mentions          PrMention[]
+
+  @@index([status, scheduledFor])
+  @@index([datelineDate, createdAt])
+}
+
+model PrOpportunity {
+  id              String            @id @default(uuid())
+  opportunityType PrOpportunityType
+  outletName      String
+  contactName     String?
+  contactEmail    String?
+  pitchStatus     PrPitchStatus     @default(IDENTIFIED)
+  pitchText       String?
+  resultUrl       String?
+  date            DateTime?
+  notes           String?
+  llmProvider     String?
+  llmModel        String?
+  llmPrompt       String?
+  llmResponse     String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  mentions        PrMention[]
+
+  @@index([pitchStatus, date])
+  @@index([opportunityType, date])
+}
+
+model PrMention {
+  id             String        @id @default(uuid())
+  mentionType    PrMentionType @default(MEDIA_MENTION)
+  title          String
+  sourceName     String?
+  url            String
+  mentionDate    DateTime
+  notes          String?
+  pressReleaseId String?
+  opportunityId  String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  pressRelease   PressRelease? @relation(fields: [pressReleaseId], references: [id], onDelete: SetNull)
+  opportunity    PrOpportunity? @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+
+  @@index([mentionDate, mentionType])
+  @@index([pressReleaseId])
+  @@index([opportunityId])
+}
+
+model PrBoilerplate {
+  id                  String   @id @default(uuid())
+  key                 String   @unique
+  aboutBoilerplate    String
+  physicianBioSnippets Json?
+  mediaContactName    String?
+  mediaContactEmail   String?
+  mediaContactPhone   String?
+  logoUrl             String?
+  headshotUrl         String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model ReviewRequestLink {
+  id        String              @id @default(uuid())
+  token     String              @unique
+  name      String?
+  isActive  Boolean             @default(true)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  clicks    ReviewRequestClick[]
+
+  @@index([isActive, createdAt])
+}
+
+model ReviewRequestClick {
+  id        String            @id @default(uuid())
+  linkId    String
+  platform  ReviewPlatform
+  clickedAt DateTime          @default(now())
+  referrer  String?
+  userAgent String?
+  link      ReviewRequestLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+
+  @@index([linkId, clickedAt])
+  @@index([platform, clickedAt])
+}
+
+model UnifiedLead {
+  id                  String                  @id @default(uuid())
+  firstName           String?
+  lastName            String?
+  email               String
+  phone               String?
+  state               String?
+  source              UnifiedLeadSource
+  sourcePage          String?
+  status              UnifiedLeadStatus       @default(NEW)
+  notes               String?
+  assignedPhysicianId String?
+  membershipTier      UnifiedLeadMembershipTier?
+  monthlyMembershipRate Int?
+  sourceRecordType    String?
+  sourceRecordId      String?
+  sourceMeta          Json?
+  statusUpdatedAt     DateTime                @default(now())
+  enrolledAt          DateTime?
+  newLeadNotifiedAt   DateTime?
+  staleAlertSentAt    DateTime?
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  assignedPhysician   Physician?              @relation(fields: [assignedPhysicianId], references: [id], onDelete: SetNull)
+  activities          UnifiedLeadActivity[]
+
+  @@index([status, statusUpdatedAt])
+  @@index([source, createdAt])
+  @@index([email, createdAt])
+  @@index([state, createdAt])
+  @@unique([source, sourceRecordId])
+}
+
+model UnifiedLeadActivity {
+  id            String            @id @default(uuid())
+  leadId         String
+  type           String
+  fromStatus     UnifiedLeadStatus?
+  toStatus       UnifiedLeadStatus?
+  note           String?
+  metadata       Json?
+  createdByUserId String?
+  createdAt      DateTime          @default(now())
+  lead           UnifiedLead       @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdByUser  User?             @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@index([leadId, createdAt])
+  @@index([type, createdAt])
+}
+
+model ContentBrief {
+  id                    String             @id @default(uuid())
+  targetKeyword         String
+  searchIntent          ContentBriefIntent
+  targetAudience        String
+  status                ContentBriefStatus @default(DRAFT)
+  h1Options             Json
+  metaTitleOptions      Json
+  metaDescriptionOptions Json
+  urlSlugSuggestion     String
+  outline               Json
+  semanticKeywords      Json
+  longTailQuestions     Json
+  faqSuggestions        Json
+  differentiationAngle  String
+  recommendedWordCount  Int
+  schemaRecommendation  Json
+  safetyFlags           Json?
+  safetyGlobalWarnings  Json?
+  disclaimerSuggestions Json?
+  selectedH1            String?
+  selectedMetaTitle     String?
+  selectedMetaDescription String?
+  notes                 String?
+  internalLinkCatalog   Json?
+  generationPrompt      String
+  generationResponse    String
+  safetyPrompt          String
+  safetyResponse        String
+  convertedArticleId    String?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
+
+  @@index([status, updatedAt])
+  @@index([searchIntent, updatedAt])
+  @@index([targetKeyword])
+}
+
+model ContentSafetyReview {
+  id                    String                    @id @default(uuid())
+  articleId             String
+  trigger               String
+  provider              String?
+  model                 String?
+  status                ContentSafetyReviewStatus @default(PASS)
+  contentHash           String
+  issueCount            Int                       @default(0)
+  mustFixCount          Int                       @default(0)
+  reviewCount           Int                       @default(0)
+  suggestionCount       Int                       @default(0)
+  unresolvedMustFixCount Int                      @default(0)
+  flags                 Json
+  overrideHistory       Json?
+  prompt                String
+  response              String
+  createdByUserId       String?
+  createdAt             DateTime                  @default(now())
+  updatedAt             DateTime                  @updatedAt
+  article               Article                   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, createdAt])
+  @@index([status, createdAt])
+  @@map("content_safety_reviews")
+}
+
+model ContentRepurposeAsset {
+  id                      String   @id @default(uuid())
+  articleId               String   @unique
+  contentHash             String
+  articleUrl              String?
+  linkedinPost            String?
+  xThread                 String?
+  shortVideoScript        String?
+  newsletterSubjectOptions Json?
+  newsletterSnippet       String?
+  linkedinPublishedAt     DateTime?
+  xPublishedAt            DateTime?
+  videoPublishedAt        DateTime?
+  newsletterPublishedAt   DateTime?
+  lastGeneratedAt         DateTime?
+  generationLog           Json?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  article                 Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, updatedAt])
+  @@index([lastGeneratedAt])
+}
+
+model ContentRefreshSnapshot {
+  id                     String                     @id @default(uuid())
+  articleId              String
+  periodCurrentStart     DateTime
+  periodCurrentEnd       DateTime
+  periodPreviousStart    DateTime
+  periodPreviousEnd      DateTime
+  currentClicks          Int                        @default(0)
+  previousClicks         Int                        @default(0)
+  currentImpressions     Int                        @default(0)
+  previousImpressions    Int                        @default(0)
+  currentAvgPosition     Float                      @default(0)
+  previousAvgPosition    Float                      @default(0)
+  clicksDeltaPct         Float                      @default(0)
+  impressionsDeltaPct    Float                      @default(0)
+  avgPositionDelta       Float                      @default(0)
+  clickDeclining         Boolean                    @default(false)
+  impressionsDeclining   Boolean                    @default(false)
+  positionDeclining      Boolean                    @default(false)
+  classification         ContentRefreshClassification @default(HEALTHY)
+  declineCount           Int                        @default(0)
+  freshnessDays          Int                        @default(0)
+  stale90                Boolean                    @default(false)
+  stale180               Boolean                    @default(false)
+  isTimeSensitive        Boolean                    @default(false)
+  timeSensitiveReasons   Json?
+  queryOpportunities     Json?
+  createdAt              DateTime                   @default(now())
+  article                Article                    @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  refreshBriefs          ContentRefreshBrief[]
+
+  @@unique([articleId, periodCurrentStart, periodCurrentEnd])
+  @@index([classification, createdAt(sort: Desc)])
+  @@index([articleId, createdAt(sort: Desc)])
+}
+
+model ContentRefreshBrief {
+  id                  String   @id @default(uuid())
+  articleId           String
+  snapshotId          String?
+  status              String   @default("DRAFT")
+  briefMarkdown       String
+  recommendationsJson Json
+  prompt              String
+  response            String
+  provider            String?
+  model               String?
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  article             Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  snapshot            ContentRefreshSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+
+  @@index([articleId, createdAt(sort: Desc)])
+  @@index([snapshotId])
+}
+
+model ContentRefreshHistory {
+  id               String                    @id @default(uuid())
+  articleId        String
+  eventType        ContentRefreshHistoryType
+  fromStatus       ContentRefreshWorkflowStatus?
+  toStatus         ContentRefreshWorkflowStatus?
+  summary          String
+  details          Json?
+  createdByUserId  String?
+  createdAt        DateTime                  @default(now())
+  article          Article                   @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, createdAt(sort: Desc)])
+  @@index([eventType, createdAt(sort: Desc)])
+}
+
+model ChatbotLead {
+  id                  String                   @id @default(uuid())
+  firstName           String
+  email               String
+  state               String
+  heardAboutUs        String?
+  source              String                   @default("chatbot")
+  conversationSummary String?
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  conversations       ChatbotConversationLog[]
+
+  @@unique([email, source])
+  @@index([state, createdAt])
+  @@index([createdAt])
+}
+
+model ChatbotConversationLog {
+  id                String       @id @default(uuid())
+  sessionId         String
+  pagePath          String?
+  userMessage       String
+  assistantMessage  String
+  isMedicalRedirect Boolean      @default(false)
+  leadId            String?
+  createdAt         DateTime     @default(now())
+  lead              ChatbotLead? @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([sessionId, createdAt])
+  @@index([createdAt])
+  @@index([leadId])
+}
+
 model ContentSchedule {
-  id          String   @id @default(uuid())
-  name        String
-  enabled     Boolean  @default(true)
-  timezone    String   @default("America/Chicago")
-  cadence     String   @default("DAILY")
-  runHour     Int      @default(8)
-  runMinute   Int      @default(0)
-  lastRunAt   DateTime?
-  options     Json?
-  maxDaily    Int?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  jobs        ContentJob[]
+  id        String       @id @default(uuid())
+  name      String
+  enabled   Boolean      @default(true)
+  timezone  String       @default("America/Chicago")
+  cadence   String       @default("DAILY")
+  runHour   Int          @default(8)
+  runMinute Int          @default(0)
+  lastRunAt DateTime?
+  options   Json?
+  maxDaily  Int?
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  jobs      ContentJob[]
 }
 
 model ContentJob {
-  id          String   @id @default(uuid())
-  scheduleId  String?
-  status      String   @default("PENDING")
-  runAt       DateTime
-  startedAt   DateTime?
-  finishedAt  DateTime?
-  options     Json?
-  result      Json?
-  error       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  schedule    ContentSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
+  id         String           @id @default(uuid())
+  scheduleId String?
+  status     String           @default("PENDING")
+  runAt      DateTime
+  startedAt  DateTime?
+  finishedAt DateTime?
+  options    Json?
+  result     Json?
+  error      String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+  schedule   ContentSchedule? @relation(fields: [scheduleId], references: [id], onDelete: SetNull)
 }
 
 model ContentStrategy {
@@ -86,6 +826,88 @@ model ContentStrategy {
   value     Json
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
+}
+
+model SeoHealthCheck {
+  id            String   @id @default(uuid())
+  checkDate     DateTime @default(now()) @map("check_date")
+  status        String
+  healthScore   Int      @map("health_score")
+  passedChecks  Int      @map("passed_checks")
+  totalChecks   Int      @map("total_checks")
+  criticalCount Int      @map("critical_count")
+  warningCount  Int      @map("warning_count")
+  infoCount     Int      @map("info_count")
+  resultsJson   Json     @map("results_json")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@index([checkDate(sort: Desc)])
+  @@index([status, checkDate(sort: Desc)])
+  @@map("seo_health_checks")
+}
+
+model SearchConsoleDailySummary {
+  id          String   @id @default(uuid())
+  metricDate  DateTime @unique
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  ctr         Float    @default(0)
+  position    Float    @default(0)
+  rowCount    Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([metricDate])
+}
+
+model SearchConsolePageQueryDaily {
+  id          String   @id @default(uuid())
+  metricDate  DateTime
+  page        String
+  query       String
+  impressions Int      @default(0)
+  clicks      Int      @default(0)
+  ctr         Float    @default(0)
+  position    Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([metricDate, page, query])
+  @@index([metricDate, page])
+  @@index([metricDate, query])
+  @@index([page, metricDate])
+  @@index([query, metricDate])
+}
+
+model AnalyticsTrafficDaily {
+  id               String   @id @default(uuid())
+  metricDate       DateTime
+  pagePath         String
+  pageViews        Int      @default(0)
+  uniqueVisitors   Int      @default(0)
+  avgEngagementSec Float?
+  source           String   @default("NATIVE")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([metricDate, pagePath, source])
+  @@index([metricDate, source])
+  @@index([pagePath, metricDate])
+}
+
+model AiOverviewObservation {
+  id                 String   @id @default(uuid())
+  query              String
+  dateSpotted        DateTime
+  positionInOverview Int?
+  screenshotUrl      String?
+  notes              String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([dateSpotted])
+  @@index([query])
 }
 
 model User {
@@ -103,6 +925,7 @@ model User {
   leadId               String?
   auditLogs            AuditLog[]
   conversionEvents     ConversionEvent[]
+  leadActivities       UnifiedLeadActivity[]
 }
 
 model Campaign {

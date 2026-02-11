@@ -6,13 +6,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Sparkles, Loader2, ArrowRight, Rocket, Megaphone } from 'lucide-react';
+import { Sparkles, Loader2, ArrowRight, Rocket, Megaphone, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
     const [isGenerating, setIsGenerating] = useState(false);
     const [result, setResult] = useState<{ count: number; published: number; warnings?: string[] } | null>(null);
     const [seoHealth, setSeoHealth] = useState<{ status: 'GREEN' | 'YELLOW' | 'RED'; indexRate: number; updatedAt?: string } | null>(null);
+    const [crmReminders, setCrmReminders] = useState<{
+        count: number;
+        reminders: Array<{ id: string; companyName: string; nextFollowUpDate?: string | null; status: string }>;
+    } | null>(null);
     const [count, setCount] = useState(5);
     const [mode, setMode] = useState<'BALANCED' | 'TREND' | 'RESEARCH'>('BALANCED');
     const [autoPublish, setAutoPublish] = useState(false);
@@ -44,13 +48,25 @@ export default function AdminDashboard() {
     useEffect(() => {
         const loadSeoHealth = async () => {
             try {
-                const res = await fetch('/api/admin/seo-health');
-                const data = await res.json();
+                const [seoRes, crmRes] = await Promise.all([
+                    fetch('/api/admin/seo-health'),
+                    fetch('/api/admin/employers/crm/reminders?limit=5'),
+                ]);
+
+                const data = await seoRes.json();
                 if (data.success) {
                     setSeoHealth({
                         status: data.report.status,
                         indexRate: data.report.indexRate,
                         updatedAt: data.meta?.updatedAt
+                    });
+                }
+
+                const crmData = await crmRes.json().catch(() => null);
+                if (crmData?.success) {
+                    setCrmReminders({
+                        count: Number(crmData.count || 0),
+                        reminders: Array.isArray(crmData.reminders) ? crmData.reminders : [],
                     });
                 }
             } catch {
@@ -129,6 +145,32 @@ export default function AdminDashboard() {
                         {seoHealth.updatedAt && (
                             <p className="text-xs text-muted-foreground">Updated {new Date(seoHealth.updatedAt).toLocaleString()}</p>
                         )}
+                    </CardContent>
+                </Card>
+            )}
+
+            {crmReminders && crmReminders.count > 0 && (
+                <Card className="border-amber-500/40">
+                    <CardContent className="py-4 text-sm space-y-2">
+                        <div className="font-semibold flex items-center gap-2">
+                            <AlertTriangle className="h-4 w-4 text-amber-700" />
+                            Employer Follow-ups Due: {crmReminders.count}
+                        </div>
+                        <div className="text-muted-foreground">
+                            Prospects with next follow-up date today or past due.
+                        </div>
+                        <div className="text-xs text-muted-foreground space-y-1">
+                            {crmReminders.reminders.slice(0, 3).map((item) => (
+                                <div key={item.id}>
+                                    {item.companyName} • {item.status} • {item.nextFollowUpDate ? new Date(item.nextFollowUpDate).toLocaleDateString() : 'No date'}
+                                </div>
+                            ))}
+                        </div>
+                        <div>
+                            <Button asChild variant="outline" size="sm">
+                                <Link href="/admin/employers/crm">Open Outreach CRM</Link>
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
             )}

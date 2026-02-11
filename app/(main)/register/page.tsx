@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { Suspense, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import { ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS, normalizeCoverageType } from '@/lib/pricing';
 
 function RegisterForm() {
     const searchParams = useSearchParams();
@@ -17,8 +18,9 @@ function RegisterForm() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    const planName = plan === 'family' ? 'Family Plan' : 'Individual Plan';
-    const price = plan === 'family' ? '$299/mo' : '$149/mo';
+    const planKey = normalizeCoverageType(plan);
+    const planName = MEMBERSHIP_TIERS[planKey].name;
+    const price = `$${MEMBERSHIP_TIERS[planKey].monthlyDollars}/mo`;
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -58,7 +60,7 @@ function RegisterForm() {
             const checkoutRes = await fetch("/api/stripe/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ plan: plan || 'individual' }),
+                body: JSON.stringify({ plan: planKey }),
             });
 
             if (!checkoutRes.ok) {
@@ -79,7 +81,8 @@ function RegisterForm() {
                 <CardHeader>
                     <CardTitle>Create your account</CardTitle>
                     <CardDescription>
-                        You selected the <span className="font-semibold text-primary">{planName}</span> ({price}).
+                        You selected <span className="font-semibold text-primary">{planName}</span> ({price}) +{" "}
+                        <span className="font-semibold text-primary">${ENROLLMENT_FEE_DOLLARS} enrollment fee</span>.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

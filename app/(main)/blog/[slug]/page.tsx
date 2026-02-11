@@ -4,14 +4,57 @@ import { notFound } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import type { Metadata } from 'next';
+import { Markdown } from '@/components/markdown';
+import { normalizeMarkdownForRender } from '@/lib/markdown-utils';
+import { stripTemplateOwnedSections } from '@/lib/content-engine/sections';
+import { DEFAULT_DISCLAIMER } from '@/lib/content-engine/disclaimer';
+import { CLINICAL_TEAM_URL, EDITORIAL_POLICY_URL, formatLastUpdated } from '@/lib/content-engine/policy';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const { slug } = params;
-    const article = await prisma.article.findFirst({
-        where: { OR: [{ slug }, { id: slug }] }
-    });
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+function isUuid(value: string) {
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function stripLeadingH1(markdown: string) {
+    const trimmed = markdown.trimStart();
+    if (!trimmed.startsWith('# ')) {
+        return markdown;
+    }
+    return trimmed.replace(/^#\s+[^\n]*\n+/, '');
+}
+
+async function findArticle(slug: string | undefined) {
+    if (!slug) return null;
+    try {
+        if (isUuid(slug)) {
+            return await prisma.article.findUnique({ where: { id: slug } });
+        }
+        const bySlug = await prisma.article.findUnique({ where: { slug } });
+        if (bySlug) return bySlug;
+    } catch (error) {
+        console.error('Blog article lookup failed', { slug, error });
+    }
+    try {
+        return await prisma.article.findFirst({
+            where: {
+                status: 'PUBLISHED',
+                slug
+            }
+        });
+    } catch (error) {
+        console.error('Blog article fallback lookup failed', { slug, error });
+        return null;
+    }
+}
+
+type SlugParams = { slug: string } | Promise<{ slug: string }>;
+
+export async function generateMetadata({ params }: { params: SlugParams }): Promise<Metadata> {
+    const { slug } = await params;
+    const article = await findArticle(slug);
 
     if (!article || article.status !== 'PUBLISHED') {
         return {};
@@ -23,21 +66,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function BlogPostPage({ params }: { params: { slug: string } }) {
-    const { slug } = params;
+export default async function BlogPostPage({ params }: { params: SlugParams }) {
+    const { slug } = await params;
 
-    const article = await prisma.article.findFirst({
-        where: {
-            OR: [
-                { slug },
-                { id: slug }
-            ]
-        }
-    });
+    const article = await findArticle(slug);
 
     if (!article || article.status !== 'PUBLISHED') {
         notFound();
     }
+    const disclaimer = (article.briefJson as any)?.disclaimer || DEFAULT_DISCLAIMER;
+    const rawContent = stripTemplateOwnedSections(stripLeadingH1(article.content || ''));
+    const content = normalizeMarkdownForRender(rawContent);
 
     const jsonLd = {
         '@context': 'https://schema.org',
@@ -93,8 +132,42 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
                 </div>
             </header>
 
+            <div className="space-y-4 mb-10">
+                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                    <span>{disclaimer.shortText}</span>
+                    <details className="group">
+                        <summary className="cursor-pointer text-primary text-sm">Read full disclaimer</summary>
+                        <div className="mt-2 text-xs text-muted-foreground max-w-xl">
+                            {disclaimer.fullText}
+                        </div>
+                    </details>
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm text-amber-900">
+                    <div className="font-semibold mb-1">Emergency guidance</div>
+                    <div>{disclaimer.emergencyText}</div>
+                </div>
+            </div>
+
             <div className="prose prose-lg dark:prose-invert max-w-none">
-                <ReactMarkdown>{article.content}</ReactMarkdown>
+                <Markdown content={content} />
+            </div>
+
+            <div className="mt-12 rounded-2xl border border-border bg-muted/20 p-6 text-sm text-muted-foreground">
+                <div className="font-medium text-foreground mb-2">Reviewed by</div>
+                <div className="space-y-1">
+                    <div>{article.reviewedByDisplayName || 'Present Health Clinical Team'}</div>
+                    <div>
+                        <Link href={CLINICAL_TEAM_URL} className="text-primary hover:underline">
+                            Clinical Team / Medical Review Process
+                        </Link>
+                    </div>
+                    <div>
+                        <Link href={EDITORIAL_POLICY_URL} className="text-primary hover:underline">
+                            Editorial Policy
+                        </Link>
+                    </div>
+                    <div>Last updated: {formatLastUpdated(new Date(article.updatedAt))}</div>
+                </div>
             </div>
 
             <div className="mt-16 p-8 bg-muted/30 rounded-2xl border border-border text-center">

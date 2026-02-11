@@ -48,6 +48,32 @@ const CLUSTERS: Array<{ name: string; keywords: string[] }> = [
     { name: 'immune', keywords: ['immune', 'allergy', 'vaccin', 'flu'] }
 ];
 
+const CLUSTER_RISK_PRIORITY = [
+    'heart',
+    'brain',
+    'respiratory',
+    'kids',
+    'mental-health',
+    'women-health',
+    'metabolic',
+    'immune',
+    'digestive',
+    'skin',
+    'musculoskeletal',
+    'men-health',
+    'sleep',
+    'energy',
+    'nutrition',
+    'fitness',
+    'preventive',
+    'longevity',
+    'travel',
+    'workplace',
+    'care-navigation',
+    'general'
+];
+const CLUSTER_PRIORITY_MAP = new Map(CLUSTER_RISK_PRIORITY.map((name, index) => [name, index]));
+
 const HIGH_RISK_KEYWORDS = [
     'cancer',
     'suicide',
@@ -81,13 +107,27 @@ export function pickIntent(seed: string): string {
 }
 
 export function classifyCluster(title: string): string {
+    return classifyClusters(title).primary;
+}
+
+export function classifyClusters(title: string): { primary: string; secondary: string[] } {
     const lower = title.toLowerCase();
-    for (const cluster of CLUSTERS) {
-        if (cluster.keywords.some(k => lower.includes(k))) {
-            return cluster.name;
-        }
+    const matches = CLUSTERS
+        .filter(cluster => cluster.keywords.some(k => lower.includes(k)))
+        .map(cluster => cluster.name);
+
+    if (matches.length === 0) {
+        return { primary: 'general', secondary: [] };
     }
-    return 'general';
+
+    const sorted = Array.from(new Set(matches)).sort((a, b) => {
+        const aRank = CLUSTER_PRIORITY_MAP.get(a) ?? CLUSTER_PRIORITY_MAP.get('general') ?? 999;
+        const bRank = CLUSTER_PRIORITY_MAP.get(b) ?? CLUSTER_PRIORITY_MAP.get('general') ?? 999;
+        return aRank - bRank;
+    });
+
+    const [primary, ...secondary] = sorted;
+    return { primary, secondary };
 }
 
 export function estimateRisk(title: string): 'LOW' | 'MEDIUM' | 'HIGH' {

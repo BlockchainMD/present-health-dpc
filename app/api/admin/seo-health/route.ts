@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { requireAdmin } from '@/lib/authz';
-import { getSeoHealthSnapshot } from '@/lib/seo-health/service';
+import { buildSeoHealthReportCsv, getSeoHealthSnapshot } from '@/lib/seo-health/service';
 
 export const runtime = 'nodejs';
 
@@ -12,8 +12,41 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const refresh = new URL(request.url).searchParams.get('refresh') === '1';
+        const searchParams = new URL(request.url).searchParams;
+        const refresh = searchParams.get('refresh') === '1';
+        const format = (searchParams.get('format') || '').trim().toLowerCase();
         const snapshot = await getSeoHealthSnapshot({ refresh, refreshIfStale: true });
+
+        if (format === 'csv') {
+            const csv = buildSeoHealthReportCsv(snapshot.report);
+            return new Response(csv, {
+                status: 200,
+                headers: {
+                    'Content-Type': 'text/csv; charset=utf-8',
+                    'Content-Disposition': `attachment; filename=\"seo-health-${new Date(snapshot.updatedAt).toISOString().slice(0, 10)}.csv\"`,
+                },
+            });
+        }
+
+        if (format === 'json') {
+            return new Response(JSON.stringify({
+                report: snapshot.report,
+                meta: {
+                    updatedAt: snapshot.updatedAt,
+                    cached: snapshot.cached,
+                    stale: snapshot.stale,
+                    config: snapshot.config,
+                    trend: snapshot.report.trend,
+                },
+            }, null, 2), {
+                status: 200,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8',
+                    'Content-Disposition': `attachment; filename=\"seo-health-${new Date(snapshot.updatedAt).toISOString().slice(0, 10)}.json\"`,
+                },
+            });
+        }
+
         return NextResponse.json({
             success: true,
             report: snapshot.report,
@@ -21,7 +54,8 @@ export async function GET(request: NextRequest) {
                 updatedAt: snapshot.updatedAt,
                 cached: snapshot.cached,
                 stale: snapshot.stale,
-                config: snapshot.config
+                config: snapshot.config,
+                trend: snapshot.report.trend,
             }
         });
     } catch (error: any) {

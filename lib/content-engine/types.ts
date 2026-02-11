@@ -14,7 +14,10 @@ export type Brief = {
     audience: string;
     intent: string;
     cluster: string;
+    primaryCluster: string;
+    secondaryClusters: string[];
     riskLevel: 'LOW' | 'MEDIUM' | 'HIGH';
+    hook?: string;
     primaryQuestion: string;
     secondaryQuestions: string[];
     outline: string[];
@@ -25,6 +28,13 @@ export type Brief = {
     metaDescription: string;
     wordCountTarget: number;
     ctaType: 'MEMBERSHIP' | 'NEWSLETTER' | 'BOOK_CALL';
+    allowedSources?: string[];
+};
+
+export type InternalLinkSuggestion = {
+    label: string;
+    url: string;
+    type: 'conversion' | 'cluster' | 'cross-cluster';
 };
 
 export type Draft = {
@@ -33,6 +43,8 @@ export type Draft = {
     excerpt: string;
     metaTitle: string;
     metaDescription: string;
+    qaFlags?: string[];
+    internalLinks?: InternalLinkSuggestion[];
 };
 
 export type EngineOptions = {

@@ -28,11 +28,16 @@ export function Footer() {
                     </div>
 
                     <div>
-                        <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-foreground">Practice</h3>
+                        <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-foreground">Explore</h3>
                         <ul className="space-y-3 text-sm text-muted-foreground">
-                            <li><Link href="/about" className="hover:text-primary transition-colors">About</Link></li>
+                            <li><Link href="/how-it-works" className="hover:text-primary transition-colors">How It Works</Link></li>
                             <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
-                            <li><Link href="/#benefits" className="hover:text-primary transition-colors">Benefits</Link></li>
+                            <li><Link href="/join" className="hover:text-primary transition-colors">Join</Link></li>
+                            <li><Link href="/our-physicians" className="hover:text-primary transition-colors">Our Physicians</Link></li>
+                            <li><Link href="/states" className="hover:text-primary transition-colors">States</Link></li>
+                            <li><Link href="/learn" className="hover:text-primary transition-colors">Learn</Link></li>
+                            <li><Link href="/for-employers" className="hover:text-primary transition-colors">For Employers</Link></li>
+                            <li><Link href="/about" className="hover:text-primary transition-colors">About</Link></li>
                         </ul>
                     </div>
 

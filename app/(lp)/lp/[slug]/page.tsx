@@ -8,7 +8,8 @@ import { CheckCircle2, ArrowRight, ShieldCheck, Check } from 'lucide-react';
 import Image from "next/image";
 
 import { LPAnimations, FadeInWhenVisible, StickyMobileCTA } from './client';
-import ReactMarkdown from 'react-markdown';
+import { Markdown } from '@/components/markdown';
+import { normalizeMarkdownForRender } from '@/lib/markdown-utils';
 import { getOrCreateAttributionSession } from '@/lib/attribution';
 import { headers } from 'next/headers';
 
@@ -43,12 +44,12 @@ function sanitizeObject(obj: any): any {
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-    params: { slug: string };
+    params: { slug: string } | Promise<{ slug: string }>;
     searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export async function generateMetadata({ params }: PageProps) {
-    const { slug } = params;
+    const { slug } = await params;
     const run = await prisma.campaignRun.findFirst({
         where: { campaign: { landingSlug: slug } },
         orderBy: { createdAt: 'desc' },
@@ -71,7 +72,7 @@ export async function generateMetadata({ params }: PageProps) {
 }
 
 export default async function LandingPage({ params, searchParams }: PageProps) {
-    const { slug } = params;
+    const { slug } = await params;
     const pick = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
     const { gclid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = searchParams;
     const gclidValue = pick(gclid);
@@ -247,7 +248,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                             <section className="py-20 bg-background border-y border-border">
                                 <div className="container mx-auto px-4 max-w-4xl">
                                     <div className="prose prose-lg dark:prose-invert mx-auto prose-headings:font-bold prose-p:text-muted-foreground">
-                                        <ReactMarkdown>{content.educationalBriefing}</ReactMarkdown>
+                                        <Markdown content={normalizeMarkdownForRender(content.educationalBriefing)} />
                                     </div>
                                 </div>
                             </section>

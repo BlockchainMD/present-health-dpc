@@ -1,6 +1,10 @@
 import Link from 'next/link';
-import { LayoutDashboard, FileText, Settings, ExternalLink, BarChart3, Activity } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, ExternalLink, BarChart3, Activity, Users, ShieldCheck, MapPinned, BookOpen, Building2, MessageSquare, Braces, ClipboardList, WandSparkles, Share2, Star, Inbox, Megaphone, Handshake, RotateCcw, Mail } from 'lucide-react';
 import { protectAdminPage } from '@/lib/authz';
+import { Badge } from '@/components/ui/badge';
+import { getCitationNeedsUpdateCount } from '@/lib/citations';
+import { getPendingReviewCount } from '@/lib/reviews';
+import { getLeadFollowUpCount } from '@/lib/unified-leads';
 
 export default async function AdminLayout({
     children,
@@ -8,6 +12,11 @@ export default async function AdminLayout({
     children: React.ReactNode;
 }) {
     await protectAdminPage();
+    const [citationNeedsUpdateCount, pendingReviewCount, leadFollowUpCount] = await Promise.all([
+        getCitationNeedsUpdateCount(),
+        getPendingReviewCount(),
+        getLeadFollowUpCount(),
+    ]);
 
     return (
         <div className="flex min-h-screen bg-muted/20">
@@ -46,6 +55,139 @@ export default async function AdminLayout({
                     >
                         <FileText className="h-4 w-4" />
                         Published Articles
+                    </Link>
+                    <Link
+                        href="/admin/learn"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <BookOpen className="h-4 w-4" />
+                        Learn Articles
+                    </Link>
+                    <Link
+                        href="/admin/distribution"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Share2 className="h-4 w-4" />
+                        Distribution
+                    </Link>
+                    <Link
+                        href="/admin/reviews"
+                        className="flex items-center justify-between gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <span className="flex items-center gap-3 min-w-0">
+                            <Star className="h-4 w-4" />
+                            Reviews
+                        </span>
+                        {pendingReviewCount > 0 ? (
+                            <Badge variant="destructive" className="h-5 min-w-5 px-1.5 text-[11px]">
+                                {pendingReviewCount}
+                            </Badge>
+                        ) : null}
+                    </Link>
+                    <Link
+                        href="/admin/leads"
+                        className="flex items-center justify-between gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <span className="flex items-center gap-3 min-w-0">
+                            <Inbox className="h-4 w-4" />
+                            Leads
+                        </span>
+                        {leadFollowUpCount > 0 ? (
+                            <Badge variant="destructive" className="h-5 min-w-5 px-1.5 text-[11px]">
+                                {leadFollowUpCount}
+                            </Badge>
+                        ) : null}
+                    </Link>
+                    <Link
+                        href="/admin/physicians"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Users className="h-4 w-4" />
+                        Physicians
+                    </Link>
+                    <Link
+                        href="/admin/states"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <MapPinned className="h-4 w-4" />
+                        States
+                    </Link>
+                    <Link
+                        href="/admin/employers"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Building2 className="h-4 w-4" />
+                        Employers
+                    </Link>
+                    <Link
+                        href="/admin/employers/crm"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Handshake className="h-4 w-4" />
+                        Employer CRM
+                    </Link>
+                    <Link
+                        href="/admin/chatbot"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <MessageSquare className="h-4 w-4" />
+                        Chatbot
+                    </Link>
+                    <Link
+                        href="/admin/auto-responses"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Mail className="h-4 w-4" />
+                        Auto Responses
+                    </Link>
+                    <Link
+                        href="/admin/schema"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Braces className="h-4 w-4" />
+                        Schema
+                    </Link>
+                    <Link
+                        href="/admin/citations"
+                        className="flex items-center justify-between gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <span className="flex items-center gap-3 min-w-0">
+                            <ClipboardList className="h-4 w-4" />
+                            Citations
+                        </span>
+                        {citationNeedsUpdateCount > 0 ? (
+                            <Badge variant="destructive" className="h-5 min-w-5 px-1.5 text-[11px]">
+                                {citationNeedsUpdateCount}
+                            </Badge>
+                        ) : null}
+                    </Link>
+                    <Link
+                        href="/admin/trust-hub"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <ShieldCheck className="h-4 w-4" />
+                        Trust Hub
+                    </Link>
+                    <Link
+                        href="/admin/content-briefs"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <WandSparkles className="h-4 w-4" />
+                        Content Briefs
+                    </Link>
+                    <Link
+                        href="/admin/content-refresh"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <RotateCcw className="h-4 w-4" />
+                        Content Refresh
+                    </Link>
+                    <Link
+                        href="/admin/pr"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Megaphone className="h-4 w-4" />
+                        PR
                     </Link>
                     <Link
                         href="/admin/content-ops"

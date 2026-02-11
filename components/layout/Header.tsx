@@ -4,8 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Menu } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,10 +18,21 @@ import {
 import { cn } from "@/lib/utils";
 
 const navigation = [
-    { name: "Benefits", href: "/#benefits" },
+    { name: "How It Works", href: "/how-it-works" },
     { name: "Pricing", href: "/pricing" },
+    { name: "Our Physicians", href: "/our-physicians" },
+    { name: "States", href: "/states" },
+    { name: "Learn", href: "/learn" },
+    { name: "For Employers", href: "/for-employers" },
     { name: "About", href: "/about" },
 ];
+
+function isActivePath(pathname: string, href: string) {
+    if (href.includes("#")) {
+        return pathname === href.split("#")[0];
+    }
+    return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function Header() {
     const pathname = usePathname();
@@ -66,23 +76,21 @@ export function Header() {
                     {navigation.map((item) => (
                         <Link
                             key={item.name}
-                            href={item.href}
-                            className={cn(
-                                "text-sm font-medium transition-colors hover:text-primary",
-                                pathname === item.href
-                                    ? "text-primary"
-                                    : "text-muted-foreground"
-                            )}
-                        >
+	                            href={item.href}
+	                            className={cn(
+	                                "text-sm font-medium transition-colors hover:text-primary",
+	                                isActivePath(pathname, item.href)
+	                                    ? "text-primary"
+	                                    : "text-muted-foreground"
+	                            )}
+	                        >
                             {item.name}
                         </Link>
-                    ))}
-                    <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        <Link href="/pricing">
-                            Join / See Pricing
-                        </Link>
-                    </Button>
-                </nav>
+	                    ))}
+	                    <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+	                        <Link href="/join">Join</Link>
+	                    </Button>
+	                </nav>
 
                 {/* Mobile Menu */}
                 <div className="md:hidden">
@@ -101,28 +109,26 @@ export function Header() {
                                 {navigation.map((item) => (
                                     <SheetClose asChild key={item.name}>
                                         <Link
-                                            href={item.href}
-                                            className={cn(
-                                                "text-lg font-medium transition-colors hover:text-primary",
-                                                pathname === item.href
-                                                    ? "text-primary"
-                                                    : "text-muted-foreground"
-                                            )}
-                                        >
+	                                            href={item.href}
+	                                            className={cn(
+	                                                "text-lg font-medium transition-colors hover:text-primary",
+	                                                isActivePath(pathname, item.href)
+	                                                    ? "text-primary"
+	                                                    : "text-muted-foreground"
+	                                            )}
+	                                        >
                                             {item.name}
                                         </Link>
                                     </SheetClose>
-                                ))}
-                                <SheetClose asChild>
-                                    <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                                        <Link href="/pricing">
-                                            Join / See Pricing
-                                        </Link>
-                                    </Button>
-                                </SheetClose>
-                            </div>
-                        </SheetContent>
-                    </Sheet>
+	                                ))}
+	                                <SheetClose asChild>
+	                                    <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+	                                        <Link href="/join">Join</Link>
+	                                    </Button>
+	                                </SheetClose>
+	                            </div>
+	                        </SheetContent>
+	                    </Sheet>
                 </div>
             </div>
         </header>

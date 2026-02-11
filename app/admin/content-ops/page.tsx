@@ -41,9 +41,14 @@ export default function ContentOpsPage() {
     const [useFeedback, setUseFeedback] = useState(true);
     const [reviewType, setReviewType] = useState<'CLINICAL' | 'EDITORIAL'>('CLINICAL');
     const [reviewLabel, setReviewLabel] = useState('Present Health Clinical Team');
-    const [jobType, setJobType] = useState<'CONTENT' | 'GSC_SYNC' | 'REFRESH_STRATEGY' | 'SEO_HEALTH'>('CONTENT');
+    const [jobType, setJobType] = useState<'CONTENT' | 'GSC_SYNC' | 'REFRESH_STRATEGY' | 'SEO_HEALTH' | 'CONTENT_REFRESH_DETECT'>('CONTENT');
     const [gscDays, setGscDays] = useState(7);
     const [refreshAfterSync, setRefreshAfterSync] = useState(true);
+    const [preflightSeoHealth, setPreflightSeoHealth] = useState(true);
+    const [preflightGscSync, setPreflightGscSync] = useState(true);
+    const [preflightGscDays, setPreflightGscDays] = useState(7);
+    const [preflightRefreshStrategy, setPreflightRefreshStrategy] = useState(true);
+    const [preflightStrategyDays, setPreflightStrategyDays] = useState(30);
     const [timezone, setTimezone] = useState('America/Chicago');
     const [cadence, setCadence] = useState<'DAILY' | 'HOURLY'>('DAILY');
     const [runHour, setRunHour] = useState(8);
@@ -78,6 +83,12 @@ export default function ContentOpsPage() {
         setJobType((opts.jobType as any) || 'CONTENT');
         setGscDays(opts.days ?? 7);
         setRefreshAfterSync(Boolean(opts.refreshStrategy));
+        const preflight = opts.preflight || {};
+        setPreflightSeoHealth(preflight.seoHealthSnapshot !== false);
+        setPreflightGscSync(preflight.gscSync !== false);
+        setPreflightGscDays(preflight.gscDays ?? 7);
+        setPreflightRefreshStrategy(preflight.refreshStrategy !== false);
+        setPreflightStrategyDays(preflight.strategyDays ?? 30);
         if (opts.sources) setSources((prev) => ({ ...prev, ...opts.sources }));
     };
 
@@ -122,6 +133,13 @@ export default function ContentOpsPage() {
     const createSchedule = async () => {
         setSaving(true);
         try {
+            const preflight = {
+                seoHealthSnapshot: preflightSeoHealth,
+                gscSync: preflightGscSync,
+                gscDays: preflightGscDays,
+                refreshStrategy: preflightRefreshStrategy,
+                strategyDays: preflightStrategyDays
+            };
             const payload = {
                 name: scheduleName || 'Content Engine Schedule',
                 timezone,
@@ -139,7 +157,8 @@ export default function ContentOpsPage() {
                     reviewLabel,
                     sources,
                     days: gscDays,
-                    refreshStrategy: refreshAfterSync
+                    refreshStrategy: refreshAfterSync,
+                    preflight: jobType === 'CONTENT' ? preflight : undefined
                 }
             };
             if (selectedScheduleId) {
@@ -243,6 +262,7 @@ export default function ContentOpsPage() {
                                 <option value="GSC_SYNC">GSC Sync</option>
                                 <option value="REFRESH_STRATEGY">Refresh Strategy</option>
                                 <option value="SEO_HEALTH">SEO Health Snapshot</option>
+                                <option value="CONTENT_REFRESH_DETECT">Content Refresh Detection</option>
                             </select>
                         </div>
                         <div className="grid gap-2">
@@ -308,35 +328,90 @@ export default function ContentOpsPage() {
                     )}
 
                     {jobType === 'CONTENT' && (
-                        <div className="grid gap-2">
-                            <Label>Source mix</Label>
-                            <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
-                                {([
-                                    ['trends', 'Google Trends'],
-                                    ['news', 'Google News'],
-                                    ['pubmed', 'PubMed'],
-                                    ['trials', 'ClinicalTrials.gov'],
-                                    ['nih', 'NIH News'],
-                                    ['cdc', 'CDC News'],
-                                    ['curated', 'Curated Evergreen']
-                                ] as const).map(([key, label]) => (
-                                    <label key={key} className="flex items-center gap-2">
-                                        <input
-                                            type="checkbox"
-                                            className="h-4 w-4"
-                                            checked={sources[key]}
-                                            onChange={(e) => setSources(prev => ({ ...prev, [key]: e.target.checked }))}
-                                        />
-                                        {label}
-                                    </label>
-                                ))}
+                        <>
+                            <div className="grid gap-2">
+                                <Label>Source mix</Label>
+                                <div className="grid grid-cols-2 gap-2 text-sm text-muted-foreground">
+                                    {([
+                                        ['trends', 'Google Trends'],
+                                        ['news', 'Google News'],
+                                        ['pubmed', 'PubMed'],
+                                        ['trials', 'ClinicalTrials.gov'],
+                                        ['nih', 'NIH News'],
+                                        ['cdc', 'CDC News'],
+                                        ['curated', 'Curated Evergreen']
+                                    ] as const).map(([key, label]) => (
+                                        <label key={key} className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                className="h-4 w-4"
+                                                checked={sources[key]}
+                                                onChange={(e) => setSources(prev => ({ ...prev, [key]: e.target.checked }))}
+                                            />
+                                            {label}
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+
+                            <div className="grid gap-2">
+                                <Label>Preflight data sync</Label>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                                        <div>
+                                            <Label className="text-sm font-medium">Refresh SEO Health snapshot</Label>
+                                            <p className="text-xs text-muted-foreground">Ensures latest indexing data before publish.</p>
+                                        </div>
+                                        <Switch checked={preflightSeoHealth} onCheckedChange={setPreflightSeoHealth} />
+                                    </div>
+                                    <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                                        <div>
+                                            <Label className="text-sm font-medium">Sync Search Console metrics</Label>
+                                            <p className="text-xs text-muted-foreground">Pulls recent impressions/clicks.</p>
+                                        </div>
+                                        <Switch checked={preflightGscSync} onCheckedChange={setPreflightGscSync} />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label>GSC lookback (days)</Label>
+                                        <Input
+                                            type="number"
+                                            min={1}
+                                            value={preflightGscDays}
+                                            onChange={(e) => setPreflightGscDays(Number(e.target.value))}
+                                            disabled={!preflightGscSync}
+                                        />
+                                    </div>
+                                    <div className="flex items-center justify-between rounded-lg border border-border px-3 py-2">
+                                        <div>
+                                            <Label className="text-sm font-medium">Refresh strategy weights</Label>
+                                            <p className="text-xs text-muted-foreground">Updates CTR-weighted topic mix.</p>
+                                        </div>
+                                        <Switch checked={preflightRefreshStrategy} onCheckedChange={setPreflightRefreshStrategy} />
+                                    </div>
+                                    <div className="grid gap-2">
+                                        <Label>Strategy window (days)</Label>
+                                        <Input
+                                            type="number"
+                                            min={7}
+                                            value={preflightStrategyDays}
+                                            onChange={(e) => setPreflightStrategyDays(Number(e.target.value))}
+                                            disabled={!preflightRefreshStrategy}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </>
                     )}
 
                     {jobType === 'SEO_HEALTH' && (
                         <div className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground">
                             This schedule refreshes the SEO Health snapshot using Google Search Console data.
+                        </div>
+                    )}
+
+                    {jobType === 'CONTENT_REFRESH_DETECT' && (
+                        <div className="rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground">
+                            This schedule runs weekly ranking decay detection and updates article refresh workflow statuses.
                         </div>
                     )}
 

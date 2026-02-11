@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { format } from 'date-fns';
 import Link from 'next/link';
 import { Article } from '@prisma/client';
-import ReactMarkdown from 'react-markdown';
+import { Markdown } from '@/components/markdown';
+import { normalizeMarkdownForRender } from '@/lib/markdown-utils';
 
 export const dynamic = 'force-dynamic';
 
@@ -46,7 +47,7 @@ export default async function BlogPage() {
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="text-muted-foreground line-clamp-4 text-sm prose prose-sm dark:prose-invert">
-                                <ReactMarkdown>{article.excerpt || article.content.substring(0, 200) + '...'}</ReactMarkdown>
+                                <Markdown content={normalizeMarkdownForRender(article.excerpt || article.content.substring(0, 200) + '...')} />
                             </div>
                             <Link
                                 href={`/blog/${article.slug || article.id}`}

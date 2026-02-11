@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
-import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
+import { ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS, normalizeCoverageType } from "@/lib/pricing";
 
 export async function POST(req: Request) {
     try {
@@ -16,15 +16,15 @@ export async function POST(req: Request) {
             );
         }
 
-        const { plan } = await req.json();
+        const body = await req.json().catch(() => null);
+        const payload = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
+        const planRaw = payload.plan;
+        const plan = normalizeCoverageType(planRaw);
 
-        // Define price IDs (You would typically store these in your DB or config)
-        // For this demo, we'll create them on the fly or use a lookup
-        // Ideally, you should create Products/Prices in your Stripe Dashboard and use those IDs.
-        // Since we don't have them, we will use 'price_data' to create them inline for this MVP.
-
-        const unitAmount = plan === 'family' ? 29900 : 14900;
-        const productName = plan === 'family' ? 'Family Plan' : 'Individual Plan';
+        const tier = MEMBERSHIP_TIERS[plan];
+        const unitAmount = tier.monthlyDollars * 100;
+        const productName = `${tier.name} Membership`;
+        const enrollmentFeeAmount = ENROLLMENT_FEE_DOLLARS * 100;
 
         const checkoutSession = await stripe.checkout.sessions.create({
             mode: 'subscription',
@@ -43,11 +43,22 @@ export async function POST(req: Request) {
                     },
                     quantity: 1,
                 },
+                {
+                    price_data: {
+                        currency: "usd",
+                        product_data: {
+                            name: "Present Health - Enrollment fee",
+                        },
+                        unit_amount: enrollmentFeeAmount,
+                    },
+                    quantity: 1,
+                },
             ],
             customer_email: session.user.email!,
             metadata: {
                 userId: session.user.id,
                 attributionSessionId: (await cookies()).get('ph_attrib')?.value || '',
+                plan,
             },
             success_url: `${process.env.NEXTAUTH_URL}/dashboard?success=true`,
             cancel_url: `${process.env.NEXTAUTH_URL}/dashboard?canceled=true`,

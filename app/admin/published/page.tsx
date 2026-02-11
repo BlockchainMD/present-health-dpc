@@ -5,7 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ExternalLink, Trash2, Loader2 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import { Markdown } from '@/components/markdown';
+import { normalizeMarkdownForRender } from '@/lib/markdown-utils';
 import Link from 'next/link';
 
 interface Article {
@@ -22,6 +23,7 @@ export default function PublishedPage() {
     const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
     const [processingId, setProcessingId] = useState<string | null>(null);
+    const [proofreadingId, setProofreadingId] = useState<string | null>(null);
 
     useEffect(() => {
         fetchArticles();
@@ -81,6 +83,21 @@ export default function PublishedPage() {
         }
     };
 
+    const handleProofread = async (id: string) => {
+        setProofreadingId(id);
+        try {
+            const res = await fetch(`/api/admin/articles/${id}/proofread`, { method: 'POST' });
+            const data = await res.json();
+            if (res.ok && data?.success) {
+                setArticles(prev => prev.map(article => (article.id === id ? { ...article, content: data.article.content } : article)));
+            }
+        } catch (error) {
+            console.error('Failed to proofread', error);
+        } finally {
+            setProofreadingId(null);
+        }
+    };
+
     if (loading) {
         return <div className="flex justify-center p-12"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
     }
@@ -120,9 +137,17 @@ export default function PublishedPage() {
                                 </div>
                             </CardHeader>
                             <CardContent className="pt-6 max-h-48 overflow-y-auto prose prose-sm dark:prose-invert max-w-none">
-                                <ReactMarkdown>{article.content.substring(0, 300) + '...'}</ReactMarkdown>
+                                <Markdown content={normalizeMarkdownForRender(article.content.substring(0, 300) + '...')} />
                             </CardContent>
                             <CardFooter className="bg-muted/10 flex justify-end gap-3 pt-4">
+                                <Button
+                                    variant="outline"
+                                    onClick={() => handleProofread(article.id)}
+                                    disabled={!!processingId || proofreadingId === article.id}
+                                >
+                                    {proofreadingId === article.id ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                                    AI proofread
+                                </Button>
                                 <Button
                                     variant="outline"
                                     onClick={() => handleUnpublish(article.id)}

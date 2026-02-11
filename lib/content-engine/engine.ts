@@ -4,10 +4,12 @@ import { fetchTopicSignals } from './sources';
 import { generateBrief } from './brief';
 import { generateDraft } from './draft';
 import { qaDraft } from './qa';
-import { classifyCluster, slugify } from './taxonomy';
+import { classifyCluster, classifyClusters, slugify } from './taxonomy';
 import { getClusterWeights } from './feedback';
-import { EngineOptions, EngineResult, TopicSignal } from './types';
+import { Brief, EngineOptions, EngineResult, InternalLinkSuggestion, TopicSignal } from './types';
 import { getSeoHealthSnapshot } from '../seo-health/service';
+import { DEFAULT_DISCLAIMER } from './disclaimer';
+import { lintMarkdown } from './lint';
 
 const MAX_PER_RUN = 10;
 const DEFAULT_MAX_AUTO_PUBLISH_PER_DAY = 20;
@@ -32,12 +34,18 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
         }
         if (seoSnapshot.report.status === 'RED') {
             warnings.push('SEO health status is RED.');
-            if (seoSnapshot.config.pauseDraftsOnRed) {
-                return { created: 0, published: 0, articles: [], warnings };
-            }
-            if (seoSnapshot.config.stopPublishingOnRed && autoPublishEnabled) {
+            if (seoSnapshot.config.hardStopOnRed) {
+                warnings.push('Publishing hard stop is active until SEO health recovers.');
+                if (autoPublishEnabled) {
+                    autoPublishEnabled = false;
+                }
+            } else if (seoSnapshot.config.stopPublishingOnRed && autoPublishEnabled) {
                 autoPublishEnabled = false;
                 warnings.push('Auto-publishing disabled due to RED SEO health status.');
+            }
+            if (seoSnapshot.config.pauseDraftsOnRed) {
+                warnings.push('Draft generation paused due to RED SEO health status.');
+                return { created: 0, published: 0, articles: [], warnings };
             }
         }
     } catch (error) {
@@ -81,7 +89,8 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
 
         for (const signal of pool) {
             if (created.length >= count) break;
-            const cluster = classifyCluster(signal.title);
+            const clusterInfo = classifyClusters(signal.title);
+            const cluster = clusterInfo.primary;
             if ((clusterCounts[cluster] || 0) >= MAX_PER_CLUSTER) continue;
             const lowerTitle = signal.title.toLowerCase();
             const isDpcTopic = DPC_KEYWORDS.some(keyword => lowerTitle.includes(keyword));
@@ -113,8 +122,12 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                 };
             }
 
+            const reviewType = options.reviewType === 'EDITORIAL' ? 'EDITORIAL' : 'CLINICAL';
+            const reviewLabel = options.reviewLabel
+                || (reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
+
             const draft = await generateDraft(brief);
-            const qa = qaDraft(brief, draft);
+            const qa = qaDraft(brief, draft, { reviewLabel });
             const contentHash = hashContent(qa.content);
             const duplicate = await prisma.article.findFirst({ where: { contentHash } });
             if (duplicate && !allowExisting) continue;
@@ -133,12 +146,10 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                 finalSlug = slugify(`${brief.title}-${Date.now().toString(36).slice(-4)}`);
             }
 
-            const reviewType = options.reviewType === 'EDITORIAL' ? 'EDITORIAL' : 'CLINICAL';
-            const reviewLabel = options.reviewLabel
-                || (reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
-
-            const autoPublish = autoPublishEnabled && brief.riskLevel === 'LOW' && autoPublishRemaining > 0;
+            const lintIssues = lintMarkdown(qa.content);
+            const autoPublish = autoPublishEnabled && brief.riskLevel === 'LOW' && autoPublishRemaining > 0 && lintIssues.length === 0;
             if (autoPublish) autoPublishRemaining -= 1;
+            const internalLinks = await buildInternalLinks(brief);
 
             const article = await prisma.article.create({
                 data: {
@@ -154,7 +165,12 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                     intent: brief.intent,
                     cluster: brief.cluster,
                     riskLevel: brief.riskLevel,
-                    briefJson: brief as any,
+                    briefJson: {
+                        ...brief,
+                        internalLinks,
+                        disclaimer: DEFAULT_DISCLAIMER,
+                        qaFlags: qa.qaFlags || []
+                    } as any,
                     evidenceJson: {
                         sources: [
                             { title: signal.title, url: signal.url, source: signal.source, kind: signal.kind }
@@ -182,6 +198,48 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
     }
 
     return { created: result.created.length, published: result.published, articles: result.created, warnings };
+}
+
+async function buildInternalLinks(brief: Brief): Promise<InternalLinkSuggestion[]> {
+    const links: InternalLinkSuggestion[] = [
+        { label: 'Join / See Pricing', url: '/pricing', type: 'conversion' }
+    ];
+
+    const primaryArticles = await prisma.article.findMany({
+        where: {
+            status: 'PUBLISHED',
+            cluster: brief.cluster
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+        select: { slug: true, title: true }
+    });
+
+    for (const article of primaryArticles) {
+        if (!article.slug) continue;
+        links.push({ label: article.title, url: `/blog/${article.slug}`, type: 'cluster' });
+    }
+
+    const secondaryClusters = (brief.secondaryClusters || []).filter(Boolean).slice(0, 2);
+    for (const cluster of secondaryClusters) {
+        const secondaryArticle = await prisma.article.findFirst({
+            where: {
+                status: 'PUBLISHED',
+                cluster
+            },
+            orderBy: { createdAt: 'desc' },
+            select: { slug: true, title: true }
+        });
+        if (secondaryArticle?.slug) {
+            links.push({ label: secondaryArticle.title, url: `/blog/${secondaryArticle.slug}`, type: 'cross-cluster' });
+        }
+    }
+
+    const unique = new Map<string, InternalLinkSuggestion>();
+    for (const link of links) {
+        unique.set(link.url, link);
+    }
+    return Array.from(unique.values()).slice(0, 6);
 }
 
 function resolveSources(mode: EngineOptions['mode'], sources: EngineOptions['sources']) {
