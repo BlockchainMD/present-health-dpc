@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/accordion";
 import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
 import { buildHomepageSchemas } from "@/lib/schema";
+import { MEMBERSHIP_TIERS } from "@/lib/pricing";
 
 // ============================================================================
 // HERO - OPTIMIZED (V3 Base + V1 Access Icons)
@@ -59,14 +60,14 @@ function HeroOptimized() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
               <Button asChild size="lg" className="text-lg px-8 h-14 bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href="/book">
-                  <Phone className="mr-2 h-5 w-5" />
-                  Book a Free Intro Call
+                <Link href="/join">
+                  Start Membership
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8 h-14">
-                <Link href="#pricing">
-                  See Pricing
+                <Link href="/book">
+                  <Phone className="mr-2 h-5 w-5" />
+                  Book a Free Intro Call
                 </Link>
               </Button>
             </div>
@@ -265,7 +266,9 @@ function HsaInfoSection() {
               </div>
               <div className="flex gap-3">
                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">2</div>
-                <p className="text-sm text-emerald-900/80">Join Present Health ($149 per month).</p>
+                <p className="text-sm text-emerald-900/80">
+                  Join Present Health (${MEMBERSHIP_TIERS.individual.monthlyDollars} per month).
+                </p>
               </div>
               <div className="flex gap-3">
                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">3</div>
@@ -294,6 +297,8 @@ function HsaInfoSection() {
 // ============================================================================
 function PricingCards() {
   const [isAnnual, setIsAnnual] = useState(false);
+  const monthlyPrice = MEMBERSHIP_TIERS.individual.monthlyDollars;
+  const annualPrice = monthlyPrice * 11;
 
   return (
     <section id="pricing" className="py-20 bg-background">
@@ -324,7 +329,7 @@ function PricingCards() {
             </CardHeader>
             <CardContent className="flex-1">
               <div className="mb-6">
-                <span className="text-4xl font-bold">${isAnnual ? 1639 : 149}</span>
+                <span className="text-4xl font-bold">${isAnnual ? annualPrice : monthlyPrice}</span>
                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
               </div>
               <ul className="space-y-3">
@@ -337,8 +342,15 @@ function PricingCards() {
               </ul>
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
-              <p className="text-xs text-center text-muted-foreground">Available in select states.</p>
+              <p className="text-xs text-center text-muted-foreground">
+                Available in active states. Confirm eligibility before checkout.
+              </p>
               <Button className="w-full" asChild>
+                <Link href="/join">
+                  Start Membership
+                </Link>
+              </Button>
+              <Button className="w-full" variant="outline" asChild>
                 <Link href="/book">
                   Book Free Intro Call
                 </Link>
@@ -433,6 +445,11 @@ function FinalCTA() {
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg" variant="secondary" className="text-lg px-8 h-12">
+            <Link href="/join">
+              Start Membership
+            </Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="text-lg px-8 h-12 border-primary-foreground/30 hover:bg-primary-foreground/10">
             <Link href="/book">
               <Phone className="mr-2 h-5 w-5" />
               Book a Free Intro Call
@@ -465,9 +482,9 @@ function StickyCTA() {
       {showSticky && (
         <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
           <div className="flex items-center gap-2 bg-background border border-border shadow-lg rounded-full px-2 py-2">
-            <Link href="/book">
+            <Link href="/join">
               <Button size="sm" className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                Book Intro Call <Phone className="ml-2 h-4 w-4" />
+                Start Membership <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>
             <button onClick={() => setDismissed(true)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Dismiss">

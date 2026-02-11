@@ -6,21 +6,62 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from 'next/link';
-import { Suspense, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS, normalizeCoverageType } from '@/lib/pricing';
+import { US_STATES } from '@/lib/us-states';
+
+type StateOption = { name: string; slug: string };
 
 function RegisterForm() {
     const searchParams = useSearchParams();
-    const router = useRouter();
     const plan = searchParams.get('plan');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
+    const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
 
     const planKey = normalizeCoverageType(plan);
     const planName = MEMBERSHIP_TIERS[planKey].name;
     const price = `$${MEMBERSHIP_TIERS[planKey].monthlyDollars}/mo`;
+    const fallbackStateOptions = useMemo(
+        () => US_STATES.map((state) => ({ name: state.name, slug: state.slug })),
+        []
+    );
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadActiveStates = async () => {
+            try {
+                const res = await fetch("/api/public/active-states", { cache: "no-store" });
+                const data = await res.json().catch(() => null);
+                if (!res.ok || !data?.success || !Array.isArray(data?.states) || !data.states.length) {
+                    if (!cancelled) setStateOptions(fallbackStateOptions);
+                    return;
+                }
+
+                const normalized = data.states
+                    .map((state: any) => ({
+                        name: typeof state?.name === "string" ? state.name : "",
+                        slug: typeof state?.slug === "string" ? state.slug : "",
+                    }))
+                    .filter((state: StateOption) => state.name && state.slug)
+                    .sort((a: StateOption, b: StateOption) => a.name.localeCompare(b.name));
+
+                if (!cancelled) {
+                    setStateOptions(normalized.length ? normalized : fallbackStateOptions);
+                }
+            } catch {
+                if (!cancelled) setStateOptions(fallbackStateOptions);
+            }
+        };
+
+        void loadActiveStates();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [fallbackStateOptions]);
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -32,12 +73,13 @@ function RegisterForm() {
         const lastName = formData.get("lastName") as string;
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
+        const state = formData.get("state") as string;
 
         try {
             const res = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ firstName, lastName, email, password }),
+                body: JSON.stringify({ firstName, lastName, email, password, state, plan: planKey }),
             });
 
             if (!res.ok) {
@@ -60,11 +102,12 @@ function RegisterForm() {
             const checkoutRes = await fetch("/api/stripe/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ plan: planKey }),
+                body: JSON.stringify({ plan: planKey, state }),
             });
 
             if (!checkoutRes.ok) {
-                throw new Error("Failed to create checkout session");
+                const data = await checkoutRes.json().catch(() => null);
+                throw new Error(data?.message || "Failed to create checkout session");
             }
 
             const { url } = await checkoutRes.json();
@@ -107,9 +150,32 @@ function RegisterForm() {
                             <Input id="email" name="email" type="email" placeholder="john@example.com" required disabled={isLoading} />
                         </div>
                         <div className="space-y-2">
+                            <Label htmlFor="state">State of residence</Label>
+                            <select
+                                id="state"
+                                name="state"
+                                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+                                required
+                                disabled={isLoading}
+                                defaultValue=""
+                            >
+                                <option value="" disabled>
+                                    Select your state
+                                </option>
+                                {(stateOptions.length ? stateOptions : fallbackStateOptions).map((state) => (
+                                    <option key={state.slug} value={state.name}>
+                                        {state.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="space-y-2">
                             <Label htmlFor="password">Password</Label>
                             <Input id="password" name="password" type="password" required disabled={isLoading} />
                         </div>
+                        <p className="text-xs text-muted-foreground">
+                            We verify your state eligibility before checkout.
+                        </p>
                         <Button type="submit" className="w-full" disabled={isLoading}>
                             {isLoading ? "Creating account..." : "Continue to Payment"}
                         </Button>

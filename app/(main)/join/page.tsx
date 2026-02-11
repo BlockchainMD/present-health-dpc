@@ -10,7 +10,27 @@ export const metadata: Metadata = {
     description: "Join Present Health. Choose a membership tier and get telehealth-first Direct Primary Care with transparent pricing.",
 };
 
-export default function JoinPage() {
+type JoinPageProps = {
+    searchParams?: { [key: string]: string | string[] | undefined };
+};
+
+function pickSearchValue(value: string | string[] | undefined) {
+    return Array.isArray(value) ? value[0] : value;
+}
+
+function normalizePlan(value: string | undefined): CoverageType {
+    if (value === "couple") return "couple";
+    if (value === "family") return "family";
+    return "individual";
+}
+
+export default function JoinPage({ searchParams }: JoinPageProps) {
+    const selectedPlan = normalizePlan(pickSearchValue(searchParams?.plan));
+    const orderedPlans = (["individual", "couple", "family"] as CoverageType[]).sort((a, b) => {
+        if (a === selectedPlan) return -1;
+        if (b === selectedPlan) return 1;
+        return 0;
+    });
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "WebPage",
@@ -30,12 +50,20 @@ export default function JoinPage() {
             </header>
 
             <div className="mt-12 grid gap-6 md:grid-cols-3">
-                {(["individual", "couple", "family"] as CoverageType[]).map((key) => {
+                {orderedPlans.map((key) => {
                     const tier = MEMBERSHIP_TIERS[key];
+                    const isSelected = key === selectedPlan;
                     return (
-                        <Card key={key} className="border-border/60">
+                        <Card key={key} className={isSelected ? "border-primary/40 shadow-sm" : "border-border/60"}>
                             <CardHeader>
-                                <CardTitle>{tier.name}</CardTitle>
+                                <CardTitle>
+                                    {tier.name}
+                                    {isSelected ? (
+                                        <span className="ml-2 align-middle text-xs rounded-full bg-primary/10 text-primary px-2 py-1">
+                                            Selected
+                                        </span>
+                                    ) : null}
+                                </CardTitle>
                                 <CardDescription>
                                     ${tier.monthlyDollars}/month + ${ENROLLMENT_FEE_DOLLARS} one-time enrollment fee
                                 </CardDescription>
@@ -48,7 +76,7 @@ export default function JoinPage() {
                                 </ul>
                                 <div className="flex gap-3">
                                     <Button asChild>
-                                        <Link href={`/register?plan=${key}`}>Continue</Link>
+                                        <Link href={`/register?plan=${key}`}>Continue with {tier.name}</Link>
                                     </Button>
                                     <Button asChild variant="outline">
                                         <Link href="/pricing">See pricing details</Link>

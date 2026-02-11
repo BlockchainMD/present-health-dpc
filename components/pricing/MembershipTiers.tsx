@@ -58,7 +58,7 @@ export function MembershipTiers() {
 
                                 <CardFooter className="mt-auto flex flex-col gap-3">
                                     <Button asChild className="w-full">
-                                        <Link href={`/register?plan=${key}`}>Join {tier.name}</Link>
+                                        <Link href={`/join?plan=${key}`}>Join {tier.name}</Link>
                                     </Button>
                                     <Button asChild variant="outline" className="w-full">
                                         <Link href="/book">Book a free intro call</Link>
@@ -110,4 +110,3 @@ export function MembershipTiers() {
         </section>
     );
 }
-
