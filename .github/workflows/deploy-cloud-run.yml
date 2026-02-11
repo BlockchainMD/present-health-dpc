@@ -1,0 +1,111 @@
+name: Deploy Cloud Run
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: cloud-run-production
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    env:
+      SERVICE_NAME: present-health-dpc
+      REGION: us-central1
+      ARTIFACT_REPOSITORY: present-health-dpc
+      IMAGE_NAME: present-health-dpc
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Setup gcloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Configure Docker auth for Artifact Registry
+        run: gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
+
+      - name: Ensure Artifact Registry repository exists
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          if ! gcloud artifacts repositories describe "$ARTIFACT_REPOSITORY" \
+            --location "$REGION" \
+            --project "$GCP_PROJECT_ID" >/dev/null 2>&1; then
+            gcloud artifacts repositories create "$ARTIFACT_REPOSITORY" \
+              --repository-format=docker \
+              --location "$REGION" \
+              --project "$GCP_PROJECT_ID"
+          fi
+
+      - name: Build and push container image
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+
+          BUILD_TIME="$(date -u +%Y%m%dT%H%M%SZ)"
+          IMAGE_URI="${REGION}-docker.pkg.dev/${GCP_PROJECT_ID}/${ARTIFACT_REPOSITORY}/${IMAGE_NAME}:${GITHUB_SHA}"
+
+          docker build \
+            --build-arg DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy \
+            --build-arg NEXT_PUBLIC_BUILD_ID="${GITHUB_SHA}" \
+            --build-arg NEXT_PUBLIC_BUILD_TIME="${BUILD_TIME}" \
+            -t "${IMAGE_URI}" \
+            .
+
+          docker push "${IMAGE_URI}"
+
+          echo "IMAGE_URI=${IMAGE_URI}" >> "$GITHUB_ENV"
+
+      - name: Deploy to Cloud Run
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          CLOUD_SQL_INSTANCE: ${{ secrets.CLOUD_SQL_INSTANCE }}
+          CLOUD_RUN_ENV_VARS: ${{ secrets.CLOUD_RUN_ENV_VARS }}
+          CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT: ${{ secrets.CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+
+          BASE_ENV_VARS="NEXTAUTH_URL=https://presenthealthmd.com,SITE_URL=https://presenthealthmd.com,NEXT_PUBLIC_SITE_URL=https://presenthealthmd.com"
+          if [[ -n "${CLOUD_RUN_ENV_VARS:-}" ]]; then
+            BASE_ENV_VARS="${BASE_ENV_VARS},${CLOUD_RUN_ENV_VARS}"
+          fi
+
+          DEPLOY_ARGS=(
+            run deploy "$SERVICE_NAME"
+            --project "$GCP_PROJECT_ID"
+            --image "$IMAGE_URI"
+            --region "$REGION"
+            --platform managed
+            --allow-unauthenticated
+            --update-env-vars "$BASE_ENV_VARS"
+          )
+
+          if [[ -n "${CLOUD_SQL_INSTANCE:-}" ]]; then
+            DEPLOY_ARGS+=(--add-cloudsql-instances "$CLOUD_SQL_INSTANCE")
+          fi
+
+          if [[ -n "${CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT:-}" ]]; then
+            DEPLOY_ARGS+=(--service-account "$CLOUD_RUN_RUNTIME_SERVICE_ACCOUNT")
+          fi
+
+          gcloud "${DEPLOY_ARGS[@]}"
+
+          SERVICE_URL="$(gcloud run services describe "$SERVICE_NAME" --project "$GCP_PROJECT_ID" --region "$REGION" --format='value(status.url)')"
+          echo "Cloud Run service URL: ${SERVICE_URL}"
