@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Check, CheckCircle, MessageCircle, Clock, Shield, Heart, Phone, ArrowRight, X, ShieldCheck, CheckCircle2, Video, PhoneCall } from "lucide-react";
+import { Check, CheckCircle, MessageCircle, Clock, Shield, Heart, Phone, ArrowRight, X, CheckCircle2, Video, PhoneCall } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
@@ -61,18 +61,20 @@ function HeroOptimized() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
               <Button asChild size="lg" className="text-lg px-8 h-14 bg-primary text-primary-foreground hover:bg-primary/90">
-                <Link href="/join">
-                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "hero" } })}>
-                    Start Membership
-                  </span>
+                <Link
+                  href="/join"
+                  onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "hero" } })}
+                >
+                  Start Membership
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8 h-14">
-                <Link href="/book">
-                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "hero" } })}>
-                    <Phone className="mr-2 h-5 w-5 inline" />
-                    Book a Free Intro Call
-                  </span>
+                <Link
+                  href="/book"
+                  onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "hero" } })}
+                >
+                  <Phone className="mr-2 h-5 w-5 inline" />
+                  Book a Free Intro Call
                 </Link>
               </Button>
             </div>
@@ -143,7 +145,8 @@ function FounderQuote() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="max-w-3xl mx-auto text-center">
           <blockquote className="text-2xl md:text-3xl font-medium text-foreground leading-relaxed mb-6">
-            "I left the traditional system because I was tired of spending more time on paperwork than with patients. Present Health is my way of practicing medicine the way it should be—focused on you."
+            &ldquo;I left the traditional system because I was tired of spending more time on paperwork than with patients.
+            Present Health is my way of practicing medicine the way it should be-focused on you.&rdquo;
           </blockquote>
           <div className="flex items-center justify-center gap-3">
             <div className="h-12 w-12 rounded-full overflow-hidden">
@@ -351,17 +354,19 @@ function PricingCards() {
                 Available in active states. Confirm eligibility before checkout.
               </p>
               <Button className="w-full" asChild>
-                <Link href="/join">
-                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "pricing-card" } })}>
-                    Start Membership
-                  </span>
+                <Link
+                  href="/join"
+                  onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "pricing-card" } })}
+                >
+                  Start Membership
                 </Link>
               </Button>
               <Button className="w-full" variant="outline" asChild>
-                <Link href="/book">
-                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "pricing-card" } })}>
-                    Book Free Intro Call
-                  </span>
+                <Link
+                  href="/book"
+                  onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "pricing-card" } })}
+                >
+                  Book Free Intro Call
                 </Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
@@ -450,22 +455,24 @@ function FinalCTA() {
       <div className="container mx-auto px-4 md:px-6 text-center">
         <h2 className="text-3xl font-bold mb-4">Ready to meet your doctor?</h2>
         <p className="text-primary-foreground/80 mb-8 max-w-xl mx-auto">
-          Limited spots available. Book a free intro call to see if we're a fit.
+          Limited spots available. Book a free intro call to see if we&apos;re a fit.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg" variant="secondary" className="text-lg px-8 h-12">
-            <Link href="/join">
-              <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "final-cta" } })}>
-                Start Membership
-              </span>
+            <Link
+              href="/join"
+              onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "final-cta" } })}
+            >
+              Start Membership
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="text-lg px-8 h-12 border-primary-foreground/30 hover:bg-primary-foreground/10">
-            <Link href="/book">
-              <span onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "final-cta" } })}>
-                <Phone className="mr-2 h-5 w-5 inline" />
-                Book a Free Intro Call
-              </span>
+            <Link
+              href="/book"
+              onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "final-cta" } })}
+            >
+              <Phone className="mr-2 h-5 w-5 inline" />
+              Book a Free Intro Call
             </Link>
           </Button>
         </div>
@@ -496,10 +503,12 @@ function StickyCTA() {
         <motion.div initial={{ y: 100, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 100, opacity: 0 }} className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50">
           <div className="flex items-center gap-2 bg-background border border-border shadow-lg rounded-full px-2 py-2">
             <Link href="/join">
-              <Button size="sm" className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "sticky-cta" } })}>
-                  Start Membership <ArrowRight className="ml-2 h-4 w-4 inline" />
-                </span>
+              <Button
+                size="sm"
+                className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "sticky-cta" } })}
+              >
+                Start Membership <ArrowRight className="ml-2 h-4 w-4 inline" />
               </Button>
             </Link>
             <button onClick={() => setDismissed(true)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Dismiss">
