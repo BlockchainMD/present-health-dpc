@@ -439,6 +439,15 @@ function mapEmployerStatus(status: string | null | undefined): UnifiedLeadStatus
     return UnifiedLeadStatus.NEW;
 }
 
+function mapCampaignLeadStatus(status: string | null | undefined): UnifiedLeadStatus {
+    const raw = cleanText(status, 40).toUpperCase();
+    if (raw === "BOOKED") return UnifiedLeadStatus.CONSULTATION_SCHEDULED;
+    if (raw === "CONVERTED" || raw === "ENROLLED") return UnifiedLeadStatus.ENROLLED;
+    if (raw === "LOST" || raw === "CLOSED") return UnifiedLeadStatus.LOST;
+    if (raw === "CONTACTED") return UnifiedLeadStatus.CONTACTED;
+    return UnifiedLeadStatus.NEW;
+}
+
 function mapEmployerTier(inquiry: EmployerInquiry): UnifiedLeadMembershipTier {
     const range = cleanText(inquiry.employeeCountRange, 30);
     if (range) return UnifiedLeadMembershipTier.EMPLOYER;
@@ -586,8 +595,108 @@ export async function upsertUnifiedLeadFromCampaignLead(
             adLeadStatus: lead.status,
             metadata,
         } as Prisma.InputJsonValue,
-        suggestedStatus: UnifiedLeadStatus.NEW,
+        suggestedStatus: mapCampaignLeadStatus(lead.status),
         createdAt: lead.createdAt,
+    });
+
+    if (sendNotification && result.action === "created" && result.leadId) {
+        await notifyNewLead(result.leadId);
+    }
+
+    return result;
+}
+
+export async function upsertUnifiedLeadFromWebsiteRegistration(
+    input: {
+        sourceRecordId?: string | null;
+        email: string;
+        firstName?: string | null;
+        lastName?: string | null;
+        phone?: string | null;
+        state?: string | null;
+        sourcePage?: string | null;
+        membershipTier?: UnifiedLeadMembershipTier | null;
+        monthlyMembershipRate?: number | null;
+        suggestedStatus?: UnifiedLeadStatus | null;
+        createdAt?: Date | null;
+        sourceMeta?: Prisma.InputJsonValue | null;
+    },
+    sendNotification = true
+) {
+    const email = cleanEmail(input.email);
+    if (!email) return { action: "skipped" as const };
+
+    const sourceRecordId =
+        cleanText(input.sourceRecordId, 120) ||
+        `register:${email}`;
+
+    const result = await upsertLeadFromSource({
+        source: UnifiedLeadSource.CONTACT_FORM,
+        sourceRecordType: "WebsiteRegistration",
+        sourceRecordId,
+        firstName: input.firstName || null,
+        lastName: input.lastName || null,
+        email,
+        phone: input.phone || null,
+        state: input.state || null,
+        sourcePage: input.sourcePage || "/register",
+        sourceMeta:
+            (toJsonObject(input.sourceMeta) as Prisma.InputJsonValue) ||
+            ({ channel: "website" } as Prisma.InputJsonValue),
+        suggestedStatus: input.suggestedStatus || UnifiedLeadStatus.NEW,
+        membershipTier: input.membershipTier || null,
+        monthlyMembershipRate: input.monthlyMembershipRate || null,
+        createdAt: input.createdAt || null,
+    });
+
+    if (sendNotification && result.action === "created" && result.leadId) {
+        await notifyNewLead(result.leadId);
+    }
+
+    return result;
+}
+
+export async function upsertUnifiedLeadFromCalBooking(
+    input: {
+        sourceRecordId?: string | null;
+        email: string;
+        fullName?: string | null;
+        firstName?: string | null;
+        lastName?: string | null;
+        phone?: string | null;
+        state?: string | null;
+        sourcePage?: string | null;
+        sourceMeta?: Prisma.InputJsonValue | null;
+        createdAt?: Date | null;
+    },
+    sendNotification = true
+) {
+    const email = cleanEmail(input.email);
+    if (!email) return { action: "skipped" as const };
+
+    const split = input.fullName ? splitName(input.fullName) : { firstName: null, lastName: null };
+    const firstName = input.firstName || split.firstName;
+    const lastName = input.lastName || split.lastName;
+
+    const sourceRecordId =
+        cleanText(input.sourceRecordId, 120) ||
+        `cal:${email}`;
+
+    const result = await upsertLeadFromSource({
+        source: UnifiedLeadSource.CONTACT_FORM,
+        sourceRecordType: "CalBooking",
+        sourceRecordId,
+        firstName,
+        lastName,
+        email,
+        phone: input.phone || null,
+        state: input.state || null,
+        sourcePage: input.sourcePage || "/book",
+        sourceMeta:
+            (toJsonObject(input.sourceMeta) as Prisma.InputJsonValue) ||
+            ({ source: "cal-webhook" } as Prisma.InputJsonValue),
+        suggestedStatus: UnifiedLeadStatus.CONSULTATION_SCHEDULED,
+        createdAt: input.createdAt || null,
     });
 
     if (sendNotification && result.action === "created" && result.leadId) {

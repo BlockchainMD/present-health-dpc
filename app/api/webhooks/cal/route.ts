@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { uploadConversionToGoogleAds } from '@/lib/ads/google-ads';
 import { recordConversionEvent } from '@/lib/conversion';
+import { upsertUnifiedLeadFromCalBooking, upsertUnifiedLeadFromCampaignLead } from '@/lib/unified-leads';
 
 export async function POST(request: NextRequest) {
     try {
@@ -20,6 +21,34 @@ export async function POST(request: NextRequest) {
         const attendee = payload.payload?.attendees?.[0] || payload.attendees?.[0];
         const emailRaw = attendee?.email || payload.payload?.email || payload.email;
         const email = typeof emailRaw === 'string' ? emailRaw.trim().toLowerCase() : undefined;
+        const fullNameRaw =
+            attendee?.name ||
+            payload.payload?.name ||
+            payload.name ||
+            payload.payload?.attendeeName ||
+            payload.attendeeName ||
+            '';
+        const fullName = typeof fullNameRaw === "string" ? fullNameRaw.trim() : "";
+        const sourceRecordIdRaw =
+            payload.payload?.uid ||
+            payload.uid ||
+            payload.payload?.bookingId ||
+            payload.bookingId ||
+            payload.payload?.id ||
+            payload.id ||
+            email ||
+            "";
+        const sourceRecordId = String(sourceRecordIdRaw).trim() || (email || `cal-${Date.now()}`);
+        const bookingTimeRaw =
+            payload.payload?.startTime ||
+            payload.startTime ||
+            payload.payload?.start ||
+            payload.start ||
+            null;
+        const bookingTime =
+            typeof bookingTimeRaw === "string" && Number.isFinite(new Date(bookingTimeRaw).getTime())
+                ? new Date(bookingTimeRaw)
+                : new Date();
 
         if (!email) {
             console.warn('[CalWebhook] No email found in payload');
@@ -37,20 +66,48 @@ export async function POST(request: NextRequest) {
 
         if (!lead) {
             console.log(`[CalWebhook] No pending lead found for ${email}. Might be a direct booking.`);
-            return NextResponse.json({ received: true, message: 'No pending lead' });
+            await upsertUnifiedLeadFromCalBooking(
+                {
+                    sourceRecordId,
+                    email,
+                    fullName,
+                    sourcePage: "/book",
+                    sourceMeta: payload,
+                    createdAt: bookingTime,
+                },
+                true
+            );
+
+            await recordConversionEvent({
+                type: "CONSULTATION_BOOKED",
+                metadata: { source: "CalWebhook", payload, leadType: "direct" },
+            });
+
+            return NextResponse.json({ received: true, message: 'No pending lead; unified lead captured' });
         }
 
         // Update lead status
-        await prisma.lead.update({
+        const updatedLead = await prisma.lead.update({
             where: { id: lead.id },
             data: {
                 status: 'BOOKED',
                 convertedAt: new Date(),
                 email: email // In case we didn't have it before
-            }
+            },
+            include: {
+                campaignRun: {
+                    select: {
+                        campaign: {
+                            select: { landingSlug: true },
+                        },
+                    },
+                },
+            },
         });
 
         console.log(`[CalWebhook] Lead converted: ${email} (Lead ID: ${lead.id})`);
+
+        await upsertUnifiedLeadFromCampaignLead(updatedLead, false);
 
         // Record Conversion Event
         const session = await prisma.attributionSession.findFirst({
@@ -59,7 +116,7 @@ export async function POST(request: NextRequest) {
         });
 
         await recordConversionEvent({
-            type: 'BOOKED',
+            type: 'CONSULTATION_BOOKED',
             attributionSessionId: session?.id,
             leadId: lead.id,
             metadata: { source: 'CalWebhook', payload }
