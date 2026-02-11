@@ -6,7 +6,9 @@ export function middleware(request: NextRequest) {
 
   if (host.startsWith("www.")) {
     const url = request.nextUrl.clone();
+    url.protocol = "https:";
     url.host = host.replace(/^www\./, "");
+    url.port = "";
     return NextResponse.redirect(url, 308);
   }
 
