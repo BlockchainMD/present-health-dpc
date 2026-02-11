@@ -72,6 +72,19 @@ type Dashboard = {
     stageCounts: Array<{ status: ProspectStatus; label: string; count: number }>;
     conversionByStage: ConversionStage[];
     reminders: Prospect[];
+    cadence?: {
+        weekStart: string;
+        monthStart: string;
+        outreachTargetWeekly: number;
+        outreachThisWeek: number;
+        meetingsTargetMonthly: number;
+        meetingsThisMonth: number;
+        proposalsTargetMonthly: number;
+        proposalsThisMonth: number;
+        outreachProgress: number;
+        meetingsProgress: number;
+        proposalsProgress: number;
+    };
 };
 
 type OutreachTemplateKind =
@@ -178,6 +191,12 @@ function formatCurrency(value: number | null | undefined) {
 function formatPercent(value: number | null | undefined) {
     if (!Number.isFinite(value as number)) return "0.0%";
     return `${((value as number) * 100).toFixed(1)}%`;
+}
+
+function clampProgress(value: number | null | undefined) {
+    const n = Number(value || 0);
+    if (!Number.isFinite(n)) return 0;
+    return Math.max(0, Math.min(1, n));
 }
 
 function computeSavingsEstimate(employees: number | null | undefined) {
@@ -920,6 +939,55 @@ export function EmployerOutreachCrm() {
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ) : null}
+
+                    {dashboard.cadence ? (
+                        <Card>
+                            <CardHeader>
+                                <CardTitle className="text-lg">Weekly Outreach Cadence</CardTitle>
+                                <CardDescription>
+                                    Operating targets to keep employer outreach pipeline growing each week.
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent className="grid gap-4 md:grid-cols-3">
+                                <div className="rounded-lg border p-3">
+                                    <div className="text-xs text-muted-foreground">Outreach this week</div>
+                                    <div className="mt-1 text-xl font-semibold">
+                                        {dashboard.cadence.outreachThisWeek} / {dashboard.cadence.outreachTargetWeekly}
+                                    </div>
+                                    <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
+                                        <div
+                                            className="h-full bg-primary"
+                                            style={{ width: `${clampProgress(dashboard.cadence.outreachProgress) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="rounded-lg border p-3">
+                                    <div className="text-xs text-muted-foreground">Meetings this month</div>
+                                    <div className="mt-1 text-xl font-semibold">
+                                        {dashboard.cadence.meetingsThisMonth} / {dashboard.cadence.meetingsTargetMonthly}
+                                    </div>
+                                    <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
+                                        <div
+                                            className="h-full bg-sky-600"
+                                            style={{ width: `${clampProgress(dashboard.cadence.meetingsProgress) * 100}%` }}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="rounded-lg border p-3">
+                                    <div className="text-xs text-muted-foreground">Proposals this month</div>
+                                    <div className="mt-1 text-xl font-semibold">
+                                        {dashboard.cadence.proposalsThisMonth} / {dashboard.cadence.proposalsTargetMonthly}
+                                    </div>
+                                    <div className="mt-2 h-2 rounded-full bg-muted overflow-hidden">
+                                        <div
+                                            className="h-full bg-emerald-600"
+                                            style={{ width: `${clampProgress(dashboard.cadence.proposalsProgress) * 100}%` }}
+                                        />
+                                    </div>
                                 </div>
                             </CardContent>
                         </Card>

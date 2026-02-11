@@ -154,6 +154,18 @@ function quarterEnd(date = new Date()) {
     return new Date(Date.UTC(start.getUTCFullYear(), start.getUTCMonth() + 3, 0, 23, 59, 59, 999));
 }
 
+function monthStart(date = new Date()) {
+    return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1, 0, 0, 0, 0));
+}
+
+function weekStartMonday(date = new Date()) {
+    const utc = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), 0, 0, 0, 0));
+    const day = utc.getUTCDay();
+    const daysFromMonday = (day + 6) % 7;
+    utc.setUTCDate(utc.getUTCDate() - daysFromMonday);
+    return utc;
+}
+
 export function parseEmployerProspectSource(value: unknown): EmployerProspectSource | null {
     const raw = compactWhitespace(value).toUpperCase();
     if (!raw) return null;
@@ -940,7 +952,13 @@ export async function getEmployerPipelineDashboard() {
     const now = new Date();
     const qStart = quarterStart(now);
     const qEnd = quarterEnd(now);
+    const mStart = monthStart(now);
+    const wStart = weekStartMonday(now);
     const dueCutoff = endOfToday();
+
+    const outreachTargetWeekly = 30;
+    const meetingsTargetMonthly = 8;
+    const proposalsTargetMonthly = 4;
 
     const counts = new Map<EmployerProspectStatus, number>();
     for (const status of STAGE_ORDER) counts.set(status, 0);
@@ -948,6 +966,9 @@ export async function getEmployerPipelineDashboard() {
     let pipelineValue = 0;
     let wonThisQuarter = 0;
     let dueFollowUps = 0;
+    let outreachThisWeek = 0;
+    let meetingsThisMonth = 0;
+    let proposalsThisMonth = 0;
 
     for (const prospect of prospects) {
         counts.set(prospect.status, (counts.get(prospect.status) || 0) + 1);
@@ -966,6 +987,35 @@ export async function getEmployerPipelineDashboard() {
             prospect.updatedAt <= qEnd
         ) {
             wonThisQuarter += 1;
+        }
+
+        if (prospect.lastContactDate && prospect.lastContactDate >= wStart && prospect.lastContactDate <= now) {
+            outreachThisWeek += 1;
+        }
+
+        if (
+            prospect.updatedAt >= mStart &&
+            prospect.updatedAt <= now &&
+            [
+                EmployerProspectStatus.MEETING_SCHEDULED,
+                EmployerProspectStatus.PROPOSAL_SENT,
+                EmployerProspectStatus.NEGOTIATING,
+                EmployerProspectStatus.WON,
+            ].includes(prospect.status)
+        ) {
+            meetingsThisMonth += 1;
+        }
+
+        if (
+            prospect.updatedAt >= mStart &&
+            prospect.updatedAt <= now &&
+            [
+                EmployerProspectStatus.PROPOSAL_SENT,
+                EmployerProspectStatus.NEGOTIATING,
+                EmployerProspectStatus.WON,
+            ].includes(prospect.status)
+        ) {
+            proposalsThisMonth += 1;
         }
     }
 
@@ -1022,6 +1072,19 @@ export async function getEmployerPipelineDashboard() {
         })),
         conversionByStage,
         reminders,
+        cadence: {
+            weekStart: wStart.toISOString(),
+            monthStart: mStart.toISOString(),
+            outreachTargetWeekly,
+            outreachThisWeek,
+            meetingsTargetMonthly,
+            meetingsThisMonth,
+            proposalsTargetMonthly,
+            proposalsThisMonth,
+            outreachProgress: outreachTargetWeekly > 0 ? outreachThisWeek / outreachTargetWeekly : 0,
+            meetingsProgress: meetingsTargetMonthly > 0 ? meetingsThisMonth / meetingsTargetMonthly : 0,
+            proposalsProgress: proposalsTargetMonthly > 0 ? proposalsThisMonth / proposalsTargetMonthly : 0,
+        },
     };
 }
 
