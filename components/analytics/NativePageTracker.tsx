@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 function shouldSkipPath(pathname: string) {
     if (!pathname.startsWith("/")) return true;
@@ -13,24 +13,26 @@ function shouldSkipPath(pathname: string) {
 
 export function NativePageTracker() {
     const pathname = usePathname() || "/";
-    const searchParams = useSearchParams();
-    const lastTrackedPathRef = useRef<string>("");
+    const lastTrackedKeyRef = useRef<string>("");
 
     useEffect(() => {
         const path = String(pathname || "/");
         if (!path || shouldSkipPath(path)) return;
-        if (lastTrackedPathRef.current === path) return;
-        lastTrackedPathRef.current = path;
+        const search = typeof window !== "undefined" ? window.location.search : "";
+        const query = search.startsWith("?") ? search.slice(1) : search;
+        const trackKey = query ? `${path}?${query}` : path;
+        if (lastTrackedKeyRef.current === trackKey) return;
+        lastTrackedKeyRef.current = trackKey;
+        const params = new URLSearchParams(query);
 
         const payloadObject: Record<string, string> = { path };
-        const query = searchParams?.toString() || "";
         if (query) payloadObject.query = query;
-        const utmSource = searchParams?.get("utm_source") || "";
-        const utmMedium = searchParams?.get("utm_medium") || "";
-        const utmCampaign = searchParams?.get("utm_campaign") || "";
-        const utmTerm = searchParams?.get("utm_term") || "";
-        const utmContent = searchParams?.get("utm_content") || "";
-        const gclid = searchParams?.get("gclid") || "";
+        const utmSource = params.get("utm_source") || "";
+        const utmMedium = params.get("utm_medium") || "";
+        const utmCampaign = params.get("utm_campaign") || "";
+        const utmTerm = params.get("utm_term") || "";
+        const utmContent = params.get("utm_content") || "";
+        const gclid = params.get("gclid") || "";
         if (utmSource) payloadObject.utm_source = utmSource;
         if (utmMedium) payloadObject.utm_medium = utmMedium;
         if (utmCampaign) payloadObject.utm_campaign = utmCampaign;
@@ -57,7 +59,7 @@ export function NativePageTracker() {
             keepalive: true,
             credentials: "same-origin",
         }).catch(() => undefined);
-    }, [pathname, searchParams]);
+    }, [pathname]);
 
     return null;
 }
