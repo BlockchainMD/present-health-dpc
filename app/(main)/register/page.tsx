@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS, normalizeCoverageType } from '@/lib/pricing';
+import { MEMBERSHIP_TIERS, normalizeCoverageType } from '@/lib/pricing';
 import { US_STATES } from '@/lib/us-states';
 import { trackEvent } from '@/lib/track-event';
 
@@ -130,8 +130,7 @@ function RegisterForm() {
                 <CardHeader>
                     <CardTitle>Create your account</CardTitle>
                     <CardDescription>
-                        You selected <span className="font-semibold text-primary">{planName}</span> ({price}) +{" "}
-                        <span className="font-semibold text-primary">${ENROLLMENT_FEE_DOLLARS} enrollment fee</span>.
+                        You selected <span className="font-semibold text-primary">{planName}</span> ({price}).
                     </CardDescription>
                 </CardHeader>
                 <CardContent>

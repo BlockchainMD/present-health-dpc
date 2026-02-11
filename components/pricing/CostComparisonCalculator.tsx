@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import {
     DEFAULT_INSURANCE_PREMIUMS_DOLLARS,
     DEFAULT_MARGINAL_TAX_RATE,
-    ENROLLMENT_FEE_DOLLARS,
     MEMBERSHIP_TIERS,
     normalizeCoverageType,
     type CoverageType,
@@ -37,21 +36,21 @@ export function CostComparisonCalculator() {
 
     const computed = useMemo(() => {
         const membershipAnnual = membershipMonthly * 12;
-        const dpcAnnualYear1 = membershipAnnual + ENROLLMENT_FEE_DOLLARS;
+        const dpcAnnual = membershipAnnual;
 
         const premiumAnnual = premiumMonthly * 12;
         const traditionalAnnual = premiumAnnual + oopAnnual;
 
-        const savings = traditionalAnnual - dpcAnnualYear1;
+        const savings = traditionalAnnual - dpcAnnual;
 
         const taxRate = DEFAULT_MARGINAL_TAX_RATE[filingStatus];
         const hsaBenefit = membershipAnnual * taxRate;
 
-        const effectiveMonthlyAfterHsa = (dpcAnnualYear1 - hsaBenefit) / 12;
+        const effectiveMonthlyAfterHsa = (dpcAnnual - hsaBenefit) / 12;
 
         return {
             membershipAnnual,
-            dpcAnnualYear1,
+            dpcAnnual,
             traditionalAnnual,
             savings,
             hsaBenefit,
@@ -185,9 +184,6 @@ export function CostComparisonCalculator() {
                                 >
                                     Reset
                                 </Button>
-                                <div className="text-xs text-muted-foreground sm:ml-auto self-center">
-                                    Enrollment fee included in DPC year-1 total.
-                                </div>
                             </div>
                         </CardContent>
                     </Card>
@@ -200,10 +196,10 @@ export function CostComparisonCalculator() {
                             <div className="grid gap-2">
                                 <div className="flex items-center justify-between gap-3">
                                     <div className="text-sm font-medium text-foreground">Annual cost with Present Health</div>
-                                    <div className="text-lg font-semibold">{currency0.format(computed.dpcAnnualYear1)}</div>
+                                    <div className="text-lg font-semibold">{currency0.format(computed.dpcAnnual)}</div>
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                    {currency0.format(membershipMonthly)} × 12 + {currency0.format(ENROLLMENT_FEE_DOLLARS)} enrollment fee (year 1)
+                                    {currency0.format(membershipMonthly)} × 12
                                 </div>
                             </div>
 

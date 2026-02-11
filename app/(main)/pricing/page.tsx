@@ -21,7 +21,7 @@ export default function PricingPage() {
                     Simple, Transparent Pricing.
                 </h1>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                    Telehealth-first Direct Primary Care membership with clear monthly pricing and a $50 one-time enrollment fee.
+                    Telehealth-first Direct Primary Care membership with clear monthly pricing and no hidden fees.
                 </p>
             </div>
 

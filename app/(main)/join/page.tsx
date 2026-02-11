@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { JsonLd } from "@/components/seo/JsonLd";
-import { ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS, type CoverageType } from "@/lib/pricing";
+import { MEMBERSHIP_TIERS, type CoverageType } from "@/lib/pricing";
 
 export const metadata: Metadata = {
     title: "Join | Present Health",
@@ -65,7 +65,7 @@ export default function JoinPage({ searchParams }: JoinPageProps) {
                                     ) : null}
                                 </CardTitle>
                                 <CardDescription>
-                                    ${tier.monthlyDollars}/month + ${ENROLLMENT_FEE_DOLLARS} one-time enrollment fee
+                                    ${tier.monthlyDollars}/month
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="space-y-4">

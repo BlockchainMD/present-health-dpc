@@ -3,7 +3,7 @@ import { Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ENROLLMENT_FEE_DOLLARS, EMPLOYER_TIER, MEMBERSHIP_TIERS, type CoverageType } from "@/lib/pricing";
+import { EMPLOYER_TIER, MEMBERSHIP_TIERS, type CoverageType } from "@/lib/pricing";
 
 const ORDER: CoverageType[] = ["individual", "couple", "family"];
 
@@ -14,8 +14,7 @@ export function MembershipTiers() {
                 <div className="max-w-3xl mx-auto text-center mb-10">
                     <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Membership tiers</h2>
                     <p className="text-lg text-muted-foreground">
-                        One flat monthly fee for primary care access. All tiers include a{" "}
-                        <span className="font-medium text-foreground">${ENROLLMENT_FEE_DOLLARS} one-time enrollment fee</span>.
+                        One flat monthly fee for primary care access.
                     </p>
                 </div>
 
@@ -40,9 +39,6 @@ export function MembershipTiers() {
                                         <div className="flex items-end gap-2">
                                             <div className="text-4xl font-bold">${tier.monthlyDollars}</div>
                                             <div className="text-muted-foreground mb-1">/month</div>
-                                        </div>
-                                        <div className="text-xs text-muted-foreground mt-1">
-                                            + ${ENROLLMENT_FEE_DOLLARS} enrollment fee (one-time)
                                         </div>
                                     </div>
 
@@ -81,7 +77,6 @@ export function MembershipTiers() {
                                     <div className="text-4xl font-bold">${EMPLOYER_TIER.monthlyPerEmployeeDollars}</div>
                                     <div className="text-muted-foreground mb-1">/employee/month</div>
                                 </div>
-                                <div className="text-xs text-muted-foreground mt-1">Enrollment fee applies.</div>
                             </div>
                             <ul className="space-y-2 text-sm">
                                 {["Group onboarding support", "Care access across eligible states", "Simple per-employee pricing"].map(

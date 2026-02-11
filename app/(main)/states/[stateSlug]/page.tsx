@@ -178,7 +178,7 @@ export default async function StatePage({ params }: { params: StateSlugParams })
                             <CardTitle className="text-base">Pricing Reminder</CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm text-muted-foreground">
-                            Membership starts at <span className="font-medium text-foreground">$99/month</span> with a one-time enrollment fee. No insurance required.
+                            Membership starts at <span className="font-medium text-foreground">$99/month</span>. No insurance required.
                             <div className="mt-3">
                                 <Link href="/pricing" className="text-primary hover:underline">View pricing</Link>
                             </div>

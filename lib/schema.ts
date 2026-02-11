@@ -1,7 +1,7 @@
 import type { Article, Physician, State } from "@prisma/client";
 import { absoluteUrl } from "@/lib/site-url";
 import { markdownToPlainText } from "@/lib/markdown-plain";
-import { EMPLOYER_TIER, ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS } from "@/lib/pricing";
+import { EMPLOYER_TIER, MEMBERSHIP_TIERS } from "@/lib/pricing";
 import { stateDisplayName } from "@/lib/us-states";
 
 export type SchemaBlock = Record<string, unknown>;
@@ -320,13 +320,6 @@ export function buildPricingSchemas(): SchemaBlock[] {
                     unitText: "month",
                 },
             },
-            additionalProperty: [
-                {
-                    "@type": "PropertyValue",
-                    name: "Enrollment fee",
-                    value: `$${ENROLLMENT_FEE_DOLLARS} one-time`,
-                },
-            ],
         });
     }
 
@@ -444,4 +437,3 @@ export function validateSchemaBlockBasics(blocks: SchemaBlock[]): string[] {
     });
     return issues;
 }
-

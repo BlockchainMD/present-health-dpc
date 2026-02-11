@@ -1,7 +1,5 @@
 export type CoverageType = "individual" | "couple" | "family";
 
-export const ENROLLMENT_FEE_DOLLARS = 50;
-
 export const MEMBERSHIP_TIERS: Record<
     CoverageType,
     {
@@ -57,4 +55,3 @@ export function normalizeCoverageType(value: unknown): CoverageType {
     if (value === "family") return "family";
     return "individual";
 }
-

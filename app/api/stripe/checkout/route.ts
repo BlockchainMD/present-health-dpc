@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
-import { ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS, normalizeCoverageType } from "@/lib/pricing";
+import { MEMBERSHIP_TIERS, normalizeCoverageType } from "@/lib/pricing";
 import { resolveServedState } from "@/lib/state-availability";
 import { getOrCreateAttributionSession } from "@/lib/attribution";
 import { recordConversionEvent } from "@/lib/conversion";
@@ -44,7 +44,6 @@ export async function POST(req: Request) {
         const tier = MEMBERSHIP_TIERS[plan];
         const unitAmount = tier.monthlyDollars * 100;
         const productName = `${tier.name} Membership`;
-        const enrollmentFeeAmount = ENROLLMENT_FEE_DOLLARS * 100;
 
         const checkoutSession = await stripe.checkout.sessions.create({
             mode: 'subscription',
@@ -60,16 +59,6 @@ export async function POST(req: Request) {
                         recurring: {
                             interval: 'month',
                         },
-                    },
-                    quantity: 1,
-                },
-                {
-                    price_data: {
-                        currency: "usd",
-                        product_data: {
-                            name: "Present Health - Enrollment fee",
-                        },
-                        unit_amount: enrollmentFeeAmount,
                     },
                     quantity: 1,
                 },
