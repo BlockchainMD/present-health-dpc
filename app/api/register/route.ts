@@ -6,7 +6,7 @@ import { getOrCreateAttributionSession } from "@/lib/attribution";
 import { recordConversionEvent } from "@/lib/conversion";
 import { normalizeCoverageType } from "@/lib/pricing";
 import { resolveServedState } from "@/lib/state-availability";
-import { upsertUnifiedLeadFromWebsiteRegistration } from "@/lib/unified-leads";
+import { upsertUnifiedLeadFromCampaignLead, upsertUnifiedLeadFromWebsiteRegistration } from "@/lib/unified-leads";
 
 function mapPlanToTier(plan: "individual" | "couple" | "family") {
     if (plan === "couple") return UnifiedLeadMembershipTier.COUPLE;
@@ -79,23 +79,70 @@ export async function POST(req: Request) {
         const campaignLead = await prisma.lead.findFirst({
             where: { email },
             orderBy: { createdAt: "desc" },
+            include: {
+                campaignRun: {
+                    select: {
+                        campaign: {
+                            select: { landingSlug: true },
+                        },
+                    },
+                },
+            },
         });
 
         const sessionId = await getOrCreateAttributionSession(req);
 
-        const unifiedLeadResult = await upsertUnifiedLeadFromWebsiteRegistration(
-            {
-                email,
-                firstName,
-                lastName,
-                state: servedState.name,
-                sourcePage: "/register",
-                sourceRecordId: `register:${email}`,
-                membershipTier,
-                monthlyMembershipRate,
-            },
-            true
-        );
+        const unifiedLeadResult = campaignLead
+            ? await (async () => {
+                const mergedMetadata =
+                    campaignLead.metadata && typeof campaignLead.metadata === "object" && !Array.isArray(campaignLead.metadata)
+                        ? {
+                            ...(campaignLead.metadata as Record<string, unknown>),
+                            firstName,
+                            lastName,
+                            state: servedState.name,
+                            plan,
+                            sourcePage: "/register",
+                        }
+                        : {
+                            firstName,
+                            lastName,
+                            state: servedState.name,
+                            plan,
+                            sourcePage: "/register",
+                        };
+
+                const updatedCampaignLead = await prisma.lead.update({
+                    where: { id: campaignLead.id },
+                    data: {
+                        metadata: mergedMetadata,
+                    },
+                    include: {
+                        campaignRun: {
+                            select: {
+                                campaign: {
+                                    select: { landingSlug: true },
+                                },
+                            },
+                        },
+                    },
+                });
+
+                return upsertUnifiedLeadFromCampaignLead(updatedCampaignLead, true);
+            })()
+            : await upsertUnifiedLeadFromWebsiteRegistration(
+                {
+                    email,
+                    firstName,
+                    lastName,
+                    state: servedState.name,
+                    sourcePage: "/register",
+                    sourceRecordId: `register:${email}`,
+                    membershipTier,
+                    monthlyMembershipRate,
+                },
+                true
+            );
 
         console.log("Creating user in DB...");
         const user = await prisma.user.create({

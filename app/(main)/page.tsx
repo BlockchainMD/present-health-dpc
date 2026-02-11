@@ -18,6 +18,7 @@ import {
 import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
 import { buildHomepageSchemas } from "@/lib/schema";
 import { MEMBERSHIP_TIERS } from "@/lib/pricing";
+import { trackEvent } from "@/lib/track-event";
 
 // ============================================================================
 // HERO - OPTIMIZED (V3 Base + V1 Access Icons)
@@ -61,13 +62,17 @@ function HeroOptimized() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
               <Button asChild size="lg" className="text-lg px-8 h-14 bg-primary text-primary-foreground hover:bg-primary/90">
                 <Link href="/join">
-                  Start Membership
+                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "hero" } })}>
+                    Start Membership
+                  </span>
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="text-lg px-8 h-14">
                 <Link href="/book">
-                  <Phone className="mr-2 h-5 w-5" />
-                  Book a Free Intro Call
+                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "hero" } })}>
+                    <Phone className="mr-2 h-5 w-5 inline" />
+                    Book a Free Intro Call
+                  </span>
                 </Link>
               </Button>
             </div>
@@ -347,12 +352,16 @@ function PricingCards() {
               </p>
               <Button className="w-full" asChild>
                 <Link href="/join">
-                  Start Membership
+                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "pricing-card" } })}>
+                    Start Membership
+                  </span>
                 </Link>
               </Button>
               <Button className="w-full" variant="outline" asChild>
                 <Link href="/book">
-                  Book Free Intro Call
+                  <span onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "pricing-card" } })}>
+                    Book Free Intro Call
+                  </span>
                 </Link>
               </Button>
               <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
@@ -446,13 +455,17 @@ function FinalCTA() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button asChild size="lg" variant="secondary" className="text-lg px-8 h-12">
             <Link href="/join">
-              Start Membership
+              <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "final-cta" } })}>
+                Start Membership
+              </span>
             </Link>
           </Button>
           <Button asChild size="lg" variant="outline" className="text-lg px-8 h-12 border-primary-foreground/30 hover:bg-primary-foreground/10">
             <Link href="/book">
-              <Phone className="mr-2 h-5 w-5" />
-              Book a Free Intro Call
+              <span onClick={() => trackEvent({ eventType: "CTA_CLICK_BOOK", path: "/", metadata: { placement: "final-cta" } })}>
+                <Phone className="mr-2 h-5 w-5 inline" />
+                Book a Free Intro Call
+              </span>
             </Link>
           </Button>
         </div>
@@ -484,7 +497,9 @@ function StickyCTA() {
           <div className="flex items-center gap-2 bg-background border border-border shadow-lg rounded-full px-2 py-2">
             <Link href="/join">
               <Button size="sm" className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                Start Membership <ArrowRight className="ml-2 h-4 w-4" />
+                <span onClick={() => trackEvent({ eventType: "CTA_CLICK_JOIN", path: "/", metadata: { placement: "sticky-cta" } })}>
+                  Start Membership <ArrowRight className="ml-2 h-4 w-4 inline" />
+                </span>
               </Button>
             </Link>
             <button onClick={() => setDismissed(true)} className="p-2 text-muted-foreground hover:text-foreground transition-colors" aria-label="Dismiss">

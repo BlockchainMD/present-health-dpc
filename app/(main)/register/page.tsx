@@ -10,6 +10,7 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import { signIn } from 'next-auth/react';
 import { ENROLLMENT_FEE_DOLLARS, MEMBERSHIP_TIERS, normalizeCoverageType } from '@/lib/pricing';
 import { US_STATES } from '@/lib/us-states';
+import { trackEvent } from '@/lib/track-event';
 
 type StateOption = { name: string; slug: string };
 
@@ -74,6 +75,11 @@ function RegisterForm() {
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
         const state = formData.get("state") as string;
+        trackEvent({
+            eventType: "REGISTER_FORM_SUBMIT",
+            path: "/register",
+            metadata: { plan: planKey, state },
+        });
 
         try {
             const res = await fetch("/api/register", {

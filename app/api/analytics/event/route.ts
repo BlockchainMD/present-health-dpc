@@ -1,28 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { recordNativePageView } from "@/lib/analytics-dashboard";
 import { getOrCreateAttributionSession } from "@/lib/attribution";
+import { recordConversionEvent } from "@/lib/conversion";
 
 export const runtime = "nodejs";
 
-function pickPath(request: NextRequest, body: Record<string, unknown> | null) {
-    const explicit =
-        (typeof body?.path === "string" && body.path) ||
-        (typeof body?.pathname === "string" && body.pathname) ||
-        "";
+function sanitizeEventType(value: unknown) {
+    const raw = String(value || "").trim().toUpperCase();
+    if (!raw) return "";
+    if (!/^[A-Z0-9_]{3,64}$/.test(raw)) return "";
+    return raw;
+}
 
-    if (explicit.trim()) return explicit.trim();
+function sanitizePath(value: unknown) {
+    const raw = String(value || "").trim();
+    if (!raw) return "";
+    if (!raw.startsWith("/")) return "";
+    return raw.slice(0, 300);
+}
 
-    const referer = request.headers.get("referer") || "";
-    if (referer) {
-        try {
-            return new URL(referer).pathname;
-        } catch {
-            // ignore malformed referer
-        }
-    }
-
-    return "";
+function toJsonObject(value: unknown) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+    return value as Record<string, unknown>;
 }
 
 function pickValue(body: Record<string, unknown> | null, key: string) {
@@ -33,16 +32,13 @@ function pickValue(body: Record<string, unknown> | null, key: string) {
 
 export async function POST(request: NextRequest) {
     try {
-        const ua = (request.headers.get("user-agent") || "").toLowerCase();
-        if (/bot|spider|crawl|slurp|bingpreview/i.test(ua)) {
-            return NextResponse.json({ success: true, skipped: true, reason: "bot" });
+        const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+        const eventType = sanitizeEventType(body?.eventType || body?.type);
+        if (!eventType) {
+            return NextResponse.json({ success: false, error: "eventType is required" }, { status: 400 });
         }
 
-        const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
-        const path = pickPath(request, body);
-        if (!path) {
-            return NextResponse.json({ success: false, error: "path is required" }, { status: 400 });
-        }
+        const path = sanitizePath(body?.path);
 
         const attributionSessionId = await getOrCreateAttributionSession(undefined, {
             gclid: pickValue(body, "gclid") || undefined,
@@ -51,7 +47,7 @@ export async function POST(request: NextRequest) {
             utmCampaign: pickValue(body, "utm_campaign") || undefined,
             utmTerm: pickValue(body, "utm_term") || undefined,
             utmContent: pickValue(body, "utm_content") || undefined,
-            landingPath: path,
+            landingPath: path || "/",
             referrer: request.headers.get("referer") || undefined,
             userAgentHash: request.headers.get("user-agent") || undefined,
             ipHash:
@@ -60,12 +56,23 @@ export async function POST(request: NextRequest) {
                 undefined,
         });
 
-        const result = await recordNativePageView(path);
-        return NextResponse.json({ success: true, attributionSessionId, ...result });
+        const metadata = toJsonObject(body?.metadata);
+        await recordConversionEvent({
+            type: eventType,
+            attributionSessionId,
+            metadata: {
+                ...metadata,
+                path: path || null,
+                source: "NativeEventTrack",
+            },
+        });
+
+        return NextResponse.json({ success: true });
     } catch (error: any) {
         return NextResponse.json(
-            { success: false, error: error?.message || "Failed to track pageview" },
+            { success: false, error: error?.message || "Failed to record event" },
             { status: 500 }
         );
     }
 }
+

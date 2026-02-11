@@ -1,11 +1,14 @@
+import { NativePageTracker } from "@/components/analytics/NativePageTracker";
+
 export default function LandingPageLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
     return (
-        <main className="flex-1">
-            {children}
-        </main>
+        <>
+            <main className="flex-1">{children}</main>
+            <NativePageTracker />
+        </>
     );
 }

@@ -7,20 +7,24 @@ interface PageProps {
 
 export default async function BookPage({ searchParams }: PageProps) {
     const pick = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
-    const { runId, gclid } = searchParams;
+    const { runId, gclid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = searchParams;
     const runIdValue = pick(runId);
     const gclidValue = pick(gclid);
+    const utmSourceValue = pick(utm_source);
+    const utmMediumValue = pick(utm_medium);
+    const utmCampaignValue = pick(utm_campaign);
+    const utmTermValue = pick(utm_term);
+    const utmContentValue = pick(utm_content);
 
-    // Construct Cal.com URL with UTMs for attribution
-    // We'll use utm_source=presenthealth and utm_medium=ad
-    // utm_campaign can be the runId
     const calBaseUrl = "https://cal.com/jonathan-rouwhorst-1idf8k/15min";
     const calUrl = new URL(calBaseUrl);
-    calUrl.searchParams.set("utm_source", "presenthealth");
-    calUrl.searchParams.set("utm_medium", "ad");
-    if (runIdValue) calUrl.searchParams.set("utm_campaign", runIdValue);
-    if (gclidValue) calUrl.searchParams.set("utm_term", gclidValue);
-    if (runIdValue) calUrl.searchParams.set("utm_content", runIdValue);
+    calUrl.searchParams.set("utm_source", utmSourceValue || "presenthealth");
+    calUrl.searchParams.set("utm_medium", utmMediumValue || "website");
+    calUrl.searchParams.set("utm_campaign", utmCampaignValue || runIdValue || "book-intro-call");
+    if (utmTermValue) calUrl.searchParams.set("utm_term", utmTermValue);
+    if (utmContentValue) calUrl.searchParams.set("utm_content", utmContentValue);
+    if (!utmContentValue && runIdValue) calUrl.searchParams.set("utm_content", runIdValue);
+    if (gclidValue) calUrl.searchParams.set("gclid", gclidValue);
 
     return (
         <div className="min-h-screen bg-background">

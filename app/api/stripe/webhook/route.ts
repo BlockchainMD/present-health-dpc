@@ -4,6 +4,12 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
 import { recordConversionEvent } from "@/lib/conversion";
+import { MEMBERSHIP_TIERS, normalizeCoverageType } from "@/lib/pricing";
+import {
+    upsertUnifiedLeadFromCampaignLead,
+    upsertUnifiedLeadFromWebsiteRegistration,
+} from "@/lib/unified-leads";
+import { UnifiedLeadMembershipTier, UnifiedLeadStatus } from "@prisma/client";
 
 export async function POST(req: Request) {
     const body = await req.text();
@@ -42,9 +48,8 @@ export async function POST(req: Request) {
 
     console.log(`[StripeWebhook] Processing event: ${event.id} type: ${event.type}`);
 
-    const session = event.data.object as Stripe.Checkout.Session;
-
     if (event.type === "checkout.session.completed") {
+        const session = event.data.object as Stripe.Checkout.Session;
         const subscription = await stripe.subscriptions.retrieve(
             session.subscription as string
         );
@@ -62,6 +67,16 @@ export async function POST(req: Request) {
             select: { id: true, leadId: true, attributionSessionId: true }
         });
 
+        const plan = normalizeCoverageType(session.metadata.plan);
+        const membershipTier =
+            plan === "couple"
+                ? UnifiedLeadMembershipTier.COUPLE
+                : plan === "family"
+                    ? UnifiedLeadMembershipTier.FAMILY
+                    : UnifiedLeadMembershipTier.INDIVIDUAL;
+        const monthlyRate = MEMBERSHIP_TIERS[plan].monthlyDollars;
+        const normalizedEmail = String(session.customer_details?.email || session.customer_email || "").trim().toLowerCase();
+
         await prisma.user.update({
             where: {
                 id: session.metadata.userId,
@@ -73,9 +88,54 @@ export async function POST(req: Request) {
             },
         });
 
-        // Record Conversion Event with enriched metadata
+        if (user?.leadId) {
+            await prisma.lead.updateMany({
+                where: { id: user.leadId },
+                data: {
+                    status: "CONVERTED",
+                    convertedAt: new Date(),
+                },
+            });
+
+            const campaignLead = await prisma.lead.findUnique({
+                where: { id: user.leadId },
+                include: {
+                    campaignRun: {
+                        select: {
+                            campaign: {
+                                select: { landingSlug: true },
+                            },
+                        },
+                    },
+                },
+            });
+            if (campaignLead) {
+                await upsertUnifiedLeadFromCampaignLead(campaignLead, false);
+            }
+        }
+
+        if (normalizedEmail) {
+            await upsertUnifiedLeadFromWebsiteRegistration(
+                {
+                    sourceRecordId: `register:${normalizedEmail}`,
+                    email: normalizedEmail,
+                    state: session.metadata.state || null,
+                    sourcePage: "/register",
+                    membershipTier,
+                    monthlyMembershipRate: monthlyRate,
+                    suggestedStatus: UnifiedLeadStatus.ENROLLED,
+                    sourceMeta: {
+                        stripeCustomerId: String(subscription.customer || ""),
+                        stripeSubscriptionId: subscription.id,
+                        userId: session.metadata.userId,
+                    },
+                },
+                false
+            );
+        }
+
         await recordConversionEvent({
-            type: 'STRIPE_SUBSCRIBED',
+            type: "CHECKOUT_COMPLETED",
             attributionSessionId: session.metadata.attributionSessionId || user?.attributionSessionId,
             userId: session.metadata.userId,
             leadId: user?.leadId,
@@ -83,25 +143,78 @@ export async function POST(req: Request) {
                 stripeSubscriptionId: subscription.id,
                 stripeEventId: event.id,
                 leadId: user?.leadId,
-                attributionSessionId: user?.attributionSessionId || session.metadata.attributionSessionId
+                attributionSessionId: user?.attributionSessionId || session.metadata.attributionSessionId,
+                plan,
+                monthlyRate,
+                state: session.metadata.state || null,
             }
         });
 
         await recordConversionEvent({
-            type: 'MEMBER_ACTIVE',
+            type: "SUBSCRIPTION_STARTED",
             attributionSessionId: session.metadata.attributionSessionId || user?.attributionSessionId,
             userId: session.metadata.userId,
             leadId: user?.leadId,
-            metadata: { source: 'StripeWebhook' }
+            metadata: {
+                source: "StripeWebhook",
+                stripeSubscriptionId: subscription.id,
+                stripeCustomerId: String(subscription.customer || ""),
+            },
+        });
+
+        await recordConversionEvent({
+            type: "MEMBER_ACTIVE",
+            attributionSessionId: session.metadata.attributionSessionId || user?.attributionSessionId,
+            userId: session.metadata.userId,
+            leadId: user?.leadId,
+            metadata: {
+                source: "StripeWebhook",
+                plan,
+                monthlyRate,
+                state: session.metadata.state || null,
+            },
+        });
+    }
+
+    if (event.type === "invoice.paid") {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customerId = typeof invoice.customer === "string" ? invoice.customer : null;
+        if (customerId) {
+            await prisma.user.updateMany({
+                where: { stripeCustomerId: customerId },
+                data: { subscriptionStatus: "active" },
+            });
+        }
+        await recordConversionEvent({
+            type: "INVOICE_PAID",
+            metadata: {
+                source: "StripeWebhook",
+                stripeInvoiceId: invoice.id,
+                stripeCustomerId: customerId,
+                amountPaid: invoice.amount_paid,
+                billingReason: invoice.billing_reason,
+            },
         });
     }
 
     if (event.type === "invoice.payment_failed") {
         const invoice = event.data.object as Stripe.Invoice;
-        // Find user by subscription ID and update status
-        // This is a bit trickier without storing the sub ID first, but for now we assume it's there
-        // or we can look up by customer ID if we had it.
-        // For MVP, we'll skip complex logic here.
+        const customerId = typeof invoice.customer === "string" ? invoice.customer : null;
+        if (customerId) {
+            await prisma.user.updateMany({
+                where: { stripeCustomerId: customerId },
+                data: { subscriptionStatus: "past_due" },
+            });
+        }
+        await recordConversionEvent({
+            type: "PAYMENT_FAILED",
+            metadata: {
+                source: "StripeWebhook",
+                stripeInvoiceId: invoice.id,
+                stripeCustomerId: customerId,
+                amountDue: invoice.amount_due,
+            },
+        });
     }
 
     // Mark event as processed

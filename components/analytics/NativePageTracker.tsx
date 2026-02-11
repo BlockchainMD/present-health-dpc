@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 function shouldSkipPath(pathname: string) {
     if (!pathname.startsWith("/")) return true;
@@ -13,6 +13,7 @@ function shouldSkipPath(pathname: string) {
 
 export function NativePageTracker() {
     const pathname = usePathname() || "/";
+    const searchParams = useSearchParams();
     const lastTrackedPathRef = useRef<string>("");
 
     useEffect(() => {
@@ -21,7 +22,23 @@ export function NativePageTracker() {
         if (lastTrackedPathRef.current === path) return;
         lastTrackedPathRef.current = path;
 
-        const payload = JSON.stringify({ path });
+        const payloadObject: Record<string, string> = { path };
+        const query = searchParams?.toString() || "";
+        if (query) payloadObject.query = query;
+        const utmSource = searchParams?.get("utm_source") || "";
+        const utmMedium = searchParams?.get("utm_medium") || "";
+        const utmCampaign = searchParams?.get("utm_campaign") || "";
+        const utmTerm = searchParams?.get("utm_term") || "";
+        const utmContent = searchParams?.get("utm_content") || "";
+        const gclid = searchParams?.get("gclid") || "";
+        if (utmSource) payloadObject.utm_source = utmSource;
+        if (utmMedium) payloadObject.utm_medium = utmMedium;
+        if (utmCampaign) payloadObject.utm_campaign = utmCampaign;
+        if (utmTerm) payloadObject.utm_term = utmTerm;
+        if (utmContent) payloadObject.utm_content = utmContent;
+        if (gclid) payloadObject.gclid = gclid;
+
+        const payload = JSON.stringify(payloadObject);
 
         try {
             if (navigator.sendBeacon) {
@@ -40,7 +57,7 @@ export function NativePageTracker() {
             keepalive: true,
             credentials: "same-origin",
         }).catch(() => undefined);
-    }, [pathname]);
+    }, [pathname, searchParams]);
 
     return null;
 }
