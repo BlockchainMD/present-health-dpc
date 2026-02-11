@@ -993,27 +993,29 @@ export async function getEmployerPipelineDashboard() {
             outreachThisWeek += 1;
         }
 
+        const meetingStatuses: EmployerProspectStatus[] = [
+            EmployerProspectStatus.MEETING_SCHEDULED,
+            EmployerProspectStatus.PROPOSAL_SENT,
+            EmployerProspectStatus.NEGOTIATING,
+            EmployerProspectStatus.WON,
+        ];
         if (
             prospect.updatedAt >= mStart &&
             prospect.updatedAt <= now &&
-            [
-                EmployerProspectStatus.MEETING_SCHEDULED,
-                EmployerProspectStatus.PROPOSAL_SENT,
-                EmployerProspectStatus.NEGOTIATING,
-                EmployerProspectStatus.WON,
-            ].includes(prospect.status)
+            meetingStatuses.includes(prospect.status)
         ) {
             meetingsThisMonth += 1;
         }
 
+        const proposalStatuses: EmployerProspectStatus[] = [
+            EmployerProspectStatus.PROPOSAL_SENT,
+            EmployerProspectStatus.NEGOTIATING,
+            EmployerProspectStatus.WON,
+        ];
         if (
             prospect.updatedAt >= mStart &&
             prospect.updatedAt <= now &&
-            [
-                EmployerProspectStatus.PROPOSAL_SENT,
-                EmployerProspectStatus.NEGOTIATING,
-                EmployerProspectStatus.WON,
-            ].includes(prospect.status)
+            proposalStatuses.includes(prospect.status)
         ) {
             proposalsThisMonth += 1;
         }
