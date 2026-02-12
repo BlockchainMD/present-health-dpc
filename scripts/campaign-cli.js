@@ -6,6 +6,7 @@ const { PrismaClient } = require("@prisma/client");
 
 let prisma = null;
 let proxyProcess = null;
+let stoppingProxy = false;
 
 const DEFAULT_TARGET = "prod";
 const DEFAULT_PROXY_PORT = 5435;
@@ -334,12 +335,14 @@ async function waitForPort(port, timeoutMs = 15000) {
 
 async function startCloudSqlProxy(instance, port) {
     const binary = resolveProxyBinary();
+    stoppingProxy = false;
     proxyProcess = spawn(binary, ["--address", "127.0.0.1", "--port", String(port), instance], {
         stdio: "ignore",
         detached: false,
     });
 
     proxyProcess.once("exit", (code) => {
+        if (stoppingProxy) return;
         if (code && code !== 0) {
             console.error(`cloud-sql-proxy exited unexpectedly with code ${code}`);
         }
@@ -350,6 +353,7 @@ async function startCloudSqlProxy(instance, port) {
 
 async function stopCloudSqlProxy() {
     if (!proxyProcess) return;
+    stoppingProxy = true;
     proxyProcess.kill("SIGTERM");
     proxyProcess = null;
 }

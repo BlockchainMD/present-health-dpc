@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --test",
-    "campaign:queue-review": "node scripts/campaign-cli.js queue-review"
+    "campaign:queue-review": "node scripts/campaign-cli.js queue-review",
+    "campaign:queue-review:local": "node scripts/campaign-cli.js queue-review --target local"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
