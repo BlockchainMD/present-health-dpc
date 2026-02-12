@@ -1,0 +1,27 @@
+{
+    "displayName": "Lead-Capture-Alert",
+    "documentation": {
+        "content": "A new lead has been captured. Details are included in the log snippet below.\n\n$${log.extracted_text}",
+        "mimeType": "text/markdown"
+    },
+    "userLabels": {},
+    "conditions": [
+        {
+            "displayName": "Log match: [LEAD-CAPTURE]",
+            "conditionMatchedLog": {
+                "filter": "resource.type=\"cloud_run_revision\" AND textPayload =~ \"\\[LEAD-CAPTURE\\]\""
+            }
+        }
+    ],
+    "alertStrategy": {
+        "notificationRateLimit": {
+            "period": "300s"
+        },
+        "autoClose": "604800s"
+    },
+    "combiner": "OR",
+    "enabled": true,
+    "notificationChannels": [
+        "projects/present-health-dpc-2025/notificationChannels/5815080475022906051"
+    ]
+}
