@@ -1,5 +1,11 @@
 export type CoverageType = "individual" | "couple" | "family";
 
+export const MEMBERSHIP_MONTHLY_DOLLARS = 49;
+export const MEMBERSHIP_ANNUAL_DOLLARS = 490;
+export const MEMBERSHIP_ANNUAL_SAVINGS_DOLLARS = 98;
+export const SINGLE_VISIT_DOLLARS = 49;
+export const EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS = 29;
+
 export const MEMBERSHIP_TIERS: Record<
     CoverageType,
     {
@@ -10,29 +16,44 @@ export const MEMBERSHIP_TIERS: Record<
     }
 > = {
     individual: {
-        name: "Individual",
-        monthlyDollars: 99,
-        tagline: "For one adult member.",
-        includes: ["Telehealth-first primary care", "Direct messaging and follow-ups", "Same/next-day visits when available"],
+        name: "Membership",
+        monthlyDollars: MEMBERSHIP_MONTHLY_DOLLARS,
+        tagline: "One plan. Adults 18+.",
+        includes: [
+            "Unlimited secure messaging (text, photo, voice memo)",
+            "Responses within 4 business hours (M-F 8am-8pm ET)",
+            "Video visits when clinically appropriate",
+            "Prescriptions, labs, and ongoing care support",
+        ],
     },
     couple: {
-        name: "Couple",
-        monthlyDollars: 179,
-        tagline: "For two adults. Save about 10% vs two individual memberships.",
-        includes: ["Two adult members", "Telehealth-first primary care", "Direct messaging and follow-ups"],
+        name: "Membership",
+        monthlyDollars: MEMBERSHIP_MONTHLY_DOLLARS,
+        tagline: "One plan. Adults 18+.",
+        includes: [
+            "Unlimited secure messaging (text, photo, voice memo)",
+            "Responses within 4 business hours (M-F 8am-8pm ET)",
+            "Video visits when clinically appropriate",
+            "Prescriptions, labs, and ongoing care support",
+        ],
     },
     family: {
-        name: "Family",
-        monthlyDollars: 249,
-        tagline: "Two adults plus children under 18.",
-        includes: ["Two adult members", "Children under 18 included", "Telehealth-first primary care for the household"],
+        name: "Membership",
+        monthlyDollars: MEMBERSHIP_MONTHLY_DOLLARS,
+        tagline: "One plan. Adults 18+.",
+        includes: [
+            "Unlimited secure messaging (text, photo, voice memo)",
+            "Responses within 4 business hours (M-F 8am-8pm ET)",
+            "Video visits when clinically appropriate",
+            "Prescriptions, labs, and ongoing care support",
+        ],
     },
 };
 
 export const EMPLOYER_TIER = {
     name: "Employer / Group",
-    monthlyPerEmployeeDollars: 89,
-    minEmployees: 10,
+    monthlyPerEmployeeDollars: EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS,
+    minEmployees: 1,
 } as const;
 
 // Default insurance premium inputs for the comparison calculator.
