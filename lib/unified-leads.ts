@@ -692,7 +692,7 @@ export async function upsertUnifiedLeadFromCalBooking(
         email,
         phone: input.phone || null,
         state: input.state || null,
-        sourcePage: input.sourcePage || "/book",
+        sourcePage: input.sourcePage || "/join",
         sourceMeta:
             (toJsonObject(input.sourceMeta) as Prisma.InputJsonValue) ||
             ({ source: "cal-webhook" } as Prisma.InputJsonValue),

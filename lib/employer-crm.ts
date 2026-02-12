@@ -218,7 +218,7 @@ function defaultOutreachTemplates(): EmployerOutreachTemplate[] {
             body: [
                 "Hi {contact_name},",
                 "",
-                "I work with Present Health, a telehealth-first Direct Primary Care practice. We help employers offer each team member a dedicated family physician with unlimited virtual visits and no copays.",
+                "I work with Present Health, a telehealth-first Direct Primary Care practice. We help employers offer each team member messaging-first access to licensed clinicians with board-certified physician oversight, unlimited virtual visits, and no copays.",
                 "",
                 "For a team of about {employee_count}, we estimate potential primary-care-related savings of roughly {estimated_annual_savings} annually, while improving access and continuity of care.",
                 "",
@@ -238,7 +238,7 @@ function defaultOutreachTemplates(): EmployerOutreachTemplate[] {
             body: [
                 "Hi {contact_name},",
                 "",
-                "Noticed that {company_name} already invests in employee wellbeing. Present Health can complement that with telehealth-first Direct Primary Care so every employee has a dedicated family physician.",
+                "Noticed that {company_name} already invests in employee wellbeing. Present Health can complement that with telehealth-first Direct Primary Care so every employee has direct access to licensed clinicians with board-certified physician oversight.",
                 "",
                 "For around {employee_count} employees, estimated annual savings could be about {estimated_annual_savings} while delivering faster access, continuity, and no-copay primary care.",
                 "",

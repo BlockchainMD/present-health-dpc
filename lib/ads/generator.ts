@@ -17,14 +17,14 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
         hero: {
             headline: `Direct Primary Care for ${campaign.persona}`,
             subheadline: `Get the care you need for "${campaign.intent}" without the wait.`,
-            cta: "Book a Free Intro Conversation"
+            cta: "Start Membership — $49/mo"
         },
         educationalBriefing: undefined,
         benefits: Array.isArray(campaign.benefits) ? campaign.benefits : [],
         howItWorks: [
-            { title: "Book", desc: "Schedule a free intro call." },
-            { title: "Meet", desc: "Talk to Dr. J directly." },
-            { title: "Join", desc: "Sign up for membership." }
+            { title: "Sign up", desc: "Start membership in minutes." },
+            { title: "Message", desc: "Message your care team directly." },
+            { title: "Get care", desc: "Get full-service primary care with one transparent plan." }
         ],
         proof: Array.isArray(campaign.proofPoints) ? campaign.proofPoints : [],
         pricing: {
@@ -35,18 +35,18 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
                     name: "Membership",
                     price: 49,
                     period: "mo",
-                    features: ["Unlimited virtual visits", "Direct messaging with Dr. J", "Care coordination", "Prevention planning"]
+                    features: ["Unlimited virtual visits", "Direct messaging with your care team", "Care coordination", "Prevention planning"]
                 }
             ]
         },
         faqs: [
             { question: "Do you accept insurance?", answer: "We do not bill insurance directly. This allows us to keep costs transparent and focus on your care, not paperwork." },
-            { question: "Can I text my doctor?", answer: "Yes! Members have direct access to your doctor via text and email." }
+            { question: "Can I message the care team?", answer: "Yes. Members can message licensed clinicians for care questions, follow-up, and coordination." }
         ],
         ctaSection: {
             headline: "Ready to take control of your health?",
             subheadline: "Join Present Health today.",
-            buttonText: "Book Your Free Intro Call"
+            buttonText: "Start Membership — $49/mo"
         }
     };
 
@@ -65,9 +65,9 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             User Intent/Problem: ${redactedIntent}
             
             CORE VALUE PROPOSITIONS:
-            - Direct Access: Text/email your doctor anytime.
+            - Direct Access: Message your care team anytime during business hours.
             - Time Savings: No waiting rooms, same-day starts.
-            - Relationship: A doctor who actually knows you.
+            - Relationship: Ongoing primary care continuity through a dedicated clinical team.
             - Transparent Pricing: No insurance headaches.
 
             COPYWRITING INSTRUCTIONS:
@@ -159,7 +159,7 @@ At Present Health, we believe that the foundation of great care is a deep, unhur
 When addressing concerns like **${campaign.intent}**, you shouldn't be rushed through a 15-minute appointment. You deserve the time to explore the root causes.
 
 ## How DPC Helps
-Direct Primary Care (DPC) gives us the freedom to focus entirely on you, not insurance paperwork. This means longer visits and direct access to Dr. J via text or video.
+Direct Primary Care (DPC) gives us the freedom to focus entirely on you, not insurance paperwork. This means faster access and clear follow-through through messaging-first care.
             `.trim();
         }
     }

@@ -20,7 +20,12 @@ import { headers } from 'next/headers';
 function sanitizeContent(text: string): string {
     if (!text) return text;
     // Remove patterns like "([Present Health][1])" or "([text][number])"
-    return text.replace(/\s*\(\[[^\]]+\]\[[^\]]+\]\)/g, '');
+    let next = text.replace(/\s*\(\[[^\]]+\]\[[^\]]+\]\)/g, '');
+    next = next.replace(/book (a )?free intro (call|conversation)/gi, "start membership");
+    next = next.replace(/book intro call/gi, "start membership");
+    next = next.replace(/talk to dr\.?\s*j directly/gi, "Message our care team directly");
+    next = next.replace(/direct messaging with dr\.?\s*j/gi, "Direct messaging with your care team");
+    return next;
 }
 
 function sanitizeObject(obj: any): any {
@@ -134,9 +139,9 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
 
     if (!content.howItWorks || !Array.isArray(content.howItWorks) || content.howItWorks.length === 0) {
         content.howItWorks = [
-            { title: "Book", desc: "Schedule a free intro call." },
-            { title: "Meet", desc: "Talk to Dr. J directly." },
-            { title: "Join", desc: "Sign up for membership." }
+            { title: "Sign up", desc: "Start membership in minutes." },
+            { title: "Message", desc: "Message your care team directly." },
+            { title: "Get care", desc: "Get ongoing primary care with one transparent plan." }
         ];
     }
 
@@ -151,7 +156,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                 name: "Membership",
                 price: 49,
                 period: "mo",
-                features: ["Unlimited virtual visits", "Direct messaging with Dr. J", "Care coordination", "Prevention planning"]
+                features: ["Unlimited virtual visits", "Direct messaging with your care team", "Care coordination", "Prevention planning"]
             }
         ]
     };
@@ -160,7 +165,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
         content.pricing = defaultPricing;
     }
 
-    const bookUrl = `/book?runId=${runId}${gclid ? `&gclid=${gclid}` : ''}`;
+    const joinUrl = `/join?runId=${runId}${gclid ? `&gclid=${gclid}` : ''}`;
 
     return (
         <div className="min-h-screen bg-background flex flex-col">
@@ -172,7 +177,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                         <span className="font-bold text-xl text-primary">Present Health</span>
                     </Link>
                     <Button asChild size="sm">
-                        <Link href={bookUrl}>Book Intro Call</Link>
+                        <Link href={joinUrl}>Start Membership - $49/mo</Link>
                     </Button>
                 </div>
             </header>
@@ -193,7 +198,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                             {content.hero.subheadline}
                                         </p>
                                         <Button asChild size="lg" className="text-lg px-8 h-12">
-                                            <Link href={bookUrl}>
+                                            <Link href={joinUrl}>
                                                 {content.hero.cta} <ArrowRight className="ml-2 h-5 w-5" />
                                             </Link>
                                         </Button>
@@ -213,7 +218,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                             <div className="relative aspect-[3/4] rounded-3xl overflow-hidden shadow-2xl border-2 border-border">
                                                 <Image
                                                     src="/doctor-portrait.jpg"
-                                                    alt="Dr. J - Your Physician at Present Health"
+                                                    alt="Present Health clinician team"
                                                     fill
                                                     className="object-cover"
                                                     priority
@@ -230,7 +235,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                                         </div>
                                                     </div>
                                                     <div>
-                                                        <p className="font-bold text-foreground">Dr. J</p>
+                                                        <p className="font-bold text-foreground">Present Health Team</p>
                                                         <p className="text-sm text-emerald-600 font-medium">Accepting New Members</p>
                                                     </div>
                                                 </div>
@@ -325,8 +330,8 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                                 </CardContent>
                                                 <CardFooter className="flex flex-col gap-4">
                                                     <Button className="w-full" asChild>
-                                                        <Link href={bookUrl}>
-                                                            Book Free Intro Call
+                                                        <Link href={joinUrl}>
+                                                            Start Membership - $49/mo
                                                         </Link>
                                                     </Button>
                                                     <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
@@ -385,8 +390,8 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                 <h2 className="text-3xl font-bold mb-4">{content.ctaSection?.headline || "Ready to get started?"}</h2>
                                 <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">{content.ctaSection?.subheadline || "Join Present Health today."}</p>
                                 <Button asChild size="lg" variant="secondary" className="text-lg px-8">
-                                    <Link href={bookUrl}>
-                                        {content.ctaSection?.buttonText || "Book Your Free Intro Call"}
+                                    <Link href={joinUrl}>
+                                        {content.ctaSection?.buttonText || "Start Membership - $49/mo"}
                                     </Link>
                                 </Button>
                             </div>

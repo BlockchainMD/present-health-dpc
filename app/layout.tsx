@@ -14,8 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Present Health | Virtual Direct Primary Care (HSA-Friendly 2026)",
-  description: "Membership primary care with direct doctor access, same/next-day virtual visits, prevention planning, and transparent pricing. HSA-friendly starting 2026 (limits apply).",
+  title: "Present Health | Messaging-First Primary Care",
+  description:
+    "Full-service primary care by message, phone, or video. One plan: $49/month. Everything included. Adults 18+.",
 };
 
 export default function RootLayout({

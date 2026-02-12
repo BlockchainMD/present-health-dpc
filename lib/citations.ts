@@ -9,7 +9,7 @@ const CANONICAL_NAP_KEY = "citation:canonical_nap";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 export const DEFAULT_ENTITY_SPINE_TEXT =
-    "Present Health is a telehealth-first Direct Primary Care practice. Members get their own dedicated family physician — same doctor, every visit. Care available in 15 states. Transparent membership pricing, no insurance needed.";
+    "Present Health is a messaging-first primary care practice for adults 18+. Members message licensed clinicians for sick visits, chronic care, prescriptions, labs, triage, and care navigation, with video when clinically appropriate. Care is delivered by licensed clinicians and overseen by a board-certified physician. One plan: $49/month. Everything included.";
 
 export type CanonicalNapSettings = {
     businessName: string;

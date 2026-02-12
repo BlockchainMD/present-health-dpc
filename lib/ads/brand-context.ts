@@ -7,17 +7,17 @@
 
 export const BRAND_CONTEXT = `
 ## ABOUT PRESENT HEALTH
-Present Health is a Virtual Direct Primary Care (DPC) practice founded by Dr. J, a board-certified family medicine physician with 10+ years of experience. We believe healthcare should be about relationships, not transactions.
+Present Health is a messaging-first Direct Primary Care (DPC) practice for adults 18+. Care is delivered by licensed clinicians and overseen by a board-certified physician.
 
 ## THE DPC MODEL EXPLAINED
-Direct Primary Care removes the insurance middleman. Patients pay a flat monthly membership fee directly to their physician, eliminating copays, surprise bills, and insurance paperwork. This allows doctors to maintain smaller panels (max 300 patients vs. 2,500+ in traditional practices) and spend real time with each patient.
+Direct Primary Care removes the insurance middleman. Members pay a flat monthly fee directly to the practice, eliminating copays, surprise bills, and insurance paperwork for primary care membership services.
 
 ## UNIQUE DIFFERENTIATORS
-1. **Relationship-First Model**: Unlike concierge practices focused on luxury perks, we focus on genuine doctor-patient relationships and unhurried care.
-2. **Virtual-Native**: Built for telehealth from day one—text, video, or phone. No physical overhead means savings passed to members.
-3. **HSA-Friendly (2026)**: Priced at $49/mo—within IRS HSA monthly limits so members can pay with pre-tax dollars.
-4. **Anti-Rushed Care**: Minimum 30-minute visits. Your doctor actually has time to listen.
-5. **Direct Access**: Text or email your doctor directly—no phone trees, no waiting for callbacks.
+1. **Messaging-First Access**: Most care starts with secure messaging, with video when clinically appropriate.
+2. **One Clear Plan**: $49/month with no tiers, no per-visit fees, and no upsells.
+3. **Virtual-Native Care**: Built for telehealth from day one—message, phone, or video.
+4. **Transparent Model**: No insurance billing, no copays for membership care, no surprise membership bills.
+5. **Clinical Oversight**: Care delivered by licensed clinicians and overseen by a board-certified physician.
 
 ## WHAT WE ARE NOT (COMPLIANCE CRITICAL)
 - NOT insurance (we complement high-deductible health plans, not replace them)
@@ -27,12 +27,11 @@ Direct Primary Care removes the insurance middleman. Patients pay a flat monthly
 - NOT making medical claims in ads (no "cure", "guarantee", "100%")
 
 ## IDEAL PATIENT PROFILE
-- Adults (25-55) frustrated with the traditional healthcare system
+- Adults (18+) frustrated with the traditional healthcare system
 - Remote workers or digital nomads without easy access to local clinics
 - People with high-deductible health plans looking to maximize value
 - Health-conscious individuals wanting a proactive partner, not reactive sick visits
 - Busy professionals who value their time and hate waiting rooms
-- Parents seeking a trusted advisor for family health decisions
 
 ## PAIN POINTS WE ADDRESS
 1. "I can't get an appointment for 3 weeks"
@@ -51,21 +50,22 @@ Direct Primary Care removes the insurance middleman. Patients pay a flat monthly
 - Use "you/your" language, not "patients/members"
 
 ## KEY PROOF POINTS
-- Board-certified family medicine physician
-- 10+ years of clinical experience
-- Limited patient panel for personalized attention
+- Licensed clinicians with board-certified physician oversight
+- Messaging-first care model with clear response-time expectations
 - No insurance billing = no surprise costs
 - Transparent, flat-rate pricing
 - Cancel anytime, no contracts
 
 ## PRICING (CURRENT)
 - Membership: $49/month ($490/year if paid annually—save $98)
+- Single Visit: $49
+- Employer plans: $29/employee/month
 - HSA/FSA eligible starting January 2026 (subject to IRS rules)
 - Labs and prescriptions billed separately at transparent cost
 
 ## CALL TO ACTION PREFERENCES
-- Primary CTA: "Book a Free Intro Call" (low commitment, high conversion)
-- Secondary: "See Pricing" or "Learn More"
+- Primary CTA: "Start Membership — $49/mo"
+- Secondary: "See Pricing" or "How It Works"
 - AVOID: "Sign Up Now", "Buy Today", "Limited Time" (too aggressive)
 `;
 

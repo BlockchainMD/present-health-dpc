@@ -13,9 +13,9 @@ export default function VisitPage() {
         <div className="container mx-auto max-w-4xl px-4 pt-24 pb-14 md:px-6">
             <Card className="border-border/70">
                 <CardHeader>
-                    <CardTitle className="text-3xl tracking-tight md:text-4xl">Single Visit Option - $49</CardTitle>
+                    <CardTitle className="text-3xl tracking-tight md:text-4xl">Just need one visit? $49.</CardTitle>
                     <CardDescription className="text-base text-muted-foreground">
-                        For one-time primary care needs when you do not want a membership.
+                        No membership required. One clinical encounter for a specific health concern.
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6 text-sm text-muted-foreground">
@@ -28,7 +28,7 @@ export default function VisitPage() {
                     </p>
                     <div className="flex flex-col gap-3 sm:flex-row">
                         <Button asChild>
-                            <Link href="/book">Request Single Visit - $49</Link>
+                            <Link href="/join">Start Single Visit Request</Link>
                         </Button>
                         <Button asChild variant="outline">
                             <Link href="/join">Prefer membership? Start at $49/mo</Link>

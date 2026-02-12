@@ -21,9 +21,7 @@ export function Footer() {
                             </span>
                         </Link>
                         <p className="mt-4 text-sm text-muted-foreground">
-                            Primary Care, Finally Unlocked.
-                            <br />
-                            Virtual DPC for the modern era.
+                            Primary care that fits in your pocket. $49/month.
                         </p>
                     </div>
 
@@ -63,8 +61,16 @@ export function Footer() {
                     </p>
                     <div className="text-xs text-muted-foreground max-w-2xl text-center md:text-right space-y-1">
                         <p>Present Health is a Direct Primary Care practice, not insurance. We do not bill insurance.</p>
-                        <p>Services are provided by a licensed physician where permitted. Availability varies by state.</p>
-                        <p className="italic">*Membership fees may be HSA/FSA eligible starting 2026, subject to IRS rules and limits. Consult a tax professional.</p>
+                        <p>
+                            This service does not replace emergency care - call 911 for emergencies. Members must be 18 or older.
+                        </p>
+                        <p>
+                            Services provided by licensed clinicians. All clinical decisions are made or supervised by a board-certified physician.
+                        </p>
+                        <p>
+                            Response times apply during business hours (M-F 8am-8pm ET). Availability varies by state. Lab and imaging costs billed separately at transparent prices.
+                        </p>
+                        <p className="italic">HSA eligibility subject to IRS rules. Consult a tax professional.</p>
                     </div>
                 </div>
             </div>

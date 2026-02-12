@@ -140,7 +140,7 @@ export function buildChatbotSystemPrompt(config: ChatbotConfig, stateNames: stri
         "",
         statesLine,
         `Useful site routes: ${pageList}.`,
-        "If asked for next step, prefer directing to /join or /book.",
+        "If asked for next step, prefer directing to /join.",
     ].join("\n");
 }
 
@@ -244,4 +244,3 @@ export function buildConversationSummaryFromLogs(
 
     return clipText(`${topicLine} ${lastQuestions}`, 1200);
 }
-

@@ -338,7 +338,7 @@ export async function getPrBoilerplate() {
         id: physician.id,
         name: physician.name,
         snippet: normalizeText(
-            physician.bio || `${physician.name}${physician.credentials ? `, ${physician.credentials}` : ""}, is a family physician at Present Health.`,
+            physician.bio || `${physician.name}${physician.credentials ? `, ${physician.credentials}` : ""}, is a physician leader at Present Health.`,
             700
         ),
     }));

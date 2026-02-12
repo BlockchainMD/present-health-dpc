@@ -8,7 +8,7 @@ export function SocialProof() {
         },
         {
             icon: <ShieldCheck className="h-6 w-6 text-primary" />,
-            text: "Board-certified family medicine",
+            text: "Board-certified physician oversight",
         },
         {
             text: "Direct access / transparent pricing",

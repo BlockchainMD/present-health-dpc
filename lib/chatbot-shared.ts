@@ -34,7 +34,7 @@ export const DEFAULT_CHATBOT_KNOWLEDGE_BASE = [
     "Membership costs: $49/month or $490/year (save $98).",
     "Single visit option: $49 per visit.",
     "Employer plans: $29/employee/month.",
-    "Members get their own dedicated family physician (same doctor every visit).",
+    "Care is delivered by licensed clinicians and overseen by a board-certified physician.",
     "Unlimited telehealth visits, no copays, no surprise bills.",
     "Present Health can prescribe medications, order labs, manage chronic conditions, and provide preventive care.",
     "Present Health does not provide emergency care, surgery, specialist procedures, or imaging.",

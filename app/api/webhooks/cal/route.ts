@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
                     sourceRecordId,
                     email,
                     fullName,
-                    sourcePage: "/book",
+                    sourcePage: "/join",
                     sourceMeta: payload,
                     createdAt: bookingTime,
                 },

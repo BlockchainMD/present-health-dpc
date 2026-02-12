@@ -19,7 +19,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     // 1. Brand
     headlines.push("Present Health DPC");
     headlines.push("Direct Primary Care");
-    headlines.push("Meet Dr. J");
+    headlines.push("$49/Month Membership");
 
     // 2. Intent/Persona (Truncated to 30 chars if needed)
     if (intent && intent.length <= 30) headlines.push(intent);
@@ -31,9 +31,9 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     });
 
     // 4. Call to Action
-    headlines.push("Book Free Intro Call");
+    headlines.push("Start Membership");
     headlines.push("No Waiting Rooms");
-    headlines.push("Text Your Doctor");
+    headlines.push("Message Your Care Team");
 
     // --- DESCRIPTIONS (Max 90 chars) ---
     // 1. Proof Points
@@ -47,7 +47,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
 
     // 3. Standard Value Prop
     descriptions.push("Experience healthcare the way it should be. Direct access, transparent pricing, no insurance hassles.");
-    descriptions.push("Your personal doctor is just a text away. Join Present Health today.");
+    descriptions.push("Message your care team directly and get full-service primary care for $49/month.");
 
     // --- VALIDATION & FALLBACKS ---
     const safeHeadlines = headlines.filter(h => validateContent(h, "Headline").status === 'PASS');
@@ -62,7 +62,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     ];
 
     const FALLBACK_DESCRIPTIONS = [
-        "Experience healthcare designed around you. Direct access to your personal physician.",
+        "Experience healthcare designed around you. Messaging-first care with transparent pricing.",
         "Simple, transparent monthly membership. No insurance hassles, no waiting rooms."
     ];
 
@@ -87,7 +87,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
             descriptions: [...new Set(safeDescriptions)].slice(0, 4)
         },
         meta: {
-            primaryText: safeDescriptions[0] || "Experience healthcare designed around you. Direct access to your personal physician.",
+            primaryText: safeDescriptions[0] || "Experience healthcare designed around you. Messaging-first care with transparent pricing.",
             headline: safeHeadlines[0] || "Present Health DPC",
             description: safeDescriptions[1] || "Simple, transparent monthly membership. No insurance hassles."
         },
@@ -484,9 +484,9 @@ export async function uploadConversionToGoogleAds(gclid: string, conversionDateT
     });
 
     try {
-        // 1. Get or find the Conversion Action for "Intro Call Booking"
+        // 1. Get or find the Conversion Action for "Membership Signup"
         // For simplicity, we'll assume a specific resource name or search for it
-        const conversionActionName = "Intro Call Booking";
+        const conversionActionName = "Membership Signup";
         const query = `SELECT conversion_action.resource_name FROM conversion_action WHERE conversion_action.name = '${conversionActionName}'`;
         const result = await customer.query(query);
 

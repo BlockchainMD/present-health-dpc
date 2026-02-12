@@ -380,7 +380,7 @@ export function ChatbotWidget({ pathname, stateOptions, welcomeMessage }: Props)
                                 <div>Lead captured. Ready for the next step?</div>
                                 <div className="flex flex-wrap gap-2">
                                     <Button asChild size="sm">
-                                        <Link href="/book">Book a consultation</Link>
+                                        <Link href="/join">Start membership</Link>
                                     </Button>
                                     <Button asChild size="sm" variant="outline">
                                         <Link href="/join">Continue joining</Link>

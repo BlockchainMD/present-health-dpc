@@ -74,7 +74,7 @@ export function StickyMobileCTA({ ctaText, runId }: { ctaText: string, runId: st
                     className="fixed bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-lg border-t border-border z-[100] md:hidden"
                 >
                     <Button asChild className="w-full shadow-lg h-12 text-lg">
-                        <Link href={`/book?runId=${runId}${searchParams.get('gclid') ? `&gclid=${searchParams.get('gclid')}` : ''}`}>
+                        <Link href={`/join?runId=${runId}${searchParams.get('gclid') ? `&gclid=${searchParams.get('gclid')}` : ''}`}>
                             {ctaText}
                         </Link>
                     </Button>
