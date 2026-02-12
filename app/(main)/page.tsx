@@ -89,11 +89,11 @@ function HeroSection() {
                     </h1>
                     <p className="mx-auto mt-5 max-w-3xl text-lg text-muted-foreground md:text-xl">
                         Full-service primary care, starting with a message. Sick visits, chronic care, prescriptions, labs,
-                        and more - $49/month. Everything included.
+                        and more — $49/month. Everything included.
                     </p>
                     <div className="mt-8">
                         <Button asChild size="lg" className="h-12 px-8 text-base">
-                            <Link href="/join">Start Membership - $49/mo</Link>
+                            <Link href="/join">Start Membership — $49/mo</Link>
                         </Button>
                     </div>
                     <p className="mt-4 text-sm text-muted-foreground">
@@ -301,7 +301,7 @@ function PricingBlockSection() {
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="space-y-4 text-center">
-                        <p className="text-lg font-semibold text-foreground">$490/year - save $98</p>
+                        <p className="text-lg font-semibold text-foreground">$490/year — save $98</p>
                         <p className="text-sm text-muted-foreground">
                             HSA-eligible in 2026
                             <br />
@@ -458,9 +458,9 @@ function FinalCTASection() {
             <div className="container mx-auto px-4 text-center md:px-6">
                 <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Primary care that actually works.</h2>
                 <div className="mt-7">
-                    <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
-                        <Link href="/join">
-                            Start Membership - $49/mo <ArrowRight className="ml-2 h-4 w-4" />
+                        <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
+                            <Link href="/join">
+                            Start Membership — $49/mo <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
                 </div>
