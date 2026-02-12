@@ -11,7 +11,7 @@ test('pricing membership copy uses scoped-inclusion language and stronger discla
   const source = readSource('components/pricing/MembershipTiers.tsx');
 
   assert.match(source, /One plan\. All primary care services included\./);
-  assert.match(source, /Not insurance\./);
+  assert.doesNotMatch(source, /Present Health covers primary care and does not replace health insurance/);
   assert.match(source, /Typical response time: within 4 business hours/);
   assert.match(source, /HSA-eligible starting 2026\./);
   assert.doesNotMatch(source, /One plan\. Everything included\./);
@@ -28,4 +28,3 @@ test('pricing calculator is framed as primary-care comparison, not insurance-equ
   assert.doesNotMatch(source, /Annual cost with traditional insurance/);
   assert.doesNotMatch(source, /Estimated annual savings/);
 });
-

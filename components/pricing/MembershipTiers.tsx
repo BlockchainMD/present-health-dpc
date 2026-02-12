@@ -76,10 +76,6 @@ export function MembershipTiers() {
                         Primary care should not have fine print. $49/month covers care within our primary care scope - no per-visit fees, no tiers,
                         no surprises.
                     </p>
-                    <div className="mt-4 rounded-lg border-2 border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-                        <span className="font-semibold">Not insurance.</span> Present Health covers primary care and does not replace health insurance
-                        for hospitalization, specialist care, surgery, or emergency services.
-                    </div>
                 </div>
 
                 <div className="max-w-4xl mx-auto">
