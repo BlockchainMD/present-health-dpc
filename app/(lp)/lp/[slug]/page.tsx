@@ -306,7 +306,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
 
                                     <div className="flex justify-center max-w-lg mx-auto">
                                         {content.pricing.tiers.map((tier: any, i: number) => (
-                                            <Card key={i} className="flex flex-col border-primary shadow-md w-full relative overflow-hidden">
+                                            <Card key={i} className="h-full flex flex-col border-primary shadow-md w-full relative overflow-hidden">
                                                 <div className="absolute top-0 right-0 bg-primary text-primary-foreground text-xs font-bold px-3 py-1 rounded-bl-lg">
                                                     MEMBERSHIP
                                                 </div>
@@ -328,7 +328,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                                         ))}
                                                     </ul>
                                                 </CardContent>
-                                                <CardFooter className="flex flex-col gap-4">
+                                                <CardFooter className="mt-auto flex flex-col gap-4">
                                                     <Button className="w-full" asChild>
                                                         <Link href={joinUrl}>
                                                             Start Membership - $49/mo
