@@ -103,7 +103,7 @@ export default async function ForEmployersPage({ searchParams }: { searchParams:
                         </CardHeader>
                         <CardContent className="text-sm text-muted-foreground space-y-4">
                             <ul className="space-y-2">
-                                <li>Each employee gets their own dedicated physician</li>
+                                <li>Each employee gets messaging-first access to licensed clinicians</li>
                                 <li>Same-day or next-day telehealth appointments</li>
                                 <li>Unlimited visits, no copays, no surprise bills</li>
                                 <li>
