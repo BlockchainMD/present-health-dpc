@@ -8,8 +8,12 @@ import {
 export function FAQAccordion() {
     const faqs = [
         {
+            question: "Is Present Health insurance?",
+            answer: "No. Present Health is a Direct Primary Care membership for primary care services. It does not replace insurance for hospitalization, surgery, specialist care, or emergencies."
+        },
+        {
             question: "Why one plan?",
-            answer: "Healthcare should not have fine print. Everything is included. No premium tier for prescriptions and no add-on for video."
+            answer: "Healthcare should not have fine print. One price covers all primary care services within our scope. No premium tier for prescriptions and no add-on for video."
         },
         {
             question: "Are video visits included?",
@@ -17,7 +21,7 @@ export function FAQAccordion() {
         },
         {
             question: "What about lab costs?",
-            answer: "We order labs at transparent wholesale prices. You pay the lab directly."
+            answer: "We order labs at transparent pricing. Labs and imaging are billed separately by the lab or imaging provider."
         },
         {
             question: "Can I cancel?",

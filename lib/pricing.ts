@@ -21,7 +21,7 @@ export const MEMBERSHIP_TIERS: Record<
         tagline: "One plan. Adults 18+.",
         includes: [
             "Unlimited secure messaging (text, photo, voice memo)",
-            "Responses within 4 business hours (M-F 8am-8pm ET)",
+            "Typical response time: within 4 business hours (M-F 8am-8pm ET)",
             "Video visits when clinically appropriate",
             "Prescriptions, labs, and ongoing care support",
         ],
@@ -32,7 +32,7 @@ export const MEMBERSHIP_TIERS: Record<
         tagline: "One plan. Adults 18+.",
         includes: [
             "Unlimited secure messaging (text, photo, voice memo)",
-            "Responses within 4 business hours (M-F 8am-8pm ET)",
+            "Typical response time: within 4 business hours (M-F 8am-8pm ET)",
             "Video visits when clinically appropriate",
             "Prescriptions, labs, and ongoing care support",
         ],
@@ -43,7 +43,7 @@ export const MEMBERSHIP_TIERS: Record<
         tagline: "One plan. Adults 18+.",
         includes: [
             "Unlimited secure messaging (text, photo, voice memo)",
-            "Responses within 4 business hours (M-F 8am-8pm ET)",
+            "Typical response time: within 4 business hours (M-F 8am-8pm ET)",
             "Video visits when clinically appropriate",
             "Prescriptions, labs, and ongoing care support",
         ],

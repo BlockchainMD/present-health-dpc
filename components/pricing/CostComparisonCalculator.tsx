@@ -6,11 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import {
-    DEFAULT_INSURANCE_PREMIUMS_DOLLARS,
     DEFAULT_MARGINAL_TAX_RATE,
     MEMBERSHIP_MONTHLY_DOLLARS,
-    normalizeCoverageType,
-    type CoverageType,
     type FilingStatus,
 } from "@/lib/pricing";
 
@@ -27,9 +24,8 @@ function selectClassName() {
 }
 
 export function CostComparisonCalculator() {
-    const [coverage, setCoverage] = useState<CoverageType>("individual");
-    const [premiumMonthly, setPremiumMonthly] = useState<number>(DEFAULT_INSURANCE_PREMIUMS_DOLLARS.individual);
-    const [oopAnnual, setOopAnnual] = useState<number>(2500);
+    const [urgentCareVisitsAnnual, setUrgentCareVisitsAnnual] = useState<number>(3);
+    const [urgentCareCostPerVisit, setUrgentCareCostPerVisit] = useState<number>(200);
     const [filingStatus, setFilingStatus] = useState<FilingStatus>("single");
 
     const membershipMonthly = MEMBERSHIP_MONTHLY_DOLLARS;
@@ -37,11 +33,9 @@ export function CostComparisonCalculator() {
     const computed = useMemo(() => {
         const membershipAnnual = MEMBERSHIP_MONTHLY_DOLLARS * 12;
         const dpcAnnual = membershipAnnual;
-
-        const premiumAnnual = premiumMonthly * 12;
-        const traditionalAnnual = premiumAnnual + oopAnnual;
-
-        const savings = traditionalAnnual - dpcAnnual;
+        const urgentCareAnnual = urgentCareVisitsAnnual * urgentCareCostPerVisit;
+        const difference = urgentCareAnnual - dpcAnnual;
+        const breakEvenVisits = urgentCareCostPerVisit > 0 ? membershipAnnual / urgentCareCostPerVisit : 0;
 
         const taxRate = DEFAULT_MARGINAL_TAX_RATE[filingStatus];
         const hsaBenefit = membershipAnnual * taxRate;
@@ -51,20 +45,21 @@ export function CostComparisonCalculator() {
         return {
             membershipAnnual,
             dpcAnnual,
-            traditionalAnnual,
-            savings,
+            urgentCareAnnual,
+            difference,
+            breakEvenVisits,
             hsaBenefit,
             effectiveMonthlyAfterHsa,
         };
-    }, [filingStatus, oopAnnual, premiumMonthly]);
+    }, [filingStatus, urgentCareCostPerVisit, urgentCareVisitsAnnual]);
 
     return (
-        <section aria-label="Cost comparison calculator" className="py-16 md:py-20 bg-muted/20 border-y border-border">
+        <section aria-label="Primary care cost comparison calculator" className="py-16 md:py-20 bg-muted/20 border-y border-border">
             <div className="container mx-auto px-4 md:px-6">
                 <div className="max-w-3xl mx-auto text-center mb-10">
-                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Cost comparison calculator</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4">Primary care cost comparison calculator</h2>
                     <p className="text-lg text-muted-foreground">
-                        Compare estimated annual cost of a Present Health membership vs traditional insurance costs.
+                        Compare common primary care access costs (like urgent care visits) with a Present Health membership.
                     </p>
                 </div>
 
@@ -74,6 +69,14 @@ export function CostComparisonCalculator() {
                     </div>
                 </noscript>
 
+                <div className="max-w-6xl mx-auto mb-6 rounded-xl border-2 border-amber-300 bg-amber-50 px-4 py-4 text-sm text-amber-950">
+                    <p className="font-semibold">Present Health is not insurance and does not replace health insurance coverage.</p>
+                    <p className="mt-1">
+                        This calculator shows primary-care cost differences only. You may still need insurance for hospitalization, specialist care,
+                        emergency care, surgery, imaging, and other services outside primary care.
+                    </p>
+                </div>
+
                 <div className="grid gap-6 lg:grid-cols-2 max-w-6xl mx-auto items-start">
                     <Card className="border-border/60">
                         <CardHeader>
@@ -81,79 +84,58 @@ export function CostComparisonCalculator() {
                         </CardHeader>
                         <CardContent className="grid gap-5">
                             <div className="grid gap-2">
-                                <Label htmlFor="coverage">Coverage type</Label>
-                                <select
-                                    id="coverage"
-                                    className={selectClassName()}
-                                    value={coverage}
-                                    onChange={(e) => {
-                                        const next = normalizeCoverageType(e.target.value);
-                                        setCoverage(next);
-                                        setPremiumMonthly(DEFAULT_INSURANCE_PREMIUMS_DOLLARS[next]);
-                                    }}
-                                >
-                                    <option value="individual">Individual</option>
-                                    <option value="couple">Couple</option>
-                                    <option value="family">Family</option>
-                                </select>
-                            </div>
-
-                            <div className="grid gap-2">
-                                <Label htmlFor="premium">Current monthly insurance premium</Label>
-                                <Input
-                                    id="premium"
-                                    type="number"
-                                    inputMode="decimal"
-                                    min={0}
-                                    step={1}
-                                    value={premiumMonthly}
-                                    onChange={(e) => {
-                                        const next = clampNumber(Number.parseFloat(e.target.value || "0"), 0, 100000);
-                                        setPremiumMonthly(next);
-                                    }}
-                                />
-                                <div className="text-xs text-muted-foreground">
-                                    Prefill uses example benchmark plan averages (individual baseline is the 2024 national average benchmark plan premium for a 40-year-old; couple/family defaults are rough household-size estimates). Source:{" "}
-                                    <a
-                                        href="https://www.insurance.com/health-insurance/aca-health-insurance-averages"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                        className="text-primary hover:underline"
-                                    >
-                                        insurance.com (citing KFF)
-                                    </a>
-                                    .
-                                </div>
-                            </div>
-
-                            <div className="grid gap-2">
                                 <div className="flex items-baseline justify-between gap-3">
-                                    <Label htmlFor="oop">Estimated annual out-of-pocket</Label>
-                                    <div className="text-xs text-muted-foreground">$0 to $10,000</div>
+                                    <Label htmlFor="urgent-care-visits">Urgent care visits per year</Label>
+                                    <div className="text-xs text-muted-foreground">0 to 12</div>
                                 </div>
                                 <Input
-                                    id="oop"
+                                    id="urgent-care-visits"
                                     type="number"
-                                    inputMode="decimal"
+                                    inputMode="numeric"
                                     min={0}
-                                    max={10000}
-                                    step={50}
-                                    value={oopAnnual}
+                                    max={12}
+                                    step={1}
+                                    value={urgentCareVisitsAnnual}
                                     onChange={(e) => {
-                                        const next = clampNumber(Number.parseFloat(e.target.value || "0"), 0, 10000);
-                                        setOopAnnual(next);
+                                        const next = clampNumber(Number.parseFloat(e.target.value || "0"), 0, 12);
+                                        setUrgentCareVisitsAnnual(next);
                                     }}
                                 />
                                 <input
                                     type="range"
                                     min={0}
-                                    max={10000}
-                                    step={50}
-                                    value={oopAnnual}
-                                    onChange={(e) => setOopAnnual(clampNumber(Number.parseFloat(e.target.value || "0"), 0, 10000))}
+                                    max={12}
+                                    step={1}
+                                    value={urgentCareVisitsAnnual}
+                                    onChange={(e) => setUrgentCareVisitsAnnual(clampNumber(Number.parseFloat(e.target.value || "0"), 0, 12))}
                                     className="w-full accent-primary"
-                                    aria-label="Out-of-pocket slider"
+                                    aria-label="Urgent care visits slider"
                                 />
+                            </div>
+
+                            <div className="grid gap-2">
+                                <Label htmlFor="urgent-care-cost">Average urgent care visit cost</Label>
+                                <Input
+                                    id="urgent-care-cost"
+                                    type="number"
+                                    inputMode="decimal"
+                                    min={0}
+                                    step={1}
+                                    value={urgentCareCostPerVisit}
+                                    onChange={(e) => {
+                                        const next = clampNumber(Number.parseFloat(e.target.value || "0"), 0, 10000);
+                                        setUrgentCareCostPerVisit(next);
+                                    }}
+                                />
+                                <div className="text-xs text-muted-foreground">
+                                    Typical urgent care visits often range around $150-$300 depending on location and services.
+                                    This is a planning estimate, not a billed quote.
+                                </div>
+                            </div>
+
+                            <div className="rounded-md border border-border bg-background px-4 py-3 text-xs text-muted-foreground">
+                                Primary-care-only framing: this tool compares membership cost against common primary care access spending.
+                                It does not compare comprehensive insurance benefits.
                             </div>
 
                             <div className="grid gap-2">
@@ -177,8 +159,8 @@ export function CostComparisonCalculator() {
                                     type="button"
                                     variant="outline"
                                     onClick={() => {
-                                        setPremiumMonthly(DEFAULT_INSURANCE_PREMIUMS_DOLLARS[coverage]);
-                                        setOopAnnual(2500);
+                                        setUrgentCareVisitsAnnual(3);
+                                        setUrgentCareCostPerVisit(200);
                                         setFilingStatus("single");
                                     }}
                                 >
@@ -199,35 +181,45 @@ export function CostComparisonCalculator() {
                                     <div className="text-lg font-semibold">{currency0.format(computed.dpcAnnual)}</div>
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                    {currency0.format(membershipMonthly)} × 12
+                                    {currency0.format(membershipMonthly)} x 12
                                 </div>
                             </div>
 
                             <div className="grid gap-2">
                                 <div className="flex items-center justify-between gap-3">
-                                    <div className="text-sm font-medium text-foreground">Annual cost with traditional insurance</div>
-                                    <div className="text-lg font-semibold">{currency0.format(computed.traditionalAnnual)}</div>
+                                    <div className="text-sm font-medium text-foreground">Estimated annual urgent care spend without membership</div>
+                                    <div className="text-lg font-semibold">{currency0.format(computed.urgentCareAnnual)}</div>
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                    {currency0.format(premiumMonthly)} × 12 + {currency0.format(oopAnnual)} estimated out-of-pocket
+                                    {urgentCareVisitsAnnual} visits x {currency0.format(urgentCareCostPerVisit)} per visit
                                 </div>
                             </div>
 
                             <div className="rounded-xl border border-border bg-muted/20 px-4 py-3">
                                 <div className="flex items-center justify-between gap-3">
-                                    <div className="text-sm font-medium text-foreground">Estimated annual savings</div>
+                                    <div className="text-sm font-medium text-foreground">Estimated annual difference (primary care only)</div>
                                     <div
                                         className={
                                             "text-lg font-bold " +
-                                            (computed.savings >= 0 ? "text-emerald-700" : "text-red-700")
+                                            (computed.difference >= 0 ? "text-emerald-700" : "text-red-700")
                                         }
                                         aria-live="polite"
                                     >
-                                        {currency0.format(computed.savings)}
+                                        {currency0.format(computed.difference)}
                                     </div>
                                 </div>
                                 <div className="text-xs text-muted-foreground mt-1">
-                                    Positive means DPC is estimated to cost less than your current insurance spending.
+                                    Positive means membership is estimated to cost less than this urgent-care-only scenario.
+                                </div>
+                            </div>
+
+                            <div className="grid gap-2">
+                                <div className="flex items-center justify-between gap-3">
+                                    <div className="text-sm font-medium text-foreground">Break-even urgent care visits per year</div>
+                                    <div className="text-lg font-semibold">{computed.breakEvenVisits.toFixed(1)}</div>
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                    At {currency0.format(urgentCareCostPerVisit)} per visit, membership cost equals about {computed.breakEvenVisits.toFixed(1)} urgent care visits/year.
                                 </div>
                             </div>
 
@@ -237,7 +229,7 @@ export function CostComparisonCalculator() {
                                     <div className="text-lg font-semibold">{currency0.format(computed.hsaBenefit)}</div>
                                 </div>
                                 <div className="text-xs text-muted-foreground">
-                                    {currency0.format(computed.membershipAnnual)} membership × 22% marginal tax rate estimate
+                                    {currency0.format(computed.membershipAnnual)} membership x 22% marginal tax rate estimate
                                 </div>
                             </div>
 
@@ -250,8 +242,10 @@ export function CostComparisonCalculator() {
                                 </div>
                             </div>
 
-                            <div className="rounded-md border border-border bg-background px-4 py-3 text-xs text-muted-foreground">
-                                This calculator provides estimates only and does not constitute tax or financial advice. Consult a tax professional for your specific situation.
+                            <div className="rounded-md border-2 border-amber-300 bg-amber-50 px-4 py-3 text-xs text-amber-950">
+                                <span className="font-semibold">Important:</span> Present Health is not insurance and does not replace insurance coverage.
+                                This calculator provides estimates only and does not constitute tax, financial, or insurance advice.
+                                Consult a tax professional and review your coverage needs before making insurance decisions.
                             </div>
                         </CardContent>
                     </Card>

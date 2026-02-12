@@ -20,7 +20,7 @@ const INCLUDED_SECTIONS: Array<{ title: string; items: string[] }> = [
         title: "Messaging & Access",
         items: [
             "Unlimited secure messaging (text, photo, voice memo)",
-            "Responses within 4 business hours (M-F 8am-8pm ET)",
+            "Typical response time: within 4 business hours (M-F 8am-8pm ET)",
             "Video visits when clinically appropriate - included",
         ],
     },
@@ -28,7 +28,7 @@ const INCLUDED_SECTIONS: Array<{ title: string; items: string[] }> = [
         title: "Prescriptions & Labs",
         items: [
             "New prescriptions and refill management",
-            "Lab and imaging ordering at transparent wholesale pricing",
+            "Lab and imaging ordering at transparent pricing",
             "Lab result interpretation (including from other providers)",
             "Medication review and interaction checks",
         ],
@@ -55,7 +55,7 @@ const NOT_INCLUDED = [
     "Emergency care (call 911)",
     "In-person procedures or physical exams requiring hands-on evaluation",
     "Specialist visits (we refer and coordinate)",
-    "Lab/imaging costs (we order at wholesale - you pay the lab directly)",
+    "Lab/imaging costs (ordered by us and billed separately by the lab/imaging provider)",
     "Not insurance",
     "Adults 18+ only",
 ];
@@ -71,11 +71,15 @@ export function MembershipTiers() {
         <section aria-label="Pricing plans" className="pb-16 md:pb-20 bg-background">
             <div className="container mx-auto px-4 md:px-6 max-w-6xl">
                 <div className="max-w-4xl mx-auto text-center mb-10">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">One plan. Everything included.</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">One plan. All primary care services included.</h1>
                     <p className="text-xl text-muted-foreground">
-                        Primary care should not have fine print. $49/month covers your care - no per-visit fees, no tiers,
+                        Primary care should not have fine print. $49/month covers care within our primary care scope - no per-visit fees, no tiers,
                         no surprises.
                     </p>
+                    <div className="mt-4 rounded-lg border-2 border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+                        <span className="font-semibold">Not insurance.</span> Present Health covers primary care and does not replace health insurance
+                        for hospitalization, specialist care, surgery, or emergency services.
+                    </div>
                 </div>
 
                 <div className="max-w-4xl mx-auto">
@@ -186,17 +190,17 @@ export function MembershipTiers() {
                             <div className="flex justify-between gap-4"><span>Non-emergency ER visit</span><span>$1,000-2,500</span></div>
                             <div className="flex justify-between gap-4"><span>Wait for PCP appointment</span><span>20+ days</span></div>
                             <div className="flex justify-between gap-4 font-medium text-foreground">
-                                <span>Present Health</span><span>$49/month, responses within hours</span>
+                                <span>Present Health</span><span>$49/month, typical responses within 4 business hours</span>
                             </div>
                         </CardContent>
                     </Card>
 
                     <Card className="border-border/60">
                         <CardHeader>
-                            <CardTitle className="text-xl">HSA-eligible in 2026.</CardTitle>
+                            <CardTitle className="text-xl">HSA-eligible starting 2026.</CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm text-muted-foreground">
-                            As DPC, this membership is within the IRS monthly DPC fee limit at $49/month.
+                            Under current IRS rules (2026), this membership is within the monthly DPC fee limit at $49/month.
                             <div className="mt-2 text-xs">
                                 Subject to IRS rules. Consult a tax professional.
                             </div>
