@@ -300,6 +300,26 @@ function checkPortOpen(port) {
     });
 }
 
+async function resolveProxyPort(flags) {
+    const explicit = typeof flags["proxy-port"] === "string" && flags["proxy-port"].trim();
+    const requested = Math.trunc(toFloat(flags["proxy-port"], DEFAULT_PROXY_PORT));
+
+    if (explicit) {
+        const open = await checkPortOpen(requested);
+        if (open) {
+            throw new Error(`Requested --proxy-port ${requested} is already in use.`);
+        }
+        return requested;
+    }
+
+    for (let port = requested; port < requested + 50; port += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        if (!(await checkPortOpen(port))) return port;
+    }
+
+    throw new Error(`Could not find an available local proxy port in ${requested}-${requested + 49}.`);
+}
+
 async function waitForPort(port, timeoutMs = 15000) {
     const start = Date.now();
     while (Date.now() - start < timeoutMs) {
@@ -341,7 +361,7 @@ async function configureDatabaseTarget(flags) {
         return;
     }
 
-    const proxyPort = Math.trunc(toFloat(flags["proxy-port"], DEFAULT_PROXY_PORT));
+    const proxyPort = await resolveProxyPort(flags);
     const service = typeof flags.service === "string" && flags.service.trim()
         ? flags.service.trim()
         : (process.env.PROD_CLOUD_RUN_SERVICE || DEFAULT_CLOUD_RUN_SERVICE);
