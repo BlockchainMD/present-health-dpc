@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS } from "@/lib/pricing";
 
 type ProspectSource = "MANUAL" | "INBOUND" | "AI_RESEARCHED";
 type ProspectStatus =
@@ -201,7 +202,7 @@ function clampProgress(value: number | null | undefined) {
 
 function computeSavingsEstimate(employees: number | null | undefined) {
     if (!employees || !Number.isFinite(employees) || employees <= 0) return 0;
-    const dpcAnnual = employees * 89 * 12;
+    const dpcAnnual = employees * EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS * 12;
     const traditionalAnnual = employees * (650 * 12 + 2000);
     return Math.max(0, Math.round(traditionalAnnual - dpcAnnual));
 }
@@ -1393,7 +1394,7 @@ export function EmployerOutreachCrm() {
                                                 }
                                             />
                                             <div className="text-xs text-muted-foreground">
-                                                Auto baseline at 89 x employees x 12. You can override.
+                                                Auto baseline at {EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS} x employees x 12. You can override.
                                             </div>
                                         </div>
                                         <div className="grid gap-2">
@@ -2067,7 +2068,7 @@ export function EmployerOutreachCrm() {
                             </div>
 
                             <div className="text-xs text-muted-foreground">
-                                Estimated deal value preview: {formatCurrency(Number(newProspect.estimatedEmployees || 0) * 89 * 12)}
+                                Estimated deal value preview: {formatCurrency(Number(newProspect.estimatedEmployees || 0) * EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS * 12)}
                             </div>
 
                             <div>

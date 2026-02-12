@@ -14,7 +14,7 @@ async function testCreativeCreation() {
             page_id: pageId,
             link_data: {
                 link: 'https://presenthealthmd.com',
-                message: 'Unlimited virtual visits + direct messaging. $149/mo.',
+                message: 'Unlimited virtual visits + direct messaging. $49/mo.',
                 name: 'Virtual Direct Primary Care',
                 description: 'Get direct access to your physician.',
                 image_hash: imageHash,

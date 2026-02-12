@@ -7,7 +7,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Pricing | Present Health",
-    description: "Simple, transparent membership pricing for telehealth-first Direct Primary Care. Individual, couple, and family tiers plus employer options.",
+    description:
+        "One plan, $49/month or $490/year. Messaging-first primary care with no per-visit fees, plus a $49 single-visit option.",
 };
 
 export default function PricingPage() {
@@ -16,15 +17,7 @@ export default function PricingPage() {
     return (
         <div className="min-h-screen bg-background">
             <SchemaBlocks blocks={schemaBlocks} idPrefix="pricing" />
-            <div className="pt-24 pb-12 text-center container px-4 mx-auto">
-                <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-                    Simple, Transparent Pricing.
-                </h1>
-                <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                    Telehealth-first Direct Primary Care membership with clear monthly pricing and no hidden fees.
-                </p>
-            </div>
-
+            <div className="pt-24" />
             <MembershipTiers />
             <CostComparisonCalculator />
             <FAQAccordion />

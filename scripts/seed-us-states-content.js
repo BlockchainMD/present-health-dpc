@@ -14,7 +14,7 @@ function defaultMetaTitle(stateName) {
 }
 
 function defaultMetaDescription(stateName) {
-    return `See the same family physician every visit. Present Health offers telehealth DPC memberships for ${stateName} residents. $99/month, no insurance needed.`;
+    return `Messaging-first primary care for ${stateName} residents. Present Health memberships are $49/month with no insurance required.`;
 }
 
 function buildStateContent(stateName) {
@@ -23,7 +23,7 @@ function buildStateContent(stateName) {
         `Present Health is a telehealth-first Direct Primary Care (DPC) membership for ${stateName} residents.`,
         ``,
         `**What to expect:**`,
-        `- **Join** online and choose a membership tier.`,
+        `- **Join** online with one simple membership plan.`,
         `- **Schedule** a same/next-day virtual visit when you need care (plus async messaging for quick questions).`,
         `- **Get a plan** with follow-up, prevention planning, and coordination when you need in-person services.`,
         ``,

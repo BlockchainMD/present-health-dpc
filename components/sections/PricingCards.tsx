@@ -23,7 +23,7 @@ export function PricingCards() {
                         <Label htmlFor="annual-mode" className={!isAnnual ? "font-bold" : "text-muted-foreground"}>Monthly</Label>
                         <Switch id="annual-mode" checked={isAnnual} onCheckedChange={setIsAnnual} />
                         <Label htmlFor="annual-mode" className={isAnnual ? "font-bold" : "text-muted-foreground"}>
-                            Annual <span className="text-xs text-primary font-normal">(Save 1 month)</span>
+                            Annual <span className="text-xs text-primary font-normal">(Save $98)</span>
                         </Label>
                     </div>
                 </div>
@@ -40,7 +40,7 @@ export function PricingCards() {
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="mb-6">
-                                <span className="text-4xl font-bold">${isAnnual ? 1639 : 149}</span>
+                                <span className="text-4xl font-bold">${isAnnual ? 490 : 49}</span>
                                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
                             </div>
                             <ul className="space-y-3">
@@ -54,8 +54,8 @@ export function PricingCards() {
                         </CardContent>
                         <CardFooter className="flex flex-col gap-4">
                             <Button className="w-full" asChild>
-                                <Link href="/book">
-                                    Book Free Intro Call
+                                <Link href="/join">
+                                    Start Membership
                                 </Link>
                             </Button>
                             <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>

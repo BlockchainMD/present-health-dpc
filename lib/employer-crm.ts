@@ -6,6 +6,7 @@ import {
 } from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
+import { EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS } from "@/lib/pricing";
 
 const OUTREACH_TEMPLATE_KEY = "employers:crm_outreach_templates";
 const DEFAULT_CLAUDE_MODEL = "claude-sonnet-4-20250514";
@@ -191,7 +192,7 @@ export function parseEmployerProspectStatus(value: unknown): EmployerProspectSta
 
 export function computeDealValueEstimate(estimatedEmployees: number | null | undefined) {
     if (!Number.isFinite(estimatedEmployees as number) || !estimatedEmployees || estimatedEmployees <= 0) return null;
-    return Math.round(estimatedEmployees * 89 * 12);
+    return Math.round(estimatedEmployees * EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS * 12);
 }
 
 export function computeEstimatedAnnualSavings(
@@ -200,7 +201,7 @@ export function computeEstimatedAnnualSavings(
     utilizationAnnual = 2000
 ) {
     if (!Number.isFinite(estimatedEmployees as number) || !estimatedEmployees || estimatedEmployees <= 0) return 0;
-    const dpcAnnual = estimatedEmployees * 89 * 12;
+    const dpcAnnual = estimatedEmployees * EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS * 12;
     const traditionalAnnual = estimatedEmployees * (premiumMonthly * 12 + utilizationAnnual);
     return Math.max(0, Math.round(traditionalAnnual - dpcAnnual));
 }

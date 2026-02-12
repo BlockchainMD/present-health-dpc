@@ -45,7 +45,7 @@ export function EmployerRoiCalculator({
     );
 
     const computed = useMemo(() => {
-        const dpcAnnual = employees * 89 * 12;
+        const dpcAnnual = employees * 29 * 12;
         const traditionalAnnual = employees * (premiumMonthly * 12 + utilizationAnnual);
         const savingsAnnual = traditionalAnnual - dpcAnnual;
         const perEmployeeMonthlySavings = employees > 0 ? savingsAnnual / employees / 12 : 0;
@@ -63,7 +63,7 @@ export function EmployerRoiCalculator({
             <CardHeader>
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                     <CardTitle>Employer ROI calculator</CardTitle>
-                    <Badge variant="secondary">$89/employee/month</Badge>
+                    <Badge variant="secondary">$29/employee/month</Badge>
                 </div>
             </CardHeader>
             <CardContent className="grid gap-6">

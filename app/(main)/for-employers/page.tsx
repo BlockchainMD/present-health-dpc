@@ -16,7 +16,7 @@ import { buildForEmployersSchemas } from "@/lib/schema";
 
 export const metadata: Metadata = {
     title: "For Employers | Present Health",
-    description: "Employer and group membership options for Present Health telehealth-first Direct Primary Care.",
+    description: "Employer and group membership options at $29 per employee per month.",
     alternates: {
         canonical: absoluteUrl("/for-employers"),
     },
@@ -78,6 +78,7 @@ export default async function ForEmployersPage({ searchParams }: { searchParams:
                 <h1 className="mt-4 text-4xl md:text-5xl font-bold tracking-tight">Give Your Team a Doctor - Not Just a Health Plan</h1>
                 <p className="mt-4 text-lg text-muted-foreground">
                     Present Health DPC memberships cost a fraction of group insurance and your employees get better care.
+                    Starting at $29 per employee per month.
                 </p>
                 {company ? (
                     <p className="mt-3 text-sm text-muted-foreground">

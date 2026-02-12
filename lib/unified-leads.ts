@@ -12,6 +12,7 @@ import {
 import { prisma } from "@/lib/prisma";
 import { stateDisplayName } from "@/lib/us-states";
 import { notifyStaleLeadDigest, notifyUnifiedLeadCreated } from "@/lib/notify";
+import { EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS, MEMBERSHIP_MONTHLY_DOLLARS } from "@/lib/pricing";
 
 type SourceLeadUpsertInput = {
     source: UnifiedLeadSource;
@@ -77,11 +78,11 @@ const STATUS_TRANSITIONS: Record<UnifiedLeadStatus, UnifiedLeadStatus[]> = {
 };
 
 const DEFAULT_TIER_RATE: Record<UnifiedLeadMembershipTier, number> = {
-    INDIVIDUAL: 99,
-    COUPLE: 179,
-    FAMILY: 249,
-    EMPLOYER: 89,
-    CUSTOM: 99,
+    INDIVIDUAL: MEMBERSHIP_MONTHLY_DOLLARS,
+    COUPLE: MEMBERSHIP_MONTHLY_DOLLARS,
+    FAMILY: MEMBERSHIP_MONTHLY_DOLLARS,
+    EMPLOYER: EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS,
+    CUSTOM: MEMBERSHIP_MONTHLY_DOLLARS,
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -174,8 +175,8 @@ function getTierRate(
     monthlyMembershipRate: number | null | undefined
 ) {
     if (typeof monthlyMembershipRate === "number" && monthlyMembershipRate > 0) return monthlyMembershipRate;
-    if (membershipTier) return DEFAULT_TIER_RATE[membershipTier] || 99;
-    return 99;
+    if (membershipTier) return DEFAULT_TIER_RATE[membershipTier] || MEMBERSHIP_MONTHLY_DOLLARS;
+    return MEMBERSHIP_MONTHLY_DOLLARS;
 }
 
 export function parseUnifiedLeadFilters(params: URLSearchParams): UnifiedLeadFilters {
@@ -532,7 +533,7 @@ export async function upsertUnifiedLeadFromEmployerInquiry(inquiry: EmployerInqu
         } as Prisma.InputJsonValue,
         suggestedStatus: mapEmployerStatus(inquiry.status),
         membershipTier: mapEmployerTier(inquiry),
-        monthlyMembershipRate: 89,
+        monthlyMembershipRate: EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS,
         createdAt: inquiry.submittedAt,
     });
 
@@ -1195,7 +1196,7 @@ export async function getUnifiedLeadMetrics(filters: UnifiedLeadFilters = {}) {
         0
     );
     const enrolledCount = enrolledNow.length;
-    const avgRate = enrolledCount > 0 ? currentMRR / enrolledCount : 99;
+    const avgRate = enrolledCount > 0 ? currentMRR / enrolledCount : MEMBERSHIP_MONTHLY_DOLLARS;
 
     const conversion = (items: typeof leads) => {
         if (!items.length) return 0;

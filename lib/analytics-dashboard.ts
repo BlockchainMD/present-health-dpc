@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { google } from "googleapis";
 
 import { prisma } from "@/lib/prisma";
+import { MEMBERSHIP_MONTHLY_DOLLARS } from "@/lib/pricing";
 import { buildSitemapEntries } from "@/lib/sitemap";
 import { US_STATES, stateFromNameOrCode } from "@/lib/us-states";
 
@@ -1202,7 +1203,7 @@ export async function getAnalyticsDashboardData(options?: {
         const isEnrolled = lead.status === "ENROLLED" || Boolean(enrolledAt);
         if (isEnrolled) {
             const month = monthKey(enrolledAt || new Date(lead.createdAt));
-            const rate = lead.monthlyMembershipRate || 99;
+            const rate = lead.monthlyMembershipRate || MEMBERSHIP_MONTHLY_DOLLARS;
             const current = monthlyEnrollments.get(month) || { count: 0, mrr: 0 };
             current.count += 1;
             current.mrr += rate;

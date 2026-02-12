@@ -15,7 +15,7 @@ Direct Primary Care removes the insurance middleman. Patients pay a flat monthly
 ## UNIQUE DIFFERENTIATORS
 1. **Relationship-First Model**: Unlike concierge practices focused on luxury perks, we focus on genuine doctor-patient relationships and unhurried care.
 2. **Virtual-Native**: Built for telehealth from day one—text, video, or phone. No physical overhead means savings passed to members.
-3. **HSA-Friendly (2026)**: Priced at $149/mo—specifically within IRS HSA limits ($150/mo individual) so members can pay with pre-tax dollars.
+3. **HSA-Friendly (2026)**: Priced at $49/mo—within IRS HSA monthly limits so members can pay with pre-tax dollars.
 4. **Anti-Rushed Care**: Minimum 30-minute visits. Your doctor actually has time to listen.
 5. **Direct Access**: Text or email your doctor directly—no phone trees, no waiting for callbacks.
 
@@ -59,7 +59,7 @@ Direct Primary Care removes the insurance middleman. Patients pay a flat monthly
 - Cancel anytime, no contracts
 
 ## PRICING (CURRENT)
-- Individual: $149/month ($1,639/year if paid annually—save 1 month)
+- Membership: $49/month ($490/year if paid annually—save $98)
 - HSA/FSA eligible starting January 2026 (subject to IRS rules)
 - Labs and prescriptions billed separately at transparent cost
 

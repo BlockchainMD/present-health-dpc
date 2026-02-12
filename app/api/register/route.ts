@@ -9,15 +9,15 @@ import { resolveServedState } from "@/lib/state-availability";
 import { upsertUnifiedLeadFromCampaignLead, upsertUnifiedLeadFromWebsiteRegistration } from "@/lib/unified-leads";
 
 function mapPlanToTier(plan: "individual" | "couple" | "family") {
-    if (plan === "couple") return UnifiedLeadMembershipTier.COUPLE;
-    if (plan === "family") return UnifiedLeadMembershipTier.FAMILY;
+    if (plan === "couple") return UnifiedLeadMembershipTier.INDIVIDUAL;
+    if (plan === "family") return UnifiedLeadMembershipTier.INDIVIDUAL;
     return UnifiedLeadMembershipTier.INDIVIDUAL;
 }
 
 function mapTierToMonthlyRate(tier: UnifiedLeadMembershipTier) {
-    if (tier === UnifiedLeadMembershipTier.COUPLE) return 179;
-    if (tier === UnifiedLeadMembershipTier.FAMILY) return 249;
-    return 99;
+    if (tier === UnifiedLeadMembershipTier.COUPLE) return 49;
+    if (tier === UnifiedLeadMembershipTier.FAMILY) return 49;
+    return 49;
 }
 
 export async function POST(req: Request) {

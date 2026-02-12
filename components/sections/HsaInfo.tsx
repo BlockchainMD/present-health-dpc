@@ -26,7 +26,7 @@ export function HsaInfo() {
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">2</div>
-                                <p className="text-sm text-emerald-900/80">You join Present Health at <strong>$149/mo</strong> — under the IRS monthly limit.</p>
+                                <p className="text-sm text-emerald-900/80">You join Present Health at <strong>$49/mo</strong> — under the IRS monthly limit.</p>
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">3</div>

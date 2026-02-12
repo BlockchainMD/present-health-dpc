@@ -273,7 +273,7 @@ function HsaInfoV2() {
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">2</div>
-                                <p className="text-sm text-emerald-900/80">Join Present Health ($149 Individual / $299 Family), within the 2026 monthly limits.</p>
+                                <p className="text-sm text-emerald-900/80">Join Present Health ($49 per month), within the 2026 monthly limits.</p>
                             </div>
                             <div className="flex gap-3">
                                 <div className="flex-shrink-0 h-6 w-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 font-bold text-sm">3</div>
@@ -328,7 +328,7 @@ function PricingCardsV2() {
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="mb-6">
-                                <span className="text-4xl font-bold">${isAnnual ? 1639 : 149}</span>
+                                <span className="text-4xl font-bold">${isAnnual ? 490 : 49}</span>
                                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
                             </div>
                             <ul className="space-y-3">
@@ -361,7 +361,7 @@ function PricingCardsV2() {
                         </CardHeader>
                         <CardContent className="flex-1">
                             <div className="mb-6">
-                                <span className="text-4xl font-bold">${isAnnual ? 3289 : 299}</span>
+                                <span className="text-4xl font-bold">${isAnnual ? 490 : 49}</span>
                                 <span className="text-muted-foreground">/{isAnnual ? 'yr' : 'mo'}</span>
                             </div>
                             <ul className="space-y-3">
@@ -491,7 +491,7 @@ function FinalCTA() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button asChild size="lg" variant="secondary" className="text-lg px-8 h-12">
                         <Link href="/register?plan=individual">
-                            Join Now – $149/mo
+                            Join Now – $49/mo
                             <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>
                     </Button>
@@ -539,7 +539,7 @@ function StickyCTA() {
                     <div className="flex items-center gap-2 bg-background border border-border shadow-lg rounded-full px-2 py-2">
                         <Link href="/register?plan=individual">
                             <Button size="sm" className="rounded-full px-6 bg-primary text-primary-foreground hover:bg-primary/90">
-                                Join – $149/mo
+                                Join – $49/mo
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>

@@ -73,7 +73,7 @@ export function StateEditor({ initial }: { initial?: Partial<StateFormValue> }) 
     const defaultMetaDescription = useMemo(
         () =>
             name.trim()
-                ? `See the same family physician every visit. Present Health offers telehealth DPC memberships for ${name.trim()} residents. $99/month, no insurance needed.`
+                ? `Messaging-first primary care for ${name.trim()} residents. Present Health memberships are $49/month with no insurance required.`
                 : "",
         [name]
     );
@@ -460,4 +460,3 @@ export function StateEditor({ initial }: { initial?: Partial<StateFormValue> }) 
         </div>
     );
 }
-

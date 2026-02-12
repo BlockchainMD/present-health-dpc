@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 async function clearMetrics() {
     // Find the campaign by slug
     const campaign = await prisma.campaign.findFirst({
-        where: { slug: 'present-health-virtual-dpc-hsa-149' },
+        where: { slug: 'present-health-virtual-dpc-hsa-49' },
         include: { runs: { orderBy: { createdAt: 'desc' }, take: 1 } }
     });
 

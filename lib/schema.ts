@@ -1,7 +1,12 @@
 import type { Article, Physician, State } from "@prisma/client";
 import { absoluteUrl } from "@/lib/site-url";
 import { markdownToPlainText } from "@/lib/markdown-plain";
-import { EMPLOYER_TIER, MEMBERSHIP_TIERS } from "@/lib/pricing";
+import {
+    EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS,
+    MEMBERSHIP_ANNUAL_DOLLARS,
+    MEMBERSHIP_MONTHLY_DOLLARS,
+    SINGLE_VISIT_DOLLARS,
+} from "@/lib/pricing";
 import { stateDisplayName } from "@/lib/us-states";
 
 export type SchemaBlock = Record<string, unknown>;
@@ -296,14 +301,49 @@ export function buildLearnArticleSchemas(article: LearnArticleInput): SchemaBloc
 }
 
 export function buildPricingSchemas(): SchemaBlock[] {
-    const blocks: SchemaBlock[] = [];
-
-    for (const tier of Object.values(MEMBERSHIP_TIERS)) {
-        blocks.push({
+    const blocks: SchemaBlock[] = [
+        {
             "@context": "https://schema.org",
             "@type": "Product",
-            name: `Present Health ${tier.name} Membership`,
-            description: tier.tagline,
+            name: "Present Health Membership",
+            description:
+                "Messaging-first primary care membership with secure messaging, video when clinically appropriate, and no per-visit fees.",
+            brand: {
+                "@type": "Brand",
+                name: "Present Health",
+            },
+            offers: [
+                {
+                    "@type": "Offer",
+                    priceCurrency: "USD",
+                    price: String(MEMBERSHIP_MONTHLY_DOLLARS),
+                    url: absoluteUrl("/pricing"),
+                    priceSpecification: {
+                        "@type": "UnitPriceSpecification",
+                        priceCurrency: "USD",
+                        price: String(MEMBERSHIP_MONTHLY_DOLLARS),
+                        unitText: "month",
+                    },
+                },
+                {
+                    "@type": "Offer",
+                    priceCurrency: "USD",
+                    price: String(MEMBERSHIP_ANNUAL_DOLLARS),
+                    url: absoluteUrl("/pricing"),
+                    priceSpecification: {
+                        "@type": "UnitPriceSpecification",
+                        priceCurrency: "USD",
+                        price: String(MEMBERSHIP_ANNUAL_DOLLARS),
+                        unitText: "year",
+                    },
+                },
+            ],
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: "Present Health Single Visit",
+            description: "One message-based or video clinical encounter for a specific health concern.",
             brand: {
                 "@type": "Brand",
                 name: "Present Health",
@@ -311,23 +351,21 @@ export function buildPricingSchemas(): SchemaBlock[] {
             offers: {
                 "@type": "Offer",
                 priceCurrency: "USD",
-                price: String(tier.monthlyDollars),
-                url: absoluteUrl("/pricing"),
+                price: String(SINGLE_VISIT_DOLLARS),
+                url: absoluteUrl("/visit"),
                 priceSpecification: {
                     "@type": "UnitPriceSpecification",
                     priceCurrency: "USD",
-                    price: String(tier.monthlyDollars),
-                    unitText: "month",
+                    price: String(SINGLE_VISIT_DOLLARS),
+                    unitText: "visit",
                 },
             },
-        });
-    }
-
-    blocks.push({
+        },
+        {
         "@context": "https://schema.org",
         "@type": "Product",
         name: "Present Health Employer / Group Membership",
-        description: `Employer groups of ${EMPLOYER_TIER.minEmployees}+ at $${EMPLOYER_TIER.monthlyPerEmployeeDollars}/employee/month.`,
+        description: `Employer groups at $${EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS}/employee/month.`,
         brand: {
             "@type": "Brand",
             name: "Present Health",
@@ -335,16 +373,17 @@ export function buildPricingSchemas(): SchemaBlock[] {
         offers: {
             "@type": "Offer",
             priceCurrency: "USD",
-            price: String(EMPLOYER_TIER.monthlyPerEmployeeDollars),
+            price: String(EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS),
             url: absoluteUrl("/for-employers"),
             priceSpecification: {
                 "@type": "UnitPriceSpecification",
                 priceCurrency: "USD",
-                price: String(EMPLOYER_TIER.monthlyPerEmployeeDollars),
+                price: String(EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS),
                 unitText: "employee / month",
             },
         },
-    });
+        },
+    ];
 
     const breadcrumb = buildBreadcrumbSchema("/pricing", { "/pricing": "Pricing" });
     if (breadcrumb) blocks.push(breadcrumb);

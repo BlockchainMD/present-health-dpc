@@ -8,17 +8,25 @@ import {
 export function FAQAccordion() {
     const faqs = [
         {
-            question: "Do I still need insurance?",
-            answer: "Yes—keep insurance for emergencies, hospital care, and specialists. DPC isn’t insurance; it's a membership for your primary care needs."
+            question: "Why one plan?",
+            answer: "Healthcare should not have fine print. Everything is included. No premium tier for prescriptions and no add-on for video."
         },
         {
-            question: "Can I use my HSA for this?",
-            answer: "Starting Jan 1, 2026, IRS guidance allows HSA funds to pay certain DPC fees within limits ($150/mo per individual), if you’re otherwise eligible. We recommend consulting a tax professional."
+            question: "Are video visits included?",
+            answer: "Yes. When clinically appropriate, video visits are included in membership."
         },
         {
-            question: "Why is enrollment limited?",
-            answer: "Because access is the product. We cap membership to protect response times and ensure you can always reach your doctor when you need them."
-        }
+            question: "What about lab costs?",
+            answer: "We order labs at transparent wholesale prices. You pay the lab directly."
+        },
+        {
+            question: "Can I cancel?",
+            answer: "Monthly plans can be canceled anytime. Annual plans can be canceled for a prorated refund."
+        },
+        {
+            question: "What if I start with a single visit and want to join?",
+            answer: "Your intake is already done. Just upgrade to membership and start messaging anytime."
+        },
     ];
 
     return (

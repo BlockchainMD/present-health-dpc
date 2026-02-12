@@ -32,8 +32,8 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             subheadline: "Direct access. Transparent pricing. No insurance required.",
             tiers: [
                 {
-                    name: "Individual",
-                    price: 149,
+                    name: "Membership",
+                    price: 49,
                     period: "mo",
                     features: ["Unlimited virtual visits", "Direct messaging with Dr. J", "Care coordination", "Prevention planning"]
                 }

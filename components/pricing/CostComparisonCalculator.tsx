@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
     DEFAULT_INSURANCE_PREMIUMS_DOLLARS,
     DEFAULT_MARGINAL_TAX_RATE,
-    MEMBERSHIP_TIERS,
+    MEMBERSHIP_MONTHLY_DOLLARS,
     normalizeCoverageType,
     type CoverageType,
     type FilingStatus,
@@ -32,10 +32,10 @@ export function CostComparisonCalculator() {
     const [oopAnnual, setOopAnnual] = useState<number>(2500);
     const [filingStatus, setFilingStatus] = useState<FilingStatus>("single");
 
-    const membershipMonthly = MEMBERSHIP_TIERS[coverage].monthlyDollars;
+    const membershipMonthly = MEMBERSHIP_MONTHLY_DOLLARS;
 
     const computed = useMemo(() => {
-        const membershipAnnual = membershipMonthly * 12;
+        const membershipAnnual = MEMBERSHIP_MONTHLY_DOLLARS * 12;
         const dpcAnnual = membershipAnnual;
 
         const premiumAnnual = premiumMonthly * 12;
@@ -56,7 +56,7 @@ export function CostComparisonCalculator() {
             hsaBenefit,
             effectiveMonthlyAfterHsa,
         };
-    }, [filingStatus, membershipMonthly, oopAnnual, premiumMonthly]);
+    }, [filingStatus, oopAnnual, premiumMonthly]);
 
     return (
         <section aria-label="Cost comparison calculator" className="py-16 md:py-20 bg-muted/20 border-y border-border">

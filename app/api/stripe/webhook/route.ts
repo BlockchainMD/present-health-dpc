@@ -68,12 +68,7 @@ export async function POST(req: Request) {
         });
 
         const plan = normalizeCoverageType(session.metadata.plan);
-        const membershipTier =
-            plan === "couple"
-                ? UnifiedLeadMembershipTier.COUPLE
-                : plan === "family"
-                    ? UnifiedLeadMembershipTier.FAMILY
-                    : UnifiedLeadMembershipTier.INDIVIDUAL;
+        const membershipTier = UnifiedLeadMembershipTier.INDIVIDUAL;
         const monthlyRate = MEMBERSHIP_TIERS[plan].monthlyDollars;
         const normalizedEmail = String(session.customer_details?.email || session.customer_email || "").trim().toLowerCase();
 
