@@ -25,45 +25,38 @@ export default function JoinPage() {
             <header className="max-w-3xl">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Join Present Health</h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    One plan. Everything included. Choose monthly or annual billing and start membership in minutes.
+                    One plan. Everything included. Start your membership in minutes.
                 </p>
             </header>
 
-            <Card className="mt-12 border-primary/40 shadow-sm">
+            <Card className="mt-12 border-primary/40 shadow-sm overflow-hidden">
+                <div className="bg-primary/5 px-6 py-2 text-primary text-xs font-bold tracking-widest uppercase border-b border-primary/10">
+                    Most Popular
+                </div>
                 <CardHeader>
-                    <CardTitle className="text-2xl md:text-3xl">Present Health Membership</CardTitle>
+                    <CardTitle className="text-2xl md:text-3xl">Monthly Membership</CardTitle>
                     <CardDescription>
-                        Full-service primary care. Messaging, video when clinically appropriate, prescriptions, labs, chronic care, and care navigation.
+                        Full-service primary care. Messaging, triage, prescriptions, labs, and care navigation.
                     </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-5">
-                    <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-xl border border-border p-4 flex h-full flex-col">
-                            <div className="text-sm text-muted-foreground">Monthly</div>
-                            <div className="text-2xl font-semibold">${MEMBERSHIP_MONTHLY_DOLLARS}/month</div>
-                            <div className="mt-auto pt-3">
-                                <Button asChild className="w-full">
-                                    <Link href="/register?plan=individual&billing=monthly">Continue monthly</Link>
-                                </Button>
-                            </div>
-                        </div>
-                        <div className="rounded-xl border border-border p-4 flex h-full flex-col">
-                            <div className="text-sm text-muted-foreground">Annual</div>
-                            <div className="text-2xl font-semibold">${MEMBERSHIP_ANNUAL_DOLLARS}/year</div>
-                            <div className="mt-1 text-xs text-muted-foreground">Save $98</div>
-                            <div className="mt-auto pt-3">
-                                <Button asChild className="w-full">
-                                    <Link href="/register?plan=individual&billing=annual">Continue annual</Link>
-                                </Button>
-                            </div>
-                        </div>
+                <CardContent className="space-y-6">
+                    <div>
+                        <div className="text-4xl font-bold">${MEMBERSHIP_MONTHLY_DOLLARS}<span className="text-lg font-normal text-muted-foreground">/month</span></div>
+                        <p className="text-sm text-muted-foreground mt-1">No long-term commitment. Cancel anytime.</p>
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                        Adults 18+ only. You will confirm state availability before payment.
-                    </div>
-                    <Button asChild variant="outline">
-                        <Link href="/pricing">See full pricing details</Link>
+
+                    <Button asChild size="lg" className="w-full text-lg h-14">
+                        <Link href="/register?plan=individual&billing=monthly">Continue to Enrollment</Link>
                     </Button>
+
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+                        <div className="text-sm text-muted-foreground">
+                            Adults 18+ only. Confirmed state availability required.
+                        </div>
+                        <Link href="/pricing" className="text-sm font-medium text-primary hover:underline">
+                            Want to save with annual billing?
+                        </Link>
+                    </div>
                 </CardContent>
             </Card>
 

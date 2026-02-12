@@ -35,6 +35,7 @@ export async function POST(req: Request) {
         const lastName = typeof body.lastName === 'string' ? body.lastName.trim() : '';
         const emailRaw = typeof body.email === 'string' ? body.email.trim() : '';
         const email = emailRaw.toLowerCase();
+        const phone = typeof body.phone === 'string' ? body.phone.trim() : null;
         const password = typeof body.password === 'string' ? body.password : '';
         const stateRaw = typeof body.state === "string" ? body.state.trim() : "";
         const plan = normalizeCoverageType(body.plan);
@@ -135,6 +136,7 @@ export async function POST(req: Request) {
                     email,
                     firstName,
                     lastName,
+                    phone,
                     state: servedState.name,
                     sourcePage: "/register",
                     sourceRecordId: `register:${email}`,
