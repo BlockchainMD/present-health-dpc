@@ -41,6 +41,9 @@ export default function JoinPage() {
                         <div className="rounded-xl border border-border p-4">
                             <div className="text-sm text-muted-foreground">Monthly</div>
                             <div className="text-2xl font-semibold">${MEMBERSHIP_MONTHLY_DOLLARS}/month</div>
+                            <div className="mt-1 min-h-4 text-xs text-muted-foreground" aria-hidden="true">
+                                <span className="opacity-0 select-none">Save $98</span>
+                            </div>
                             <Button asChild className="mt-3 w-full">
                                 <Link href="/register?plan=individual&billing=monthly">Continue monthly</Link>
                             </Button>
@@ -48,7 +51,7 @@ export default function JoinPage() {
                         <div className="rounded-xl border border-border p-4">
                             <div className="text-sm text-muted-foreground">Annual</div>
                             <div className="text-2xl font-semibold">${MEMBERSHIP_ANNUAL_DOLLARS}/year</div>
-                            <div className="text-xs text-muted-foreground">Save $98</div>
+                            <div className="mt-1 min-h-4 text-xs text-muted-foreground">Save $98</div>
                             <Button asChild className="mt-3 w-full">
                                 <Link href="/register?plan=individual&billing=annual">Continue annual</Link>
                             </Button>
