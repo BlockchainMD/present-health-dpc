@@ -7,7 +7,8 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test"
+    "test": "node --test",
+    "campaign:queue-review": "npx tsx scripts/campaign-cli.ts queue-review"
   },
   "dependencies": {
     "@calcom/embed-react": "^1.5.3",
