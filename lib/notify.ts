@@ -30,6 +30,9 @@ export async function notifyEmployerInquiry(inquiry: EmployerInquiry) {
     const subject = `New Employer Inquiry: ${inquiry.companyName}`;
     const text = formatInquiryText(inquiry);
 
+    // GCP Native Alert Fallback
+    console.log(`[LEAD-CAPTURE] ${subject}\n${text}`);
+
     return sendEmail({ to, subject, text });
 }
 
@@ -62,6 +65,10 @@ export async function notifyChatbotLead(lead: ChatbotLead) {
 
     const subject = `New Chatbot Lead: ${lead.firstName} (${lead.state})`;
     const text = formatChatbotLeadText(lead);
+
+    // GCP Native Alert Fallback
+    console.log(`[LEAD-CAPTURE] ${subject}\n${text}`);
+
     return sendEmail({ to, subject, text });
 }
 
@@ -111,7 +118,12 @@ export async function notifyUnifiedLeadCreated(lead: UnifiedLeadNotificationInpu
     ];
 
     const subject = `New Lead: ${fullName || lead.email} (${lead.source})`;
-    return sendEmail({ to, subject, text: lines.join("\n") });
+    const text = lines.join("\n");
+
+    // GCP Native Alert Fallback
+    console.log(`[LEAD-CAPTURE] ${subject}\n${text}`);
+
+    return sendEmail({ to, subject, text });
 }
 
 type StaleLeadDigestRow = {

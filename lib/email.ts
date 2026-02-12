@@ -11,24 +11,24 @@ export type SendEmailOptions = {
 
 export type SendEmailResult =
     | {
-          ok: true;
-          skipped: false;
-          provider: "smtp" | "sendgrid" | "postmark";
-          messageId?: string;
-          statusCode?: number;
-      }
+        ok: true;
+        skipped: false;
+        provider: "smtp" | "sendgrid" | "postmark";
+        messageId?: string;
+        statusCode?: number;
+    }
     | {
-          ok: false;
-          skipped: true;
-          reason: string;
-      }
+        ok: false;
+        skipped: true;
+        reason: string;
+    }
     | {
-          ok: false;
-          skipped: false;
-          reason: string;
-          provider?: "smtp" | "sendgrid" | "postmark";
-          statusCode?: number;
-      };
+        ok: false;
+        skipped: false;
+        reason: string;
+        provider?: "smtp" | "sendgrid" | "postmark";
+        statusCode?: number;
+    };
 
 function parseBool(value: string | undefined) {
     const v = String(value || "").trim().toLowerCase();
@@ -174,8 +174,8 @@ async function sendViaSendGrid(options: SendEmailOptions): Promise<SendEmailResu
                 from: { email: from },
                 reply_to: replyTo
                     ? {
-                          email: replyTo,
-                      }
+                        email: replyTo,
+                    }
                     : undefined,
                 content: [
                     ...(options.text ? [{ type: "text/plain", value: options.text }] : []),
@@ -283,10 +283,15 @@ async function sendViaPostmark(options: SendEmailOptions): Promise<SendEmailResu
 export async function sendEmail(options: SendEmailOptions): Promise<SendEmailResult> {
     const provider = resolveProvider();
     if (!provider) {
+        // GCP Native Alert Fallback: If no provider is configured, we still want the [LEAD-CAPTURE] 
+        // logs to be emitted (which is handled in notify.ts) and captured by Cloud Monitoring.
+        console.warn(`[Email] No provider configured. Ensuring content is logged for native GCP alerts.`);
+        console.log(`[Email Fallback] To: ${options.to}\nSubject: ${options.subject}\nContent:\n${options.text}`);
+
         return {
             ok: false,
             skipped: true,
-            reason: "Missing email provider config (SENDGRID_API_KEY, POSTMARK_API_KEY, or SMTP_HOST/SMTP_USER/SMTP_PASS)",
+            reason: "Missing email provider config. Logged for GCP Alert Policy.",
         };
     }
 
