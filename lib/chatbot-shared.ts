@@ -54,8 +54,10 @@ export const DEFAULT_CHATBOT_CONFIG: ChatbotConfig = {
 export function normalizePathname(pathname: string): string {
     const raw = String(pathname || "").split("?")[0].split("#")[0].trim();
     if (!raw) return "/";
-    if (raw === "/") return "/";
-    return raw.endsWith("/") ? raw.slice(0, -1) : raw;
+    const collapsed = raw.replace(/\/{2,}/g, "/");
+    if (!collapsed || collapsed === "/") return "/";
+    const withoutTrailing = collapsed.replace(/\/+$/, "");
+    return withoutTrailing || "/";
 }
 
 export function chatPageKeyFromPathname(pathname: string): ChatbotPagePath | null {
@@ -101,8 +103,11 @@ export function isChatbotEnabledForPath(
 
 export function clipText(value: string, maxChars = 2000) {
     const text = String(value || "").trim();
-    if (text.length <= maxChars) return text;
-    return `${text.slice(0, maxChars - 3)}...`;
+    const limit = Number.isFinite(maxChars) ? Math.max(0, Math.trunc(maxChars)) : 0;
+    if (limit === 0) return "";
+    if (text.length <= limit) return text;
+    if (limit <= 3) return text.slice(0, limit);
+    return `${text.slice(0, limit - 3)}...`;
 }
 
 export function sanitizeMessageForStorage(value: string, redact = false) {

@@ -63,13 +63,14 @@ const bySlug = new Map(US_STATES.map((s) => [s.slug, s]));
 export function stateFromNameOrCode(value: string): UsState | null {
     const raw = String(value || "").trim();
     if (!raw) return null;
-    const upper = raw.toUpperCase();
-    if (upper.length === 2 && byCode.has(upper)) return byCode.get(upper)!;
+    const codeCandidate = raw.replace(/[^a-z]/gi, "").toUpperCase();
+    if (codeCandidate.length === 2 && byCode.has(codeCandidate)) return byCode.get(codeCandidate)!;
 
-    const lower = raw.toLowerCase();
+    const normalizedNameInput = raw.replace(/_+/g, " ").replace(/\s+/g, " ").trim();
+    const lower = normalizedNameInput.toLowerCase();
     if (byName.has(lower)) return byName.get(lower)!;
 
-    const slug = slugify(raw);
+    const slug = slugify(normalizedNameInput);
     if (bySlug.has(slug)) return bySlug.get(slug)!;
 
     return null;
@@ -86,4 +87,3 @@ export function stateCode(value: string): string | null {
 export function stateSlug(value: string): string {
     return stateFromNameOrCode(value)?.slug ?? slugify(String(value || ""));
 }
-

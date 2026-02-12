@@ -60,9 +60,11 @@ export function schemaTypeList(blocks: SchemaBlock[]): string[] {
 
 export function buildBreadcrumbSchema(pathname: string, labelOverrides?: Record<string, string>): SchemaBlock | null {
     const normalized = (() => {
-        const raw = String(pathname || "").trim();
-        if (!raw || raw === "/") return "/";
-        return raw.endsWith("/") ? raw.slice(0, -1) : raw;
+        const raw = String(pathname || "").split("?")[0].split("#")[0].trim();
+        const collapsed = raw.replace(/\/{2,}/g, "/");
+        if (!collapsed || collapsed === "/") return "/";
+        const withoutTrailing = collapsed.replace(/\/+$/, "");
+        return withoutTrailing || "/";
     })();
 
     if (normalized === "/") return null;
@@ -470,7 +472,10 @@ export function validateSchemaBlockBasics(blocks: SchemaBlock[]): string[] {
             issues.push(`Block #${idx + 1} is missing @context=https://schema.org.`);
         }
         const type = block?.["@type"];
-        if (!(typeof type === "string" && type.trim()) && !(Array.isArray(type) && type.length > 0)) {
+        const hasStringType = typeof type === "string" && Boolean(type.trim());
+        const hasTypeInArray =
+            Array.isArray(type) && type.some((entry) => typeof entry === "string" && Boolean(entry.trim()));
+        if (!hasStringType && !hasTypeInArray) {
             issues.push(`Block #${idx + 1} is missing @type.`);
         }
     });
