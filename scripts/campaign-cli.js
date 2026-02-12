@@ -190,6 +190,199 @@ function validateCampaignInput(payload) {
     return violations;
 }
 
+function resolveTarget(flags) {
+    const raw = typeof flags.target === "string" ? flags.target.trim().toLowerCase() : DEFAULT_TARGET;
+    const target = raw || DEFAULT_TARGET;
+    if (target !== "prod" && target !== "local") {
+        throw new Error(`Invalid --target "${target}". Use "prod" or "local".`);
+    }
+    return target;
+}
+
+function resolveProxyBinary() {
+    const fromEnv = process.env.CLOUD_SQL_PROXY_BIN;
+    if (fromEnv && fs.existsSync(fromEnv)) return fromEnv;
+
+    const local = path.join(process.cwd(), "cloud-sql-proxy");
+    if (fs.existsSync(local)) return local;
+
+    return "cloud-sql-proxy";
+}
+
+function getCloudRunDatabaseConfig(service, region) {
+    let raw;
+    try {
+        raw = execFileSync(
+            "gcloud",
+            [
+                "run",
+                "services",
+                "describe",
+                service,
+                "--platform=managed",
+                "--region",
+                region,
+                "--format=json",
+            ],
+            { encoding: "utf8" }
+        );
+    } catch (error) {
+        throw new Error(
+            `Failed to read Cloud Run service config via gcloud (${service} in ${region}). ` +
+            `Ensure gcloud is authenticated and configured.`
+        );
+    }
+
+    let parsed;
+    try {
+        parsed = JSON.parse(raw);
+    } catch {
+        throw new Error("Failed to parse Cloud Run service JSON output.");
+    }
+
+    const envVars = parsed?.spec?.template?.spec?.containers?.[0]?.env || [];
+    const databaseUrl = envVars.find((entry) => entry?.name === "DATABASE_URL" && typeof entry?.value === "string")?.value || "";
+    const annotations = parsed?.spec?.template?.metadata?.annotations || {};
+    const cloudSqlAnnotation = typeof annotations["run.googleapis.com/cloudsql-instances"] === "string"
+        ? annotations["run.googleapis.com/cloudsql-instances"]
+        : "";
+    const cloudSqlInstance = cloudSqlAnnotation.split(",").map((x) => x.trim()).filter(Boolean)[0] || "";
+
+    return { databaseUrl, cloudSqlInstance };
+}
+
+function parseCloudSqlInstanceFromDatabaseUrl(databaseUrl) {
+    try {
+        const parsed = new URL(databaseUrl);
+        const hostParam = parsed.searchParams.get("host");
+        if (typeof hostParam === "string" && hostParam.startsWith("/cloudsql/")) {
+            return hostParam.replace("/cloudsql/", "").trim();
+        }
+    } catch {
+        return "";
+    }
+    return "";
+}
+
+function toTcpDatabaseUrl(databaseUrl, proxyPort) {
+    let parsed;
+    try {
+        parsed = new URL(databaseUrl);
+    } catch {
+        throw new Error("Invalid production database URL.");
+    }
+
+    const dbName = parsed.pathname.replace(/^\//, "");
+    if (!dbName) {
+        throw new Error("Production database URL is missing database name.");
+    }
+
+    const username = encodeURIComponent(decodeURIComponent(parsed.username || ""));
+    const passwordRaw = parsed.password ? decodeURIComponent(parsed.password) : "";
+    const password = passwordRaw ? `:${encodeURIComponent(passwordRaw)}` : "";
+    const auth = username ? `${username}${password}` : "";
+
+    const query = new URLSearchParams(parsed.search);
+    query.delete("host");
+    const queryString = query.toString();
+
+    return `postgresql://${auth}@127.0.0.1:${proxyPort}/${dbName}${queryString ? `?${queryString}` : ""}`;
+}
+
+function checkPortOpen(port) {
+    return new Promise((resolve) => {
+        const socket = net.createConnection({ host: "127.0.0.1", port });
+        socket.once("connect", () => {
+            socket.destroy();
+            resolve(true);
+        });
+        socket.once("error", () => resolve(false));
+    });
+}
+
+async function waitForPort(port, timeoutMs = 15000) {
+    const start = Date.now();
+    while (Date.now() - start < timeoutMs) {
+        // eslint-disable-next-line no-await-in-loop
+        const ok = await checkPortOpen(port);
+        if (ok) return;
+        // eslint-disable-next-line no-await-in-loop
+        await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+    throw new Error(`Cloud SQL proxy did not become ready on port ${port}.`);
+}
+
+async function startCloudSqlProxy(instance, port) {
+    const binary = resolveProxyBinary();
+    proxyProcess = spawn(binary, ["--address", "127.0.0.1", "--port", String(port), instance], {
+        stdio: "ignore",
+        detached: false,
+    });
+
+    proxyProcess.once("exit", (code) => {
+        if (code && code !== 0) {
+            console.error(`cloud-sql-proxy exited unexpectedly with code ${code}`);
+        }
+    });
+
+    await waitForPort(port);
+}
+
+async function stopCloudSqlProxy() {
+    if (!proxyProcess) return;
+    proxyProcess.kill("SIGTERM");
+    proxyProcess = null;
+}
+
+async function configureDatabaseTarget(flags) {
+    const target = resolveTarget(flags);
+    if (target === "local") {
+        console.log("Database target: local");
+        return;
+    }
+
+    const proxyPort = Math.trunc(toFloat(flags["proxy-port"], DEFAULT_PROXY_PORT));
+    const service = typeof flags.service === "string" && flags.service.trim()
+        ? flags.service.trim()
+        : (process.env.PROD_CLOUD_RUN_SERVICE || DEFAULT_CLOUD_RUN_SERVICE);
+    const region = typeof flags.region === "string" && flags.region.trim()
+        ? flags.region.trim()
+        : (process.env.PROD_CLOUD_RUN_REGION || DEFAULT_CLOUD_RUN_REGION);
+    const overrideDbUrl = typeof flags["prod-db-url"] === "string" && flags["prod-db-url"].trim()
+        ? flags["prod-db-url"].trim()
+        : (process.env.PROD_DATABASE_URL || "").trim();
+    const overrideInstance = typeof flags["cloudsql-instance"] === "string" && flags["cloudsql-instance"].trim()
+        ? flags["cloudsql-instance"].trim()
+        : "";
+
+    let databaseUrl = overrideDbUrl;
+    let cloudSqlInstance = overrideInstance;
+
+    if (!databaseUrl) {
+        const fromService = getCloudRunDatabaseConfig(service, region);
+        databaseUrl = fromService.databaseUrl;
+        if (!cloudSqlInstance) cloudSqlInstance = fromService.cloudSqlInstance;
+    }
+
+    if (!databaseUrl) {
+        throw new Error(
+            "Could not resolve production DATABASE_URL. " +
+            "Provide --prod-db-url or set PROD_DATABASE_URL."
+        );
+    }
+
+    if (!cloudSqlInstance) {
+        cloudSqlInstance = parseCloudSqlInstanceFromDatabaseUrl(databaseUrl);
+    }
+    if (!cloudSqlInstance) {
+        cloudSqlInstance = DEFAULT_CLOUDSQL_INSTANCE;
+    }
+
+    await startCloudSqlProxy(cloudSqlInstance, proxyPort);
+    process.env.DATABASE_URL = toTcpDatabaseUrl(databaseUrl, proxyPort);
+    console.log(`Database target: production (${service}/${region}) via ${cloudSqlInstance} on :${proxyPort}`);
+}
+
 function buildAdPlan(campaign) {
     const personaShort = clampText(campaign.persona, 26);
     const intentShort = clampText(campaign.intent, 28);
@@ -492,6 +685,8 @@ async function main() {
         process.exit(0);
     }
 
+    await configureDatabaseTarget(flags);
+    prisma = new PrismaClient();
     await queueReview(flags);
 }
 
@@ -501,5 +696,11 @@ main()
         process.exit(1);
     })
     .finally(async () => {
-        await prisma.$disconnect();
+        try {
+            if (prisma) {
+                await prisma.$disconnect();
+            }
+        } finally {
+            await stopCloudSqlProxy();
+        }
     });
