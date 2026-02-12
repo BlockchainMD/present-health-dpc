@@ -1,6 +1,17 @@
+const fs = require("fs");
+const path = require("path");
+const net = require("net");
+const { spawn, execFileSync } = require("child_process");
 const { PrismaClient } = require("@prisma/client");
 
-const prisma = new PrismaClient();
+let prisma = null;
+let proxyProcess = null;
+
+const DEFAULT_TARGET = "prod";
+const DEFAULT_PROXY_PORT = 5435;
+const DEFAULT_CLOUD_RUN_SERVICE = "present-health-dpc";
+const DEFAULT_CLOUD_RUN_REGION = "us-central1";
+const DEFAULT_CLOUDSQL_INSTANCE = "present-health-dpc-2025:us-central1:present-health-db";
 
 const DEFAULT_GEO_STATES = [
     "AZ",
@@ -77,6 +88,12 @@ Optional:
   --geo                  Default: US
   --geo-states           Comma list of 2-letter codes (default: active 15 states)
   --tone                 Default: Empathetic & Professional
+  --target               prod | local (default: prod)
+  --service              Cloud Run service name for prod config lookup (default: present-health-dpc)
+  --region               Cloud Run region for prod config lookup (default: us-central1)
+  --cloudsql-instance    Cloud SQL instance connection name override
+  --prod-db-url          Production DB URL override (or set PROD_DATABASE_URL)
+  --proxy-port           Cloud SQL proxy local port (default: 5435)
   --dry-run              Validate + print payload only
 
 Examples:
@@ -486,4 +503,3 @@ main()
     .finally(async () => {
         await prisma.$disconnect();
     });
-
