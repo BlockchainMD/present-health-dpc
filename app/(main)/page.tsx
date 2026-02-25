@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-MessageSquare,
+import {
+    MessageSquare,
     MessageSquareText,
     Image as ImageIcon,
     Mic,
