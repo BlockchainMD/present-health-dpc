@@ -63,9 +63,8 @@ function ChannelIcons() {
                 return (
                     <div key={channel.label} className="flex items-center gap-2 rounded-full border border-border px-4 py-2">
                         <span
-                            className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${
-                                channel.isPrimary ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
-                            }`}
+                            className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${channel.isPrimary ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                                }`}
                         >
                             <Icon className="h-4 w-4" />
                         </span>
@@ -89,11 +88,11 @@ function HeroSection() {
                     </h1>
                     <p className="mx-auto mt-5 max-w-3xl text-lg text-muted-foreground md:text-xl">
                         Full-service primary care, starting with a message. Sick visits, chronic care, prescriptions, labs,
-                        and more — $49/month. Everything included.
+                        and more — $99/month. Everything included.
                     </p>
                     <div className="mt-8">
                         <Button asChild size="lg" className="h-12 px-8 text-base">
-                            <Link href="/join">Start Membership — $49/mo</Link>
+                            <Link href="/join">Start Membership — $99/mo</Link>
                         </Button>
                     </div>
                     <p className="mt-4 text-sm text-muted-foreground">
@@ -139,11 +138,83 @@ function ScenarioCard({ title, patientMessage, patientAttachmentLabel, clinician
     );
 }
 
-function ScenarioSection() {
+function FeatureCard({ icon, title, description }: FeatureCardProps) {
     return (
-        <section className="bg-muted/20 py-16 md:py-20">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="mx-auto mb-10 max-w-3xl text-center">
+        <Card className="flex flex-col items-center text-center p-6 bg-background border-border/70 shadow-sm">
+            <div className="mb-4">{icon}</div>
+            <CardTitle className="text-xl font-semibold mb-2">{title}</CardTitle>
+            <CardDescription className="text-muted-foreground">{description}</CardDescription>
+        </Card>
+    );
+}
+
+function ScenarioSection() {
+    const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": "Present Health Membership",
+        "description": "Full-service primary care for adults 18+ with messaging-first access and video when clinically appropriate.",
+        "brand": {
+            "@type": "Brand",
+            "name": "Present Health"
+        },
+        "offers": {
+            "@type": "Offer",
+            "priceCurrency": "USD",
+            "price": "99.00",
+            "itemCondition": "https://schema.org/NewCondition",
+            "availability": "https://schema.org/InStock",
+            "url": "https://www.presenthealth.com/join",
+            "seller": {
+                "@type": "Organization",
+                "name": "Present Health"
+            }
+        }
+    };
+
+    const hsaFAQ = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            {
+                "@type": "Question",
+                "name": "Can I use HSA/FSA funds for Present Health membership?",
+                "acceptedAnswer": {
+                    "@type": "Answer",
+                    "text": "Yes. Direct Primary Care (DPC) memberships are HSA-eligible in 2026. The $99/month fee is within the $150/month limit for DPC. Please consult a tax professional for specific guidance regarding your individual situation."
+                }
+            }
+        ]
+    };
+
+    return (
+        <section id="features" className="w-full py-24 md:py-32 bg-slate-50 border-y border-border">
+            <SchemaBlocks blocks={[productSchema, hsaFAQ]} idPrefix="homepage-mid" />
+            <div className="container px-4 md:px-6 mx-auto max-w-6xl">
+                <div className="text-center mb-16 max-w-3xl mx-auto">
+                    <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Healthcare that respects your time</h2>
+                    <p className="text-xl text-muted-foreground mt-4">
+                        Everything you need from a primary care doctor, accessible from anywhere.
+                    </p>
+                </div>
+                <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                    <FeatureCard
+                        icon={<MessageSquare className="h-6 w-6 text-emerald-700" />}
+                        title="Text-First Approach"
+                        description="Communicate with your dedicated care team via secure messaging, photos, and voice memos. Get answers quickly without waiting for appointments."
+                    />
+                    <FeatureCard
+                        icon={<Video className="h-6 w-6 text-emerald-700" />}
+                        title="Video Consults When Needed"
+                        description="For more complex issues or when a visual assessment is helpful, seamlessly transition to a video call with your clinician."
+                    />
+                    <FeatureCard
+                        icon={<ShieldCheck className="h-6 w-6 text-emerald-700" />}
+                        title="Secure & Private"
+                        description="Your health data is protected with bank-grade security and HIPAA compliance, ensuring your privacy at all times."
+                    />
+                </div>
+                <div className="mx-auto mb-10 max-w-3xl text-center mt-16">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl">
                         Healthcare questions don&apos;t wait. Neither should your clinician.
                     </h2>
@@ -247,7 +318,7 @@ function HowItWorksSection() {
     const steps = [
         {
             title: "Sign up in 5 minutes",
-            description: "One plan, $49/month, quick health intake.",
+            description: "One plan, $99/month, quick health intake.",
         },
         {
             title: "Welcome call",
@@ -291,29 +362,62 @@ function HowItWorksSection() {
 
 function PricingBlockSection() {
     return (
-        <section className="bg-background py-16 md:py-20">
-            <div className="container mx-auto px-4 md:px-6">
-                <Card className="mx-auto max-w-3xl border-primary/30 bg-primary/5">
-                    <CardHeader className="text-center">
-                        <CardTitle className="text-3xl md:text-4xl">$49/month. Everything included.</CardTitle>
-                        <CardDescription className="text-base text-muted-foreground">
-                            No tiers. No per-visit fees. No upsells.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4 text-center">
-                        <p className="text-lg font-semibold text-foreground">$490/year — save $98</p>
-                        <p className="text-sm text-muted-foreground">
-                            HSA-eligible in 2026
-                            <br />
-                            <span className="text-xs">Subject to IRS rules. Consult a tax professional.</span>
+        <section id="pricing" className="w-full py-24 md:py-32">
+            <div className="container px-4 md:px-6 mx-auto max-w-6xl">
+                <div className="flex flex-col items-center justify-center space-y-4 text-center mb-16">
+                    <div className="space-y-2 max-w-3xl">
+                        <div className="inline-block rounded-lg bg-emerald-100 px-3 py-1 text-sm text-emerald-800 font-medium mb-2">Pricing</div>
+                        <h2 className="text-3xl font-bold tracking-tight md:text-5xl text-foreground">Simple, transparent pricing</h2>
+                        <p className="text-xl text-muted-foreground mt-4">
+                            No co-pays, no deductibles, no hidden fees. Just great care.
                         </p>
-                        <div>
-                            <Button asChild size="lg" className="h-12 px-8 text-base">
-                                <Link href="/join">Start Membership</Link>
-                            </Button>
+                    </div>
+                </div>
+
+                <div className="grid gap-8 md:grid-cols-2 max-w-4xl mx-auto items-start">
+                    {/* Monthly Plan */}
+                    <Card className="flex flex-col h-full border-border/60 shadow-sm transition-all hover:shadow-md relative overflow-hidden">
+                        <div className="absolute top-0 right-0 bg-emerald-700 text-white text-xs font-bold px-3 py-1 rounded-bl-lg uppercase tracking-wider">
+                            Most Popular
                         </div>
-                    </CardContent>
-                </Card>
+                        <CardHeader className="pt-8 pb-4">
+                            <CardTitle className="text-3xl md:text-4xl">$99/month. Everything included.</CardTitle>
+                            <p className="text-muted-foreground pt-2">Billed monthly. Cancel anytime.</p>
+                        </CardHeader>
+                        <CardContent className="flex-grow space-y-4 text-center">
+                            <p className="text-sm text-muted-foreground">
+                                HSA-eligible in 2026
+                                <br />
+                                <span className="text-xs">Subject to IRS rules. Consult a tax professional.</span>
+                            </p>
+                            <div>
+                                <Button asChild size="lg" className="h-12 px-8 text-base">
+                                    <Link href="/join">Start Membership</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+
+                    {/* Annual Plan */}
+                    <Card className="flex flex-col h-full border-border/60 shadow-sm transition-all hover:shadow-md">
+                        <CardHeader className="pb-8 pt-8 border-b border-border/40">
+                            <CardTitle className="text-3xl md:text-4xl">$990/year — save $198</CardTitle>
+                            <p className="text-muted-foreground pt-2">Billed annually.</p>
+                        </CardHeader>
+                        <CardContent className="flex-grow space-y-4 text-center">
+                            <p className="text-sm text-muted-foreground">
+                                HSA-eligible in 2026
+                                <br />
+                                <span className="text-xs">Subject to IRS rules. Consult a tax professional.</span>
+                            </p>
+                            <div>
+                                <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base">
+                                    <Link href="/join">Choose Annual Plan</Link>
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                </div>
             </div>
         </section>
     );
@@ -323,7 +427,7 @@ function HowWeDifferSection() {
     const points = [
         {
             title: "No per-visit fees.",
-            body: "Most telehealth charges you every time you need help. We don&apos;t. Message us 5 times or 50 - still $49.",
+            body: "Most telehealth charges you every time you need help. We don&apos;t. Message us 5 times or 50 - still $99.",
         },
         {
             title: "No insurance billing.",
@@ -379,73 +483,70 @@ function TrustSection() {
     );
 }
 
+function FaqItem({ question, body }: FaqItemProps) {
+    return (
+        <AccordionItem value={question}>
+            <AccordionTrigger className="text-lg font-medium text-foreground hover:no-underline">{question}</AccordionTrigger>
+            <AccordionContent className="text-muted-foreground text-base">{body}</AccordionContent>
+        </AccordionItem>
+    );
+}
+
 function FAQSection() {
     return (
-        <section className="bg-muted/20 py-16 md:py-20">
-            <div className="container mx-auto max-w-4xl px-4 md:px-6">
-                <h2 className="mb-10 text-center text-3xl font-bold tracking-tight md:text-4xl">Frequently asked questions</h2>
+        <section className="bg-slate-50 py-24 border-t border-border">
+            <div className="container px-4 md:px-6 mx-auto max-w-4xl">
+                <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
                 <Accordion type="single" collapsible className="w-full rounded-xl border border-border bg-background px-4 md:px-6">
-                    <AccordionItem value="faq-1">
-                        <AccordionTrigger>Is this real primary care?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            Yes. Same scope as a traditional PCP - sick visits, chronic care, medications, labs, wellness planning.
-                            Delivered messaging-first with video when needed. About 80-90% of primary care doesn&apos;t require a
-                            physical exam.
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="faq-2">
-                        <AccordionTrigger>How fast will I get a response?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            Within 4 hours during business hours (M-F 8am-8pm ET). After-hours messages get a
-                            next-business-morning response.
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="faq-3">
-                        <AccordionTrigger>What about things that need in-person care?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            We&apos;ll tell you and help you find the right local provider. We&apos;re transparent about what telehealth can
-                            and can&apos;t do.
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="faq-4">
-                        <AccordionTrigger>Do I still need insurance?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            We&apos;re not insurance. But we handle day-to-day primary care. Many members rely on traditional office
-                            visits much less.
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="faq-5">
-                        <AccordionTrigger>Can I use my HSA?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            Yes. DPC memberships are HSA-eligible in 2026. $49/month is within the $150/month limit. Consult a tax
-                            professional.
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="faq-6">
-                        <AccordionTrigger>What states are you in?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            {STATES.join(", ")}. See full availability on the <Link href="/states" className="text-primary hover:underline">states page</Link>.
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="faq-7">
-                        <AccordionTrigger>Do I have to be 18?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            Yes. Present Health serves adults 18 and older.
-                        </AccordionContent>
-                    </AccordionItem>
-
-                    <AccordionItem value="faq-8">
-                        <AccordionTrigger>What if I just need one visit?</AccordionTrigger>
-                        <AccordionContent className="text-muted-foreground">
-                            We offer a single visit option for $49. See details on <Link href="/visit" className="text-primary hover:underline">/visit</Link>.
-                        </AccordionContent>
-                    </AccordionItem>
+                    <FaqItem
+                        question="Is this real primary care?"
+                        body="Yes. Same scope as a traditional PCP - sick visits, chronic care, medications, labs, wellness planning. Delivered messaging-first with video when needed. About 80-90% of primary care doesn't require a physical exam."
+                    />
+                    <FaqItem
+                        question="How fast will I get a response?"
+                        body="Within 4 hours during business hours (M-F 8am-8pm ET). After-hours messages get a next-business-morning response."
+                    />
+                    <FaqItem
+                        question="Do you take insurance?"
+                        body="No, we operate outside the insurance system. This allows us to offer transparent pricing and spend more time directly on your care instead of paperwork. You can (and should) keep insurance for emergencies, specialists, and hospitalizations."
+                    />
+                    <FaqItem
+                        question="Are there per-visit fees?"
+                        body="Most telehealth charges you every time you need help. We don't. Message us 5 times or 50 - still $99."
+                    />
+                    <FaqItem
+                        question="Can I use HSA/FSA funds?"
+                        body={
+                            <>
+                                Yes. DPC memberships are HSA-eligible in 2026. $99/month is within the $150/month limit. Consult a tax
+                                professional for specific guidance.
+                            </>
+                        }
+                    />
+                    <FaqItem
+                        question="What if I need an in-person exam?"
+                        body="If a physical exam or procedure is medically necessary (like a pap smear or stitches), we will advise you to seek local care (urgent care, ER, or an in-person specialist) and help coordinate the plan before and after your visit."
+                    />
+                    <FaqItem
+                        question="What if I don't want a membership?"
+                        body={
+                            <>
+                                We offer a single visit option for $99. See details on <Link href="/visit" className="text-primary hover:underline">/visit</Link>.
+                            </>
+                        }
+                    />
+                    <FaqItem
+                        question="What states are you in?"
+                        body={
+                            <>
+                                {STATES.join(", ")}. See full availability on the <Link href="/states" className="text-primary hover:underline">states page</Link>.
+                            </>
+                        }
+                    />
+                    <FaqItem
+                        question="Do I have to be 18?"
+                        body="Yes. Present Health serves adults 18 and older."
+                    />
                 </Accordion>
             </div>
         </section>
@@ -455,12 +556,15 @@ function FAQSection() {
 function FinalCTASection() {
     return (
         <section className="bg-primary py-16 text-primary-foreground md:py-20">
-            <div className="container mx-auto px-4 text-center md:px-6">
-                <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Primary care that actually works.</h2>
-                <div className="mt-7">
-                        <Button asChild size="lg" variant="secondary" className="h-12 px-8 text-base">
-                            <Link href="/join">
-                            Start Membership — $49/mo <ArrowRight className="ml-2 h-4 w-4" />
+            <div className="container px-4 md:px-6 mx-auto max-w-4xl text-center">
+                <h2 className="text-3xl font-bold tracking-tight md:text-5xl mb-6 text-foreground">Ready to upgrade your primary care?</h2>
+                <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+                    Join Present Health today and experience healthcare that revolves around you.
+                </p>
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                    <Button size="lg" className="h-14 px-8 text-lg bg-emerald-700 hover:bg-emerald-800" asChild>
+                        <Link href="/join">
+                            Start Membership — $99/mo <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                     </Button>
                 </div>
