@@ -1,9 +1,9 @@
 export type CoverageType = "individual" | "couple" | "family";
 
-export const MEMBERSHIP_MONTHLY_DOLLARS = 49;
-export const MEMBERSHIP_ANNUAL_DOLLARS = 490;
+export const MEMBERSHIP_MONTHLY_DOLLARS = 99;
+export const MEMBERSHIP_ANNUAL_DOLLARS = 990;
 export const MEMBERSHIP_ANNUAL_SAVINGS_DOLLARS = 98;
-export const SINGLE_VISIT_DOLLARS = 49;
+export const SINGLE_VISIT_DOLLARS = 99;
 export const EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS = 29;
 
 export const MEMBERSHIP_TIERS: Record<
