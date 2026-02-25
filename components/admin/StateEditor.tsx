@@ -73,7 +73,7 @@ export function StateEditor({ initial }: { initial?: Partial<StateFormValue> }) 
     const defaultMetaDescription = useMemo(
         () =>
             name.trim()
-                ? `Messaging-first primary care for ${name.trim()} residents. Present Health memberships are $49/month with no insurance required.`
+                ? `Messaging-first primary care for ${name.trim()} residents. Present Health memberships are $99/month with no insurance required.`
                 : "",
         [name]
     );

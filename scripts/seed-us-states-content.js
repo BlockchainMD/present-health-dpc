@@ -14,7 +14,7 @@ function defaultMetaTitle(stateName) {
 }
 
 function defaultMetaDescription(stateName) {
-    return `Messaging-first primary care for ${stateName} residents. Present Health memberships are $49/month with no insurance required.`;
+    return `Messaging-first primary care for ${stateName} residents. Present Health memberships are $99/month with no insurance required.`;
 }
 
 function buildStateContent(stateName) {

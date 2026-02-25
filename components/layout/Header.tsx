@@ -76,21 +76,21 @@ export function Header() {
                     {navigation.map((item) => (
                         <Link
                             key={item.name}
-	                            href={item.href}
-	                            className={cn(
-	                                "text-sm font-medium transition-colors hover:text-primary",
-	                                isActivePath(pathname, item.href)
-	                                    ? "text-primary"
-	                                    : "text-muted-foreground"
-	                            )}
-	                        >
+                            href={item.href}
+                            className={cn(
+                                "text-sm font-medium transition-colors hover:text-primary",
+                                isActivePath(pathname, item.href)
+                                    ? "text-primary"
+                                    : "text-muted-foreground"
+                            )}
+                        >
                             {item.name}
                         </Link>
-	                    ))}
-	                    <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-	                        <Link href="/join">Join - $49/mo</Link>
-	                    </Button>
-	                </nav>
+                    ))}
+                    <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Link href="/join">Join - $99/mo</Link>
+                    </Button>
+                </nav>
 
                 {/* Mobile Menu */}
                 <div className="md:hidden">
@@ -109,26 +109,26 @@ export function Header() {
                                 {navigation.map((item) => (
                                     <SheetClose asChild key={item.name}>
                                         <Link
-	                                            href={item.href}
-	                                            className={cn(
-	                                                "text-lg font-medium transition-colors hover:text-primary",
-	                                                isActivePath(pathname, item.href)
-	                                                    ? "text-primary"
-	                                                    : "text-muted-foreground"
-	                                            )}
-	                                        >
+                                            href={item.href}
+                                            className={cn(
+                                                "text-lg font-medium transition-colors hover:text-primary",
+                                                isActivePath(pathname, item.href)
+                                                    ? "text-primary"
+                                                    : "text-muted-foreground"
+                                            )}
+                                        >
                                             {item.name}
                                         </Link>
                                     </SheetClose>
-	                                ))}
-	                                <SheetClose asChild>
-	                                    <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-	                                        <Link href="/join">Join - $49/mo</Link>
-	                                    </Button>
-	                                </SheetClose>
-	                            </div>
-	                        </SheetContent>
-	                    </Sheet>
+                                ))}
+                                <SheetClose asChild>
+                                    <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                                        <Link href="/join">Join - $99/mo</Link>
+                                    </Button>
+                                </SheetClose>
+                            </div>
+                        </SheetContent>
+                    </Sheet>
                 </div>
             </div>
         </header>

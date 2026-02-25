@@ -31,8 +31,8 @@ export function defaultPageToggles(): Record<string, boolean> {
 
 export const DEFAULT_CHATBOT_KNOWLEDGE_BASE = [
     "Present Health is a telehealth-first Direct Primary Care clinic.",
-    "Membership costs: $49/month or $490/year (save $98).",
-    "Single visit option: $49 per visit.",
+    "Membership costs: $99/month or $990/year (save $198).",
+    "Single visit option: $99 per visit.",
     "Employer plans: $29/employee/month.",
     "Care is delivered by licensed clinicians and overseen by a board-certified physician.",
     "Unlimited telehealth visits, no copays, no surprise bills.",

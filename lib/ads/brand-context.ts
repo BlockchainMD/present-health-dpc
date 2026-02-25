@@ -14,7 +14,7 @@ Direct Primary Care removes the insurance middleman. Members pay a flat monthly 
 
 ## UNIQUE DIFFERENTIATORS
 1. **Messaging-First Access**: Most care starts with secure messaging, with video when clinically appropriate.
-2. **One Clear Plan**: $49/month with no tiers, no per-visit fees, and no upsells.
+2. **One Clear Plan**: $99/month with no tiers, no per-visit fees, and no upsells.
 3. **Virtual-Native Care**: Built for telehealth from day one—message, phone, or video.
 4. **Transparent Model**: No insurance billing, no copays for membership care, no surprise membership bills.
 5. **Clinical Oversight**: Care delivered by licensed clinicians and overseen by a board-certified physician.
@@ -57,14 +57,14 @@ Direct Primary Care removes the insurance middleman. Members pay a flat monthly 
 - Cancel anytime, no contracts
 
 ## PRICING (CURRENT)
-- Membership: $49/month ($490/year if paid annually—save $98)
-- Single Visit: $49
+- Membership: $99/month ($990/year if paid annually—save $198)
+- Single Visit: $99
 - Employer plans: $29/employee/month
 - HSA/FSA eligible starting January 2026 (subject to IRS rules)
 - Labs and prescriptions billed separately at transparent cost
 
 ## CALL TO ACTION PREFERENCES
-- Primary CTA: "Start Membership — $49/mo"
+- Primary CTA: "Start Membership — $99/mo"
 - Secondary: "See Pricing" or "How It Works"
 - AVOID: "Sign Up Now", "Buy Today", "Limited Time" (too aggressive)
 `;

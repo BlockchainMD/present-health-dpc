@@ -17,7 +17,7 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
         hero: {
             headline: `Direct Primary Care for ${campaign.persona}`,
             subheadline: `Get the care you need for "${campaign.intent}" without the wait.`,
-            cta: "Start Membership — $49/mo"
+            cta: "Start Membership — $99/mo"
         },
         educationalBriefing: undefined,
         benefits: Array.isArray(campaign.benefits) ? campaign.benefits : [],
@@ -33,7 +33,7 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
             tiers: [
                 {
                     name: "Membership",
-                    price: 49,
+                    price: 99,
                     period: "mo",
                     features: ["Unlimited virtual visits", "Direct messaging with your care team", "Care coordination", "Prevention planning"]
                 }
@@ -46,7 +46,7 @@ export async function generateLandingPageSpec(campaignId: string, mockCampaign?:
         ctaSection: {
             headline: "Ready to take control of your health?",
             subheadline: "Join Present Health today.",
-            buttonText: "Start Membership — $49/mo"
+            buttonText: "Start Membership — $99/mo"
         }
     };
 

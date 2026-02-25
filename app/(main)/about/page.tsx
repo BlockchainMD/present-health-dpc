@@ -8,7 +8,7 @@ import { buildAboutSchemas } from "@/lib/schema";
 export const metadata: Metadata = {
     title: "About | Present Health",
     description:
-        "Present Health is messaging-first primary care for adults 18 and older. $49/month with no per-visit fees.",
+        "Present Health is messaging-first primary care for adults 18 and older. $99/month with no per-visit fees.",
 };
 
 export const dynamic = "force-dynamic";
@@ -66,8 +66,8 @@ export default async function AboutTrustHubPage() {
                         Full-service primary care by message, phone, or video for adults 18 and older.
                     </p>
                     <div className="mt-6">
-                        <Button asChild size="lg">
-                            <Link href="/join">Start Membership — $49/mo</Link>
+                        <Button asChild size="lg" className="h-12 px-8 text-base">
+                            <Link href="/join">Start Membership — $99/mo</Link>
                         </Button>
                     </div>
                 </section>

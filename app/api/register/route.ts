@@ -15,9 +15,9 @@ function mapPlanToTier(plan: "individual" | "couple" | "family") {
 }
 
 function mapTierToMonthlyRate(tier: UnifiedLeadMembershipTier) {
-    if (tier === UnifiedLeadMembershipTier.COUPLE) return 49;
-    if (tier === UnifiedLeadMembershipTier.FAMILY) return 49;
-    return 49;
+    if (tier === UnifiedLeadMembershipTier.COUPLE) return 99; // Currently same as individual
+    if (tier === UnifiedLeadMembershipTier.FAMILY) return 99; // Currently same as individual
+    return 99;
 }
 
 export async function POST(req: Request) {

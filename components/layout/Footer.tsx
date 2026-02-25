@@ -21,7 +21,7 @@ export function Footer() {
                             </span>
                         </Link>
                         <p className="mt-4 text-sm text-muted-foreground">
-                            Primary care that fits in your pocket. $49/month.
+                            Primary care that fits in your pocket. $99/month.
                         </p>
                     </div>
 

@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: { params: StateSlugParams }):
     const title = state.metaTitle?.trim() || `Telehealth Direct Primary Care in ${state.name} | Present Health`;
     const description =
         state.metaDescription?.trim() ||
-        `Messaging-first primary care for ${state.name} residents. Present Health memberships are $49/month with no insurance required.`;
+        `Messaging-first primary care for ${state.name} residents. Present Health memberships are $99/month with no insurance required.`;
 
     return {
         title,
@@ -178,7 +178,9 @@ export default async function StatePage({ params }: { params: StateSlugParams })
                             <CardTitle className="text-base">Pricing Reminder</CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm text-muted-foreground">
-                            Membership starts at <span className="font-medium text-foreground">$49/month</span>. No insurance required.
+                            <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+                                Membership starts at <span className="font-medium text-foreground">$99/month</span>. No insurance required.
+                            </p>
                             <div className="mt-3">
                                 <Link href="/pricing" className="text-primary hover:underline">View pricing</Link>
                             </div>

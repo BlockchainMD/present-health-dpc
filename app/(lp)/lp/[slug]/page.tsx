@@ -154,7 +154,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
         tiers: [
             {
                 name: "Membership",
-                price: 49,
+                price: 99,
                 period: "mo",
                 features: ["Unlimited virtual visits", "Direct messaging with your care team", "Care coordination", "Prevention planning"]
             }
@@ -177,7 +177,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                         <span className="font-bold text-xl text-primary">Present Health</span>
                     </Link>
                     <Button asChild size="sm">
-                        <Link href={joinUrl}>Start Membership - $49/mo</Link>
+                        <Link href={joinUrl}>Start Membership - $99/mo</Link>
                     </Button>
                 </div>
             </header>
@@ -331,7 +331,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                                 <CardFooter className="mt-auto flex flex-col gap-4">
                                                     <Button className="w-full" asChild>
                                                         <Link href={joinUrl}>
-                                                            Start Membership - $49/mo
+                                                            Start Membership - $99/mo
                                                         </Link>
                                                     </Button>
                                                     <p className="text-xs text-center text-muted-foreground font-medium">Cancel Anytime</p>
@@ -391,7 +391,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
                                 <p className="text-xl opacity-90 mb-8 max-w-2xl mx-auto">{content.ctaSection?.subheadline || "Join Present Health today."}</p>
                                 <Button asChild size="lg" variant="secondary" className="text-lg px-8">
                                     <Link href={joinUrl}>
-                                        {content.ctaSection?.buttonText || "Start Membership - $49/mo"}
+                                        {content.ctaSection?.buttonText || "Start Membership - $99/mo"}
                                     </Link>
                                 </Button>
                             </div>

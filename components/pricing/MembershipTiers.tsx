@@ -73,7 +73,7 @@ export function MembershipTiers() {
                 <div className="max-w-4xl mx-auto text-center mb-10">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">One plan. All primary care services included.</h1>
                     <p className="text-xl text-muted-foreground">
-                        Primary care should not have fine print. $49/month covers care within our primary care scope - no per-visit fees, no tiers,
+                        Primary care should not have fine print. $99/month covers care within our primary care scope - no per-visit fees, no tiers,
                         no surprises.
                     </p>
                 </div>
@@ -154,7 +154,7 @@ export function MembershipTiers() {
                                 ))}
                             </ul>
                             <p className="text-xs text-muted-foreground">
-                                Want ongoing access? The membership is the same price - $49/month for unlimited care.
+                                Want ongoing access? The membership is the same price - $99/month for unlimited care.
                             </p>
                             <Button asChild variant="outline">
                                 <Link href="/visit">Get a Single Visit</Link>
@@ -179,14 +179,14 @@ export function MembershipTiers() {
 
                     <Card className="border-border/60">
                         <CardHeader>
-                            <CardTitle className="text-2xl">How $49/month compares</CardTitle>
+                            <CardTitle className="text-2xl">How $99/month compares</CardTitle>
                         </CardHeader>
                         <CardContent className="grid gap-2 text-sm text-muted-foreground">
                             <div className="flex justify-between gap-4"><span>Urgent care visit</span><span>$150-300</span></div>
                             <div className="flex justify-between gap-4"><span>Non-emergency ER visit</span><span>$1,000-2,500</span></div>
                             <div className="flex justify-between gap-4"><span>Wait for PCP appointment</span><span>20+ days</span></div>
                             <div className="flex justify-between gap-4 font-medium text-foreground">
-                                <span>Present Health</span><span>$49/month, typical responses within 4 business hours</span>
+                                <span>Present Health</span><span>$99/month, typical responses within 4 business hours</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -196,7 +196,7 @@ export function MembershipTiers() {
                             <CardTitle className="text-xl">HSA-eligible starting 2026.</CardTitle>
                         </CardHeader>
                         <CardContent className="text-sm text-muted-foreground">
-                            Under current IRS rules (2026), this membership is within the monthly DPC fee limit at $49/month.
+                            Under current IRS rules (2026), this membership is within the monthly DPC fee limit at $99/month.
                             <div className="mt-2 text-xs">
                                 Subject to IRS rules. Consult a tax professional.
                             </div>

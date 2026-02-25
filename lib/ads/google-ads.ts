@@ -19,7 +19,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     // 1. Brand
     headlines.push("Present Health DPC");
     headlines.push("Direct Primary Care");
-    headlines.push("$49/Month Membership");
+    headlines.push("$99/Month Membership");
 
     // 2. Intent/Persona (Truncated to 30 chars if needed)
     if (intent && intent.length <= 30) headlines.push(intent);
@@ -47,7 +47,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
 
     // 3. Standard Value Prop
     descriptions.push("Experience healthcare the way it should be. Direct access, transparent pricing, no insurance hassles.");
-    descriptions.push("Message your care team directly and get full-service primary care for $49/month.");
+    descriptions.push("Message your care team directly and get full-service primary care for $99/month.");
 
     // --- VALIDATION & FALLBACKS ---
     const safeHeadlines = headlines.filter(h => validateContent(h, "Headline").status === 'PASS');
