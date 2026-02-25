@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Present Health | Messaging-First Primary Care",
   description:
-    "Full-service primary care by message, phone, or video. One plan: $49/month. Everything included. Adults 18+.",
+    "Full-service primary care by message, phone, or video. One plan: $99/month. Everything included. Adults 18+.",
 };
 
 export default function RootLayout({

@@ -7,7 +7,7 @@ import { MEMBERSHIP_ANNUAL_DOLLARS, MEMBERSHIP_MONTHLY_DOLLARS } from "@/lib/pri
 
 export const metadata: Metadata = {
     title: "Join | Present Health",
-    description: "Join Present Health in minutes. One plan: $49/month or $490/year. Messaging-first primary care for adults 18+.",
+    description: "Join Present Health in minutes. One plan: $99/month or $990/year. Messaging-first primary care for adults 18+.",
 };
 
 export default function JoinPage() {

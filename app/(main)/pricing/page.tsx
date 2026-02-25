@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Pricing | Present Health",
     description:
-        "One plan, $49/month or $490/year. Messaging-first primary care with no per-visit fees, plus a $49 single-visit option.",
+        "One plan, $99/month or $990/year. Messaging-first primary care with no per-visit fees, plus a $99 single-visit option.",
 };
 
 export default function PricingPage() {
