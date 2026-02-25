@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import {
+MessageSquare,
     MessageSquareText,
     Image as ImageIcon,
     Mic,
@@ -28,6 +28,17 @@ type ScenarioCardProps = {
     patientMessage: string;
     patientAttachmentLabel: string;
     clinicianResponse: string;
+};
+
+type FeatureCardProps = {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+};
+
+type FaqItemProps = {
+    question: string;
+    body: React.ReactNode;
 };
 
 const STATES = [
