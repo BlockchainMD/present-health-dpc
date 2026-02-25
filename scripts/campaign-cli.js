@@ -413,13 +413,16 @@ function buildAdPlan(campaign) {
 
     const headlinesRaw = [
         "Present Health DPC",
-        "$49/Month Membership",
-        "Messaging-First Care",
-        "Start Membership",
-        "No Waiting Rooms",
-        "Message Your Care Team",
-        personaShort ? `Care for ${personaShort}` : "",
-        intentShort,
+        "$99/Month Membership",
+        "Primary Care On Your Phone",
+        "Message A Doctor Anytime",
+        "Direct Primary Care",
+        "No Co-pays. No Waiting.",
+        "Your Doctor In Your Pocket",
+        "Full-Service Virtual Care",
+        "Affordable Telehealth",
+        "Adult Primary Care",
+        "No Insurance Required",
     ];
 
     const headlines = Array.from(
@@ -431,7 +434,10 @@ function buildAdPlan(campaign) {
     ).slice(0, 15);
 
     const descriptionsRaw = [
-        "Message your care team directly and get full-service primary care for $49/month.",
+        "Get unlimited access to your dedicated care team. Start a membership for $99/mo.",
+        "Sick visits, chronic care, prescriptions, and labs all handled via text or video.",
+        "A real doctor. Real answers. Better primary care without the waiting room.",
+        "Message your care team directly and get full-service primary care for $99/month.",
         "Simple, transparent monthly membership. No insurance hassles, no waiting rooms.",
         "Adults 18+ in active states. Telehealth-first care with physician oversight.",
         "One plan. Everything included. Start in minutes and stay in control of your care.",
@@ -464,24 +470,42 @@ function buildLandingPageSpec(campaign) {
         hero: {
             headline: "Text your care team. Get a real answer.",
             subheadline:
-                "Full-service primary care, starting with a message. Sick visits, chronic care, prescriptions, labs, and more — $49/month.",
-            cta: "Start Membership - $49/mo",
+                "Full-service primary care, starting with a message. Sick visits, chronic care, prescriptions, labs, and more — $99/month.",
+            cta: "Start Membership - $99/mo",
         },
         educationalBriefing: undefined,
         pricing: {
-            headline: "One plan. Everything included.",
-            subheadline: "$49/month or $490/year. No tiers. No per-visit fees.",
-            tiers: [
+            headline: "Get A Doctor You Can Actually Text",
+            subheadline: "$99/month or $990/year. No tiers. No per-visit fees.",
+            bulletPoints: [
+                "Same-day responses",
+                "Unlimited messaging",
+                "Text, photo, audio, or video",
+                "Labs & imaging orders",
+            ],
+            ctaSection: {
+                headline: "Ready to upgrade your primary care?",
+                subheadline: "Join Present Health today.",
+                buttonText: "Start Membership - $99/mo",
+            },
+            seoTags: {
+                title: "Messaging-First Primary Care | Present Health",
+                description:
+                    "Full-service primary care, starting with a message. Sick visits, chronic care, prescriptions, labs, and more — $99/month.",
+            },
+            structuredDataItems: [
                 {
-                    name: "Membership",
-                    price: 49,
-                    period: "mo",
-                    features: [
-                        "Unlimited secure messaging",
-                        "Video when clinically appropriate",
-                        "Chronic care and medication management",
-                        "Lab ordering and interpretation",
-                    ],
+                    "@context": "https://schema.org",
+                    "@type": "Product",
+                    name: "Present Health Membership",
+                    description: "Full-service virtual primary care with unlimited messaging and video.",
+                    offers: {
+                        "@type": "Offer",
+                        price: 99,
+                        priceCurrency: "USD",
+                        url: "https://presenthealthmd.com/signup",
+                        availability: "https://schema.org/InStock",
+                    },
                 },
             ],
         },
@@ -499,7 +523,7 @@ function buildLandingPageSpec(campaign) {
             },
             {
                 question: "What does it cost?",
-                answer: "Membership is $49/month or $490/year.",
+                answer: "Membership is $99/month or $990/year.",
             },
             {
                 question: "Who is this for?",
