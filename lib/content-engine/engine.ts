@@ -10,6 +10,8 @@ import { Brief, EngineOptions, EngineResult, InternalLinkSuggestion, TopicSignal
 import { getSeoHealthSnapshot } from '../seo-health/service';
 import { DEFAULT_DISCLAIMER } from './disclaimer';
 import { lintMarkdown } from './lint';
+import { getNextPublishSlots } from './publish-slots';
+import { generateFeaturedImage } from './image';
 
 const MAX_PER_RUN = 10;
 const DEFAULT_MAX_AUTO_PUBLISH_PER_DAY = 20;
