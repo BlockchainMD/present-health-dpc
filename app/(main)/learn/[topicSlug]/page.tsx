@@ -18,6 +18,7 @@ import { categoryLabel, estimateReadTimeMinutes } from "@/lib/learn";
 import { extractToc } from "@/lib/markdown-toc";
 import { markdownToPlainText } from "@/lib/markdown-plain";
 import { buildLearnArticleSchemas, coerceFaqs } from "@/lib/schema";
+import { CLINICAL_TEAM_URL, EDITORIAL_POLICY_URL, formatLastUpdated } from "@/lib/content-engine/policy";
 
 // ISR: cache article pages for 1 hour; on-demand revalidation via revalidatePath
 // in the admin PATCH route and the content-cron route keeps fresh content visible
@@ -135,6 +136,10 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
     const visibleSummary = article.excerpt?.trim() || "";
     const schemaBlocks = buildLearnArticleSchemas(article as any);
 
+    const reviewerName = article.reviewedByDisplayName || "Present Health Clinical Team";
+    const reviewerDate = article.reviewedAt || article.updatedAt;
+    const isClinical = article.reviewType !== "EDITORIAL";
+
     const related = article.category
         ? await prisma.article.findMany({
             where: {
@@ -204,6 +209,23 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                             <time dateTime={publishedDate.toISOString()}>
                                 Published {format(new Date(publishedDate), "MMM d, yyyy")}
                             </time>
+                        </div>
+
+                        {/* E-E-A-T: Medically reviewed badge — visible above the fold */}
+                        <div className="mt-4 inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/60 px-3 py-2 text-xs text-emerald-800 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+                            <svg aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                            <span>
+                                {isClinical ? "Medically reviewed" : "Editorially reviewed"} by{" "}
+                                <Link href={CLINICAL_TEAM_URL} className="font-medium underline underline-offset-2 hover:text-emerald-900 dark:hover:text-emerald-200">
+                                    {reviewerName}
+                                </Link>
+                                {" · "}
+                                <time dateTime={reviewerDate.toISOString()}>
+                                    {format(new Date(reviewerDate), "MMM d, yyyy")}
+                                </time>
+                            </span>
                         </div>
                     </header>
 

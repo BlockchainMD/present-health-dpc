@@ -229,9 +229,9 @@ export function buildStateSchemas(state: Pick<State, "name" | "slug" | "faqs" | 
 
 type LearnArticleInput = Pick<
     Article,
-    "id" | "slug" | "title" | "content" | "excerpt" | "schemaType" | "featuredImage" | "faqs" | "createdAt" | "updatedAt" | "publishedAt"
+    "id" | "slug" | "title" | "content" | "excerpt" | "schemaType" | "featuredImage" | "faqs" | "createdAt" | "updatedAt" | "publishedAt" | "reviewedAt" | "reviewedByDisplayName" | "reviewType"
 > & {
-    authorPhysician?: Pick<Physician, "name" | "slug" | "isActive"> | null;
+    authorPhysician?: Pick<Physician, "name" | "slug" | "isActive" | "credentials" | "npiNumber"> | null;
 };
 
 export function buildLearnArticleSchemas(article: LearnArticleInput): SchemaBlock[] {
@@ -244,33 +244,72 @@ export function buildLearnArticleSchemas(article: LearnArticleInput): SchemaBloc
     const authorUrl =
         article.authorPhysician?.slug && article.authorPhysician.isActive
             ? absoluteUrl(`/our-physicians/${article.authorPhysician.slug}`)
-            : absoluteUrl("/about");
+            : absoluteUrl("/clinical-team");
 
     const schemaType = (article.schemaType || "Article").trim();
     const isHowTo = schemaType === "HowTo";
 
+    // Build the reviewer block — either a named physician or the clinical team.
+    const reviewerBlock: SchemaBlock = article.authorPhysician?.name
+        ? {
+            "@type": "Person",
+            name: article.authorPhysician.name,
+            url: authorUrl,
+            ...(article.authorPhysician.credentials
+                ? { description: article.authorPhysician.credentials }
+                : {}),
+            ...(article.authorPhysician.npiNumber
+                ? {
+                    identifier: {
+                        "@type": "PropertyValue",
+                        propertyID: "NPI",
+                        value: article.authorPhysician.npiNumber,
+                    },
+                }
+                : {}),
+            worksFor: {
+                "@type": "MedicalOrganization",
+                name: "Present Health",
+                url: absoluteUrl("/"),
+            },
+        }
+        : {
+            "@type": "Organization",
+            name: article.reviewedByDisplayName || "Present Health Clinical Team",
+            url: absoluteUrl("/clinical-team"),
+        };
+
     const base: SchemaBlock = isHowTo
         ? {
             "@context": "https://schema.org",
-            "@type": "HowTo",
+            "@type": ["HowTo", "MedicalWebPage"],
             name: article.title,
             description,
             datePublished: publishedDate.toISOString(),
             dateModified: article.updatedAt.toISOString(),
+            lastReviewed: (article.reviewedAt || article.updatedAt).toISOString(),
+            reviewedBy: reviewerBlock,
             author: {
                 "@type": "Person",
                 name: authorName,
                 url: authorUrl,
             },
             mainEntityOfPage: absoluteUrl(path),
+            medicalAudience: {
+                "@type": "MedicalAudience",
+                audienceType: "Patient",
+                name: "Adult patients and health-conscious consumers",
+            },
         }
         : {
             "@context": "https://schema.org",
-            "@type": "Article",
+            "@type": ["Article", "MedicalWebPage"],
             headline: article.title,
             description,
             datePublished: publishedDate.toISOString(),
             dateModified: article.updatedAt.toISOString(),
+            lastReviewed: (article.reviewedAt || article.updatedAt).toISOString(),
+            reviewedBy: reviewerBlock,
             author: {
                 "@type": "Person",
                 name: authorName,
@@ -280,8 +319,17 @@ export function buildLearnArticleSchemas(article: LearnArticleInput): SchemaBloc
                 "@type": "Organization",
                 name: "Present Health",
                 url: absoluteUrl("/"),
+                logo: {
+                    "@type": "ImageObject",
+                    url: absoluteUrl("/logo.png"),
+                },
             },
             mainEntityOfPage: absoluteUrl(path),
+            medicalAudience: {
+                "@type": "MedicalAudience",
+                audienceType: "Patient",
+                name: "Adult patients and health-conscious consumers",
+            },
         };
 
     const image = localPathToAbsolute(article.featuredImage);
