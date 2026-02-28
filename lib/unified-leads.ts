@@ -51,6 +51,7 @@ export const UNIFIED_LEAD_SOURCE_LABELS: Record<UnifiedLeadSource, string> = {
     WAITLIST: "State waitlist",
     CONTACT_FORM: "Contact form",
     MANUAL: "Manual",
+    ASSESSMENT: "Health assessment",
 };
 
 export const UNIFIED_LEAD_STATUS_LABELS: Record<UnifiedLeadStatus, string> = {
