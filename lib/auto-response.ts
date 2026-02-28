@@ -30,6 +30,7 @@ export const AUTO_RESPONSE_SOURCE_LABELS: Record<AutoResponseSource, string> = {
     CHATBOT_LEAD: "Chatbot Lead",
     EMPLOYER_INQUIRY: "Employer Inquiry",
     STATE_WAITLIST: "State Waitlist",
+    ASSESSMENT_LEAD: "Health Assessment",
 };
 
 export const AUTO_RESPONSE_STATUS_LABELS: Record<AutoResponseStatus, string> = {
@@ -184,6 +185,31 @@ const TEMPLATE_DEFAULTS: Record<AutoResponseSource, TemplateDefaults> = {
             "Thanks again for joining the Present Health waitlist.",
             "",
             "You can keep exploring here: {learn_url}",
+        ].join("\n"),
+    },
+    ASSESSMENT_LEAD: {
+        enabled: true,
+        delayMinutes: 0,
+        subjectTemplate: "Your Present Health report is ready",
+        bodyTemplate: [
+            "Hi {first_name},",
+            "",
+            "Thank you for completing the Present Health assessment.",
+            "",
+            "Ready to experience healthcare that actually has time for you?",
+            "",
+            "Present Health DPC offers same-day appointments, transparent pricing, and direct physician access.",
+            "Join at: {join_url}",
+        ].join("\n"),
+        followUpEnabled: true,
+        followUpDelayHours: 72,
+        followUpSubjectTemplate: "Have you considered Direct Primary Care?",
+        followUpBodyTemplate: [
+            "Hi {first_name},",
+            "",
+            "Just checking in — have you had a chance to explore Present Health DPC?",
+            "",
+            "Join at: {join_url}",
         ].join("\n"),
     },
 };

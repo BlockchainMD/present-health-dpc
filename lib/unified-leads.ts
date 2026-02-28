@@ -756,6 +756,7 @@ export async function syncUnifiedLeadsFromSources(options?: {
         WAITLIST: 0,
         CONTACT_FORM: 0,
         MANUAL: 0,
+        ASSESSMENT: 0,
     };
 
     for (const lead of chatbotLeads) {

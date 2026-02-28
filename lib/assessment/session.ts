@@ -84,8 +84,8 @@ export async function captureEmail(
 
   const session = await prisma.assessmentSession.findUnique({ where: { token } });
   if (!session) throw new Error('Session not found');
-  if (session.status !== 'COMPLETED') throw new Error('Session not completed');
   if (session.status === 'CAPTURED') throw new Error('Email already captured');
+  if (session.status !== 'COMPLETED') throw new Error('Session not completed');
 
   // Derive clusters from signals
   const activeClusters = [
@@ -220,7 +220,7 @@ This email was sent because you completed a health assessment at ${baseUrl}. Thi
   <p>${greeting}</p>
   <p>Your personalized Present Health report is ready. Here's a summary based on your responses:</p>
   <div style="background:#f8fafc;border-left:4px solid #10b981;padding:16px;border-radius:4px;margin:16px 0">
-    ${summary.replace(/\n/g, '<br />').replace(/---.*$/s, '')}
+    ${summary.replace(/\n/g, '<br />').replace(/---[\s\S]*$/, '')}
   </div>
   ${
     doctorFlags.length > 0
