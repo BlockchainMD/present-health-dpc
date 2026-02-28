@@ -116,7 +116,7 @@ export async function generateSchemaForPath(path: string): Promise<SchemaBlock[]
             },
             include: {
                 authorPhysician: {
-                    select: { name: true, slug: true, isActive: true },
+                    select: { name: true, slug: true, isActive: true, credentials: true, npiNumber: true },
                 },
             },
         });

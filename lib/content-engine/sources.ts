@@ -284,7 +284,7 @@ const CURATED_TOPICS = [
     'How cardiovascular disease risk differs for men versus women',
     'What is the connection between testosterone and metabolic health?',
     'How sleep apnea affects testosterone in men',
-    'What does a men's health annual exam include?',
+    "What does a men's health annual exam include?",
     'How to reduce your prostate cancer risk through lifestyle',
     'What causes hair loss in men and what can be done about it?',
     'How to approach fertility testing as a man',

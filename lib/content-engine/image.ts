@@ -101,7 +101,7 @@ export async function generateFeaturedImage(params: {
             response_format: 'b64_json',
         });
 
-        const b64 = response.data[0]?.b64_json;
+        const b64 = response.data?.[0]?.b64_json;
         if (!b64) {
             console.warn('[image] DALL-E returned no image data');
             return null;
@@ -160,7 +160,8 @@ async function uploadToGcs(
                 'Content-Type': 'image/webp',
                 'Content-Length': String(buffer.length),
             },
-            body: buffer,
+            // Node.js Buffer is accepted by fetch at runtime; cast to satisfy TS.
+            body: buffer as unknown as BodyInit,
         });
 
         if (!uploadRes.ok) {
