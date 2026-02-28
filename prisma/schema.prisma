@@ -129,6 +129,7 @@ enum UnifiedLeadSource {
   WAITLIST
   CONTACT_FORM
   MANUAL
+  ASSESSMENT
 }
 
 enum UnifiedLeadStatus {
@@ -152,6 +153,7 @@ enum AutoResponseSource {
   CHATBOT_LEAD
   EMPLOYER_INQUIRY
   STATE_WAITLIST
+  ASSESSMENT_LEAD
 }
 
 enum AutoResponseStatus {
@@ -1096,4 +1098,49 @@ model GoogleAdsSyncCursor {
   lastSyncedDate       DateTime?
   status               String
   error                String?
+}
+
+model AssessmentSession {
+  id               String         @id @default(uuid())
+  token            String         @unique @default(uuid())
+  cluster          String?
+  articleId        String?
+  articleSlug      String?
+  status           String         @default("STARTED")
+  answers          Json           @default("{}")
+  signals          String[]       @default([])
+  aiSummary        String?
+  doctorFlags      String[]       @default([])
+  recommendedSlugs String[]       @default([])
+  email            String?
+  firstName        String?
+  leadId           String?
+  profileId        String?
+  completedAt      DateTime?
+  capturedAt       DateTime?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  profile          HealthProfile? @relation(fields: [profileId], references: [id], onDelete: SetNull)
+
+  @@index([token])
+  @@index([email])
+  @@index([cluster, createdAt(sort: Desc)])
+  @@index([status, createdAt(sort: Desc)])
+}
+
+model HealthProfile {
+  id             String              @id @default(uuid())
+  token          String              @unique @default(uuid())
+  email          String?             @unique
+  firstName      String?
+  leadId         String?             @unique
+  signals        String[]            @default([])
+  activeClusters String[]            @default([])
+  sessionCount   Int                 @default(0)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  sessions       AssessmentSession[]
+
+  @@index([email])
+  @@index([token])
 }
