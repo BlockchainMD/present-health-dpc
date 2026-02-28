@@ -19,7 +19,10 @@ import { extractToc } from "@/lib/markdown-toc";
 import { markdownToPlainText } from "@/lib/markdown-plain";
 import { buildLearnArticleSchemas, coerceFaqs } from "@/lib/schema";
 
-export const dynamic = "force-dynamic";
+// ISR: cache article pages for 1 hour; on-demand revalidation via revalidatePath
+// in the admin PATCH route and the content-cron route keeps fresh content visible
+// quickly without DB hits on every request.
+export const revalidate = 3600;
 export const runtime = "nodejs";
 
 function isUuid(value: string) {
@@ -208,8 +211,8 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                         <div className="relative aspect-[16/9] rounded-2xl overflow-hidden border border-border/60 bg-muted mb-10">
                             {(() => {
                                 const src = article.featuredImage as string;
-                                const isLocal = src.startsWith("/");
-                                return isLocal ? (
+                                const useNextImage = src.startsWith("/") || src.startsWith("https://storage.googleapis.com");
+                                return useNextImage ? (
                                     <Image
                                         src={src}
                                         alt={article.title}
@@ -219,7 +222,6 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                                         priority
                                     />
                                 ) : (
-                                    // Avoid Next.js remote image domain config for now.
                                     // eslint-disable-next-line @next/next/no-img-element
                                     <img src={src} alt={article.title} className="absolute inset-0 h-full w-full object-cover" />
                                 );

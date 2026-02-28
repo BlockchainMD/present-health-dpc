@@ -378,7 +378,7 @@ async function buildInternalLinks(brief: Brief): Promise<InternalLinkSuggestion[
 
     for (const article of primaryArticles) {
         if (!article.slug) continue;
-        links.push({ label: article.title, url: `/blog/${article.slug}`, type: 'cluster' });
+        links.push({ label: article.title, url: `/learn/${article.slug}`, type: 'cluster' });
     }
 
     const secondaryClusters = (brief.secondaryClusters || []).filter(Boolean).slice(0, 2);
@@ -392,7 +392,7 @@ async function buildInternalLinks(brief: Brief): Promise<InternalLinkSuggestion[
             select: { slug: true, title: true }
         });
         if (secondaryArticle?.slug) {
-            links.push({ label: secondaryArticle.title, url: `/blog/${secondaryArticle.slug}`, type: 'cross-cluster' });
+            links.push({ label: secondaryArticle.title, url: `/learn/${secondaryArticle.slug}`, type: 'cross-cluster' });
         }
     }
 

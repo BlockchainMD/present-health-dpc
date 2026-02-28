@@ -11,7 +11,8 @@ import { stripTemplateOwnedSections } from '@/lib/content-engine/sections';
 import { DEFAULT_DISCLAIMER } from '@/lib/content-engine/disclaimer';
 import { CLINICAL_TEAM_URL, EDITORIAL_POLICY_URL, formatLastUpdated } from '@/lib/content-engine/policy';
 
-export const dynamic = 'force-dynamic';
+// ISR: revalidate every hour; also busted on-demand by the admin PATCH route.
+export const revalidate = 3600;
 export const runtime = 'nodejs';
 
 function isUuid(value: string) {

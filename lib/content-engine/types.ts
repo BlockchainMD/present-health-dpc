@@ -68,6 +68,6 @@ export type EngineOptions = {
 export type EngineResult = {
     created: number;
     published: number;
-    articles: Array<{ id: string; title: string }>;
+    articles: Array<{ id: string; title: string; slug?: string | null }>;
     warnings?: string[];
 };

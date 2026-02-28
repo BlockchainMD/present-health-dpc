@@ -1,6 +1,7 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { enqueueDueSchedules, runDueJobs } from '@/lib/content-engine/scheduler';
 import { requireAdmin } from '@/lib/authz';
+import { revalidatePath } from 'next/cache';
 
 export const runtime = 'nodejs';
 
@@ -16,6 +17,17 @@ export async function POST(request: NextRequest) {
 
         const enqueued = await enqueueDueSchedules();
         const processed = await runDueJobs(jobLimit);
+
+        // Revalidate the hub pages so newly published articles appear immediately
+        // rather than waiting for the ISR revalidation window.
+        if (processed > 0) {
+            try {
+                revalidatePath('/learn');
+                revalidatePath('/blog');
+            } catch {
+                // Non-fatal: revalidation may not be available in all environments.
+            }
+        }
 
         return NextResponse.json({ success: true, enqueued, processed });
     } catch (error) {
