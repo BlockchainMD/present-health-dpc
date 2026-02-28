@@ -19,6 +19,7 @@ import { extractToc } from "@/lib/markdown-toc";
 import { markdownToPlainText } from "@/lib/markdown-plain";
 import { buildLearnArticleSchemas, coerceFaqs } from "@/lib/schema";
 import { CLINICAL_TEAM_URL, EDITORIAL_POLICY_URL, formatLastUpdated } from "@/lib/content-engine/policy";
+import { AssessmentWidget } from "@/components/assessment/AssessmentWidget";
 
 // ISR: cache article pages for 1 hour; on-demand revalidation via revalidatePath
 // in the admin PATCH route and the content-cron route keeps fresh content visible
@@ -328,6 +329,10 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                             </div>
                             <div>Last reviewed: {formatLastUpdated(new Date(reviewerDate))}</div>
                         </div>
+                    </section>
+
+                    <section className="mt-8">
+                        <AssessmentWidget articleSlug={article.slug || article.id} cluster={article.cluster || undefined} compact />
                     </section>
 
                     <section className="mt-8">
