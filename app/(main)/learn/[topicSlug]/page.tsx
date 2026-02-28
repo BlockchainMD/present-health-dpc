@@ -310,7 +310,27 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                         </section>
                     ) : null}
 
-                    <section className="mt-14">
+                    {/* E-E-A-T footer: reviewer attribution, editorial policy, last updated */}
+                    <section className="mt-12">
+                        <div className="rounded-xl border border-border bg-muted/20 p-5 text-sm text-muted-foreground space-y-1.5">
+                            <div className="font-medium text-foreground">
+                                {isClinical ? "Medically reviewed by" : "Editorial review by"}
+                            </div>
+                            <div>{reviewerName}</div>
+                            <div>
+                                <Link href={CLINICAL_TEAM_URL} className="text-primary hover:underline">
+                                    Clinical Team &amp; Medical Review Process
+                                </Link>
+                                {" · "}
+                                <Link href={EDITORIAL_POLICY_URL} className="text-primary hover:underline">
+                                    Editorial Policy
+                                </Link>
+                            </div>
+                            <div>Last reviewed: {formatLastUpdated(new Date(reviewerDate))}</div>
+                        </div>
+                    </section>
+
+                    <section className="mt-8">
                         <div className="rounded-2xl border border-border bg-muted/20 p-8 text-center">
                             <h2 className="text-2xl font-bold tracking-tight mb-3">Ready to try a better kind of primary care?</h2>
                             <p className="text-muted-foreground mb-6">

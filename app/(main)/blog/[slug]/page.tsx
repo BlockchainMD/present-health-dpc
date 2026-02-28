@@ -79,29 +79,36 @@ export default async function BlogPostPage({ params }: { params: SlugParams }) {
     const rawContent = stripTemplateOwnedSections(stripLeadingH1(article.content || ''));
     const content = normalizeMarkdownForRender(rawContent);
 
+    const reviewerName = article.reviewedByDisplayName || 'Present Health Clinical Team';
+    const isClinical = article.reviewType !== 'EDITORIAL';
+
     const jsonLd = {
         '@context': 'https://schema.org',
-        '@type': 'Article',
+        '@type': ['Article', 'MedicalWebPage'],
         headline: article.title,
         description: article.metaDescription || article.excerpt || undefined,
-        datePublished: article.createdAt,
-        dateModified: article.updatedAt,
+        datePublished: (article.publishedAt || article.createdAt).toISOString(),
+        dateModified: article.updatedAt.toISOString(),
+        lastReviewed: (article.reviewedAt || article.updatedAt).toISOString(),
         author: {
             '@type': 'Organization',
-            name: 'Present Health'
+            name: 'Present Health',
+            url: 'https://presenthealthmd.com/about',
         },
         publisher: {
             '@type': 'Organization',
-            name: 'Present Health'
+            name: 'Present Health',
+            url: 'https://presenthealthmd.com',
         },
-        review: article.reviewedAt && article.reviewedByDisplayName ? {
-            '@type': 'Review',
-            datePublished: article.reviewedAt,
-            author: {
-                '@type': 'Organization',
-                name: article.reviewedByDisplayName
-            }
-        } : undefined
+        reviewedBy: {
+            '@type': 'Organization',
+            name: reviewerName,
+            url: 'https://presenthealthmd.com/clinical-team',
+        },
+        medicalAudience: {
+            '@type': 'MedicalAudience',
+            audienceType: 'Patient',
+        },
     };
 
     return (
@@ -122,14 +129,28 @@ export default async function BlogPostPage({ params }: { params: SlugParams }) {
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-6 leading-tight">
                     {article.title}
                 </h1>
-                <div className="flex items-center gap-4 text-muted-foreground text-sm">
-                    <time>{format(new Date(article.createdAt), 'MMMM d, yyyy')}</time>
+                <div className="flex flex-wrap items-center gap-4 text-muted-foreground text-sm">
+                    <time>{format(new Date(article.publishedAt || article.createdAt), 'MMMM d, yyyy')}</time>
                     <span>•</span>
-                    {article.reviewedAt && article.reviewedByDisplayName ? (
-                        <span>{article.reviewType === 'EDITORIAL' ? 'Editorial review by' : 'Reviewed by'} {article.reviewedByDisplayName}</span>
-                    ) : (
-                        <span>By Present Health Team</span>
-                    )}
+                    <span>By Present Health Team</span>
+                </div>
+                {/* E-E-A-T: Medically reviewed badge */}
+                <div className="mt-3 inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/60 px-3 py-2 text-xs text-emerald-800 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300">
+                    <svg aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>
+                        {isClinical ? 'Medically reviewed' : 'Editorially reviewed'} by{' '}
+                        <strong className="font-medium">{reviewerName}</strong>
+                        {article.reviewedAt ? (
+                            <>
+                                {' · '}
+                                <time dateTime={article.reviewedAt.toISOString()}>
+                                    {format(new Date(article.reviewedAt), 'MMM d, yyyy')}
+                                </time>
+                            </>
+                        ) : null}
+                    </span>
                 </div>
             </header>
 
