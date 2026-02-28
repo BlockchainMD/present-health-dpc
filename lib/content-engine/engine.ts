@@ -80,6 +80,10 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
     }
     const clusterWeights = options.useFeedback ? await getClusterWeights() : {};
     const pool = rankSignals(signals, options.mode || 'BALANCED', clusterWeights);
+    // Pre-allocate publish slots for the whole run so articles spread naturally.
+    const publishSlots = autoPublishEnabled ? getNextPublishSlots(count) : [];
+    let slotIndex = 0;
+
     const attemptGenerate = async (allowExisting: boolean) => {
         const created: EngineResult['articles'] = [];
         let published = 0;
@@ -149,19 +153,56 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
             }
 
             const lintIssues = lintMarkdown(qa.content);
-            const autoPublish = autoPublishEnabled && brief.riskLevel === 'LOW' && autoPublishRemaining > 0 && lintIssues.length === 0;
-            if (autoPublish) autoPublishRemaining -= 1;
+            const shouldAutoPublish = autoPublishEnabled && brief.riskLevel === 'LOW' && autoPublishRemaining > 0 && lintIssues.length === 0;
+            if (shouldAutoPublish) autoPublishRemaining -= 1;
+
+            // Build contextual internal links and inject them into the content.
             const internalLinks = await buildInternalLinks(brief);
+            const contentWithLinks = injectInternalLinks(qa.content, internalLinks);
+
+            // Append a sources section when we have a real reference URL.
+            const contentWithSources = appendSourcesSection(contentWithLinks, signal);
+
+            // Stagger the publish time to spread articles across the day.
+            // Articles with a future publishedAt are visible on the site only
+            // after that time — the pages already guard for this.
+            let scheduledPublishAt: Date | null = null;
+            if (shouldAutoPublish && publishSlots[slotIndex]) {
+                scheduledPublishAt = publishSlots[slotIndex];
+                slotIndex++;
+            } else if (shouldAutoPublish) {
+                // Fallback: if we ran out of pre-calculated slots, assign one now.
+                const lastSlot = publishSlots[publishSlots.length - 1] ?? new Date();
+                scheduledPublishAt = new Date(lastSlot.getTime() + 4 * 60 * 60 * 1000);
+                publishSlots.push(scheduledPublishAt);
+                slotIndex++;
+            }
+
+            // Generate a featured image (async, non-blocking on failure).
+            let featuredImage: string | null = null;
+            if (shouldAutoPublish) {
+                try {
+                    featuredImage = await generateFeaturedImage({
+                        title: qa.title || brief.title,
+                        cluster: brief.cluster,
+                        riskLevel: brief.riskLevel,
+                    });
+                } catch {
+                    // Image generation is best-effort; don't fail the article.
+                }
+            }
 
             const article = await prisma.article.create({
                 data: {
                     title: qa.title || brief.title,
                     slug: finalSlug,
-                    content: qa.content,
+                    content: contentWithSources,
                     excerpt: qa.excerpt,
                     metaTitle: qa.metaTitle,
                     metaDescription: qa.metaDescription,
-                    status: autoPublish ? 'PUBLISHED' : 'DRAFT',
+                    status: shouldAutoPublish ? 'PUBLISHED' : 'DRAFT',
+                    publishedAt: scheduledPublishAt,
+                    featuredImage: featuredImage || null,
                     sourceUrl: signal.url,
                     angle: brief.angle,
                     intent: brief.intent,
@@ -178,17 +219,17 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                             { title: signal.title, url: signal.url, source: signal.source, kind: signal.kind }
                         ]
                     } as any,
-                    contentHash: hashContent(qa.content),
+                    contentHash: hashContent(contentWithSources),
                     reviewedByDisplayName: reviewLabel,
                     reviewType,
-                    reviewedAt: autoPublish ? new Date() : null
+                    reviewedAt: shouldAutoPublish ? new Date() : null
                 }
             });
 
-            created.push({ id: article.id, title: article.title });
+            created.push({ id: article.id, title: article.title, slug: article.slug });
             clusterCounts[cluster] = (clusterCounts[cluster] || 0) + 1;
             if (isDpcTopic) dpcCount += 1;
-            if (autoPublish) published += 1;
+            if (shouldAutoPublish) published += 1;
         }
 
         return { created, published };
@@ -200,6 +241,124 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
     }
 
     return { created: result.created.length, published: result.published, articles: result.created, warnings };
+}
+
+// ---------------------------------------------------------------------------
+// Internal link injection
+// ---------------------------------------------------------------------------
+
+const LINK_STOPWORDS = new Set([
+    'that', 'this', 'with', 'from', 'have', 'more', 'when', 'what', 'your',
+    'does', 'they', 'will', 'been', 'some', 'into', 'than', 'like', 'just',
+    'over', 'also', 'most', 'very', 'much', 'even', 'back', 'good', 'well',
+    'high', 'help', 'make', 'know', 'take', 'time', 'long', 'down', 'ways',
+    'best', 'many', 'their', 'about', 'after', 'where', 'these', 'could',
+    'other', 'which', 'would', 'there', 'should', 'cause', 'often', 'here',
+]);
+
+function escapeRegex(str: string): string {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
+ * Injects contextual markdown hyperlinks into the article content.
+ *
+ * Strategy:
+ *   - Extract 2–3 meaningful words from each related article's title.
+ *   - Find the first occurrence of that phrase in a paragraph line.
+ *   - Replace it with a markdown link if it isn't already inside a link.
+ *   - Skip heading lines and lines that already contain the target URL.
+ *   - Stop after MAX_LINKS injections to avoid over-linking.
+ */
+function injectInternalLinks(content: string, links: InternalLinkSuggestion[]): string {
+    const MAX_LINKS = 4;
+    let result = content;
+    let injected = 0;
+
+    const articleLinks = links.filter(l => l.type !== 'conversion');
+
+    for (const link of articleLinks) {
+        if (injected >= MAX_LINKS) break;
+
+        // Build candidate phrases from the link label (article title).
+        const words = link.label
+            .toLowerCase()
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 3 && !LINK_STOPWORDS.has(w));
+
+        if (words.length < 2) continue;
+
+        let matched = false;
+
+        // Try longest phrase first, then shorter fallbacks.
+        for (let len = Math.min(3, words.length); len >= 2 && !matched; len--) {
+            for (let start = 0; start <= words.length - len && !matched; start++) {
+                const phrase = words.slice(start, start + len).join(' ');
+                if (!phrase || phrase.length < 8) continue;
+
+                const escaped = escapeRegex(phrase);
+                // Don't match text already inside a markdown link `[…](…)`.
+                // The negative lookbehind `(?<!\[)` and lookahead `(?!\])` handle
+                // most common cases without full markdown AST parsing.
+                const regex = new RegExp(`(?<!\\[|\\()\\b(${escaped})\\b(?!\\]|\\()`, 'i');
+
+                const lines = result.split('\n');
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
+                    // Skip heading lines and lines that already contain this URL.
+                    if (/^#+\s/.test(line)) continue;
+                    if (line.includes(`](${link.url})`)) continue;
+
+                    if (regex.test(line)) {
+                        lines[i] = line.replace(regex, `[$1](${link.url})`);
+                        matched = true;
+                        injected++;
+                        break;
+                    }
+                }
+
+                if (matched) {
+                    result = lines.join('\n');
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+// ---------------------------------------------------------------------------
+// Sources / references section appended after QA
+// ---------------------------------------------------------------------------
+
+/**
+ * Appends a concise "Sources & references" section to the article content
+ * when the originating signal has a real URL.  This adds E-E-A-T signals
+ * (cited sources) without cluttering the main article structure.
+ */
+function appendSourcesSection(content: string, signal: TopicSignal): string {
+    if (!signal.url || !signal.url.startsWith('http')) return content;
+
+    const kindLabel: Record<string, string> = {
+        research: 'Research study',
+        trial: 'Clinical trial',
+        news: 'News report',
+        guideline: 'Clinical guideline',
+        trend: 'Trending topic',
+        curated: '',
+    };
+
+    const label = kindLabel[signal.kind] || 'Reference';
+    if (!label) return content; // Skip curated (no external URL to cite)
+
+    const sourceName = signal.source.replace(/\s*\([^)]*\)\s*/g, '').trim();
+
+    return (
+        content.trimEnd() +
+        `\n\n## Sources & references\n\n` +
+        `- [${signal.title || sourceName}](${signal.url}) — *${sourceName}* (${label})\n`
+    );
 }
 
 async function buildInternalLinks(brief: Brief): Promise<InternalLinkSuggestion[]> {
