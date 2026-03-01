@@ -29,9 +29,5 @@ steps:
       - '--add-cloudsql-instances'
       - 'present-health-dpc-2025:us-central1:present-health-db'
 
-images:
-  - 'gcr.io/$PROJECT_ID/present-health-dpc:$COMMIT_SHA'
-  - 'gcr.io/$PROJECT_ID/present-health-dpc:latest'
-
 options:
   logging: CLOUD_LOGGING_ONLY
