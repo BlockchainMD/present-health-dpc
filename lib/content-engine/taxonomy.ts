@@ -152,13 +152,17 @@ export function cleanTopicTitle(title: string): string {
 }
 
 export function slugify(input: string): string {
-    return input
+    const slug = input
         .toLowerCase()
         .replace(/[^a-z0-9\s-]/g, '')
         .trim()
         .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-        .slice(0, 80);
+        .replace(/-+/g, '-');
+    if (slug.length <= 80) return slug;
+    // Truncate at a word boundary to avoid mid-word cuts
+    const truncated = slug.slice(0, 80);
+    const lastDash = truncated.lastIndexOf('-');
+    return lastDash > 40 ? truncated.slice(0, lastDash) : truncated;
 }
 
 function pickFromSeed<T>(items: T[], seed: string): T {
