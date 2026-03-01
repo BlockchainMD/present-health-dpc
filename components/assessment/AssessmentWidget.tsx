@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,20 +17,8 @@ type CaptureResult = {
 
 const STORAGE_KEY = 'ph_assess_token';
 
-function getStoredToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  try {
-    return localStorage.getItem(STORAGE_KEY);
-  } catch {
-    return null;
-  }
-}
-
 function storeToken(token: string) {
-  if (typeof window === 'undefined') return;
-  try {
-    localStorage.setItem(STORAGE_KEY, token);
-  } catch {}
+  try { localStorage.setItem(STORAGE_KEY, token); } catch {}
 }
 
 export function AssessmentWidget({
@@ -54,13 +42,9 @@ export function AssessmentWidget({
   const [captureResult, setCaptureResult] = useState<CaptureResult | null>(null);
   const [error, setError] = useState('');
 
-  // Auto-resume if a token is stored and was already completed
-  useEffect(() => {
-    const stored = getStoredToken();
-    if (stored && step === 'IDLE') {
-      // Don't auto-resume — let user start fresh
-    }
-  }, [step]);
+  // Use refs so callbacks always have fresh state without stale closures
+  const stateRef = useRef({ token, questions, currentIndex, answers, step });
+  stateRef.current = { token, questions, currentIndex, answers, step };
 
   const startAssessment = useCallback(async () => {
     setStep('STARTING');
@@ -69,107 +53,131 @@ export function AssessmentWidget({
       const res = await fetch('/api/assessment/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'start', cluster, articleSlug }),
+        body: JSON.stringify({ action: 'start', cluster: cluster ?? null, articleSlug: articleSlug ?? null }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to start');
-      storeToken(data.token);
-      setToken(data.token);
-      setQuestions(data.questions || []);
+      const text = await res.text();
+      let data: Record<string, unknown>;
+      try { data = JSON.parse(text); } catch {
+        console.error('[Assessment] Non-JSON response:', text.slice(0, 200));
+        throw new Error('Server error — please try again');
+      }
+      if (!res.ok) throw new Error((data.error as string) || 'Failed to start');
+      storeToken(data.token as string);
+      setToken(data.token as string);
+      setQuestions((data.questions as Question[]) || []);
       setCurrentIndex(0);
       setAnswers({});
       setStep('ANSWERING');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStep('IDLE');
     }
   }, [cluster, articleSlug]);
+
+  // Advance to next question or trigger completion — always reads from ref for freshness
+  const advance = useCallback(async (latestAnswers: Record<string, string[]>) => {
+    const { token: tok, questions: qs, currentIndex: idx } = stateRef.current;
+    const nextIndex = idx + 1;
+
+    if (nextIndex < qs.length) {
+      setCurrentIndex(nextIndex);
+      return;
+    }
+
+    // Last question answered — save and complete
+    if (!tok) return;
+    setStep('COMPLETING');
+    setError('');
+
+    try {
+      await fetch('/api/assessment/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'answer', token: tok, answers: latestAnswers }),
+      });
+
+      const res = await fetch('/api/assessment/session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'complete', token: tok }),
+      });
+      const text = await res.text();
+      let data: Record<string, unknown>;
+      try { data = JSON.parse(text); } catch {
+        throw new Error('Server error — please try again');
+      }
+      if (!res.ok) throw new Error((data.error as string) || 'Failed to complete');
+
+      setPreview((data.preview as string) || '');
+      setDoctorFlagCount((data.doctorFlagCount as number) || 0);
+      setStep('GATING');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setStep('ANSWERING');
+    }
+  }, []);
 
   const currentQuestion = questions[currentIndex] ?? null;
   const isMulti = currentQuestion?.type === 'multi';
   const currentAnswers = currentQuestion ? (answers[currentQuestion.id] ?? []) : [];
   const isAnswered = currentAnswers.length > 0;
 
-  function toggleOption(label: string) {
+  function selectOption(label: string) {
     if (!currentQuestion) return;
     const id = currentQuestion.id;
-    setAnswers((prev) => {
-      const existing = prev[id] ?? [];
-      if (isMulti) {
+
+    if (isMulti) {
+      setAnswers((prev) => {
+        const existing = prev[id] ?? [];
         return {
           ...prev,
-          [id]: existing.includes(label)
-            ? existing.filter((l) => l !== label)
-            : [...existing, label],
+          [id]: existing.includes(label) ? existing.filter((l) => l !== label) : [...existing, label],
         };
-      }
-      return { ...prev, [id]: [label] };
-    });
+      });
+    } else {
+      // Single select: update answers and immediately advance using the new value
+      const newAnswers = { ...stateRef.current.answers, [id]: [label] };
+      setAnswers(newAnswers);
+      // Small delay so the selected state visually registers before advancing
+      setTimeout(() => advance(newAnswers), 200);
+    }
   }
 
-  async function handleNext() {
-    if (!token || !currentQuestion) return;
-    const nextIndex = currentIndex + 1;
-
-    if (nextIndex < questions.length) {
-      setCurrentIndex(nextIndex);
-      return;
-    }
-
-    // All questions answered — save and complete
-    setStep('COMPLETING');
-    setError('');
-    try {
-      // Save final answers
-      await fetch('/api/assessment/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'answer', token, answers }),
-      });
-
-      // Request synthesis
-      const completeRes = await fetch('/api/assessment/session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'complete', token }),
-      });
-      const completeData = await completeRes.json();
-      if (!completeRes.ok) throw new Error(completeData.error || 'Failed to complete');
-
-      setPreview(completeData.preview || '');
-      setDoctorFlagCount(completeData.doctorFlagCount || 0);
-      setStep('GATING');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
-      setStep('ANSWERING');
-    }
+  function handleMultiNext() {
+    const latestAnswers = stateRef.current.answers;
+    advance(latestAnswers);
   }
 
   async function handleCapture(e: React.FormEvent) {
     e.preventDefault();
-    if (!token || !email.trim()) return;
+    const tok = stateRef.current.token;
+    if (!tok || !email.trim()) return;
     setError('');
 
     try {
       const res = await fetch('/api/assessment/capture', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token, email: email.trim(), firstName: firstName.trim(), hp: '' }),
+        body: JSON.stringify({ token: tok, email: email.trim(), firstName: firstName.trim(), hp: '' }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to submit');
+      const text = await res.text();
+      let data: Record<string, unknown>;
+      try { data = JSON.parse(text); } catch {
+        throw new Error('Server error — please try again');
+      }
+      if (!res.ok) throw new Error((data.error as string) || 'Failed to submit');
       setCaptureResult({
-        summary: data.summary || '',
-        doctorFlags: data.doctorFlags || [],
-        recommendedSlugs: data.recommendedSlugs || [],
+        summary: (data.summary as string) || '',
+        doctorFlags: (data.doctorFlags as string[]) || [],
+        recommendedSlugs: (data.recommendedSlugs as string[]) || [],
       });
       setStep('CAPTURED');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }
   }
 
-  const progress = questions.length > 0 ? Math.round((currentIndex / questions.length) * 100) : 0;
+  const progress = questions.length > 0 ? Math.round(((currentIndex + 1) / questions.length) * 100) : 0;
 
   // ── IDLE ──────────────────────────────────────────────────────────────────
   if (step === 'IDLE') {
@@ -182,10 +190,15 @@ export function AssessmentWidget({
                 Get your personalized health insights
               </p>
               <p className="text-sm text-emerald-700 dark:text-emerald-300">
-                {compact ? 'A quick 2-minute health check — tailored to you.' : 'Answer a few questions and get a personalized summary of topics to explore with your doctor.'}
+                {compact
+                  ? 'A quick 2-minute health check — tailored to you.'
+                  : 'Answer a few questions and get a personalized summary of topics to explore with your doctor.'}
               </p>
             </div>
-            <Button onClick={startAssessment} className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white">
+            <Button
+              onClick={startAssessment}
+              className="shrink-0 bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
               Start free assessment
             </Button>
           </div>
@@ -200,7 +213,7 @@ export function AssessmentWidget({
     return (
       <Card>
         <CardContent className="pt-6 text-center text-muted-foreground">
-          Loading your assessment...
+          Loading your assessment…
         </CardContent>
       </Card>
     );
@@ -216,10 +229,9 @@ export function AssessmentWidget({
               Question {currentIndex + 1} of {questions.length}
             </span>
             <Badge variant="outline" className="text-xs">
-              {Math.round(((currentIndex + 1) / questions.length) * 100)}% complete
+              {progress}% complete
             </Badge>
           </div>
-          {/* Progress bar */}
           <div className="w-full bg-muted rounded-full h-1.5">
             <div
               className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300"
@@ -237,18 +249,7 @@ export function AssessmentWidget({
             return (
               <button
                 key={option.label}
-                onClick={() => {
-                  toggleOption(option.label);
-                  if (!isMulti) {
-                    // Auto-advance for single-select after brief delay
-                    setTimeout(() => {
-                      setCurrentIndex((prev) => prev + 1);
-                      if (currentIndex + 1 >= questions.length) {
-                        handleNext();
-                      }
-                    }, 150);
-                  }
-                }}
+                onClick={() => selectOption(option.label)}
                 className={`w-full text-left rounded-lg border px-4 py-3 text-sm transition-colors ${
                   selected
                     ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-900 dark:text-emerald-100'
@@ -264,7 +265,7 @@ export function AssessmentWidget({
 
           {isMulti ? (
             <Button
-              onClick={handleNext}
+              onClick={handleMultiNext}
               disabled={!isAnswered}
               className="w-full mt-2 bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
             >
@@ -283,7 +284,7 @@ export function AssessmentWidget({
         <CardContent className="pt-8 pb-8 text-center space-y-3">
           <div className="flex items-center justify-center gap-2">
             <div className="h-5 w-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-            <span className="text-muted-foreground">Generating your personalized insights...</span>
+            <span className="text-muted-foreground">Generating your personalized insights…</span>
           </div>
         </CardContent>
       </Card>
@@ -297,44 +298,40 @@ export function AssessmentWidget({
         <CardHeader>
           <CardTitle className="text-xl">Your health insights are ready</CardTitle>
           <p className="text-sm text-muted-foreground">
-            We found {doctorFlagCount > 0 ? `${doctorFlagCount} topic${doctorFlagCount !== 1 ? 's' : ''} to discuss with your doctor and ` : ''}personalized article recommendations for you.
+            {doctorFlagCount > 0
+              ? `We found ${doctorFlagCount} topic${doctorFlagCount !== 1 ? 's' : ''} to discuss with your doctor and personalized article recommendations.`
+              : 'We put together personalized article recommendations based on your responses.'}
           </p>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* Blurred preview */}
           <div className="relative rounded-lg border bg-muted/30 p-4 overflow-hidden">
-            <p className="text-sm text-muted-foreground line-clamp-2 select-none">
-              {preview}...
+            <p className="text-sm text-muted-foreground line-clamp-2 select-none blur-[2px]">
+              {preview}…
             </p>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/95 flex items-end justify-center pb-3">
-              <span className="text-xs text-muted-foreground font-medium">Enter your email to unlock your full report</span>
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background/95 flex items-end justify-center pb-3">
+              <span className="text-xs text-muted-foreground font-medium">
+                Enter your email to unlock your full report
+              </span>
             </div>
           </div>
 
           <form onSubmit={handleCapture} className="space-y-3">
-            {/* Honeypot */}
             <input name="hp" type="text" className="hidden" tabIndex={-1} autoComplete="off" />
-
-            <div>
-              <Input
-                type="text"
-                placeholder="First name (optional)"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="mb-2"
-              />
-              <Input
-                type="email"
-                placeholder="Your email address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-            </div>
-
+            <Input
+              type="text"
+              placeholder="First name (optional)"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+            <Input
+              type="email"
+              placeholder="Your email address"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+            />
             {error ? <p className="text-sm text-red-600">{error}</p> : null}
-
             <Button
               type="submit"
               disabled={!email.trim()}
@@ -342,9 +339,7 @@ export function AssessmentWidget({
             >
               Get my full report
             </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              No spam. Unsubscribe anytime.
-            </p>
+            <p className="text-xs text-center text-muted-foreground">No spam. Unsubscribe anytime.</p>
           </form>
         </CardContent>
       </Card>
@@ -368,9 +363,11 @@ export function AssessmentWidget({
         <CardContent className="space-y-4">
           {summary ? (
             <div className="rounded-lg border border-emerald-200 bg-emerald-50/40 dark:border-emerald-800/40 dark:bg-emerald-950/20 p-4 text-sm">
-              {summary.split('\n').map((line, i) => (
-                line.trim() ? <p key={i} className="mb-2 last:mb-0">{line}</p> : null
-              ))}
+              {summary
+                .replace(/---[\s\S]*$/, '')
+                .split('\n')
+                .filter((l) => l.trim())
+                .map((line, i) => <p key={i} className="mb-2 last:mb-0">{line}</p>)}
             </div>
           ) : null}
 
@@ -380,11 +377,7 @@ export function AssessmentWidget({
               <ul className="space-y-1">
                 {doctorFlags.map((flag, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
-                    <span className="mt-0.5 shrink-0 h-4 w-4 rounded-full border border-emerald-300 bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
-                      <svg className="h-2.5 w-2.5 text-emerald-600" fill="none" viewBox="0 0 8 8">
-                        <path stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" d="M1.5 4h5M4 1.5v5" />
-                      </svg>
-                    </span>
+                    <span className="mt-0.5 shrink-0 h-4 w-4 rounded-full border border-emerald-300 flex items-center justify-center text-emerald-600 text-[10px] font-bold">+</span>
                     {flag}
                   </li>
                 ))}
@@ -398,10 +391,7 @@ export function AssessmentWidget({
               <ul className="space-y-1">
                 {recommendedSlugs.map((slug, i) => (
                   <li key={i}>
-                    <a
-                      href={`/learn/${slug}`}
-                      className="text-sm text-emerald-600 hover:underline"
-                    >
+                    <a href={`/learn/${slug}`} className="text-sm text-emerald-600 hover:underline">
                       {slug.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
                     </a>
                   </li>
@@ -413,7 +403,7 @@ export function AssessmentWidget({
           <div className="rounded-lg border bg-muted/30 p-4">
             <p className="text-sm font-medium mb-1">Ready for healthcare that has time for you?</p>
             <p className="text-xs text-muted-foreground mb-3">
-              Present Health DPC offers same-day appointments, transparent pricing, and direct physician access.
+              Same-day appointments, transparent pricing, and direct physician access.
             </p>
             <Button asChild size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white">
               <a href="/join">Join Present Health</a>
