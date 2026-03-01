@@ -136,7 +136,6 @@ export default async function ForEmployersPage({ searchParams }: { searchParams:
             <section className="mt-14">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
                     <h2 className="text-2xl font-bold tracking-tight">Testimonials</h2>
-                    <p className="text-sm text-muted-foreground">We&apos;ll add stories here as teams come onboard.</p>
                 </div>
 
                 {testimonials.length ? (

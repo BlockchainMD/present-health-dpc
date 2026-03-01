@@ -22,6 +22,28 @@ export const metadata: Metadata = {
     title: "Text-First Primary Care | Present Health",
     description:
         "Text your care team and get a real answer. Full-service primary care for adults 18+ with messaging-first access and video when clinically appropriate.",
+    openGraph: {
+        title: "Text-First Primary Care | Present Health",
+        description:
+            "Text your care team and get a real answer. Full-service primary care for adults 18+ with messaging-first access and video when clinically appropriate.",
+        url: "https://presenthealthmd.com",
+        siteName: "Present Health",
+        images: [
+            {
+                url: "https://presenthealthmd.com/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "Present Health — Text-First Primary Care",
+            },
+        ],
+        type: "website",
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Text-First Primary Care | Present Health",
+        description: "Text your care team and get a real answer. Primary care for adults 18+ — $99/month.",
+        images: ["https://presenthealthmd.com/og-image.png"],
+    },
 };
 
 type ScenarioCardProps = {
