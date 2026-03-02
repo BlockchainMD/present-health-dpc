@@ -212,6 +212,14 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
 
             const draft = await generateDraft(brief);
             const qa = qaDraft(brief, draft, { reviewLabel });
+
+            // If AI generation failed and we got fallback stub content, skip rather
+            // than saving a near-empty article to the database.
+            if (isFallbackContent(qa.content)) {
+                console.warn(`Skipping fallback content for "${brief.title}"`);
+                continue;
+            }
+
             const contentHash = hashContent(qa.content);
             const duplicate = await prisma.article.findFirst({ where: { contentHash } });
             if (duplicate && !allowExisting) continue;
