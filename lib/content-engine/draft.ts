@@ -41,37 +41,31 @@ ${overlapNotes.length ? `- Overlap notes to address: ${overlapNotes.join(' ')}` 
 
 Rules:
 - Use Markdown.
-- Sections required (exact headings):
+- Required h2 sections (exact headings, in this order):
   1) Quick answer
   2) TL;DR
   3) Key context
   4) FAQ
   5) How Present Health can help
-- Do NOT add any other section headings.
+- Do NOT add extra h2 headings. Use h3 subheadings (###) freely within sections.
 - Headings must be on their own lines with a blank line before and after.
-- TL;DR must be 3-5 bullets with at least one action-oriented bullet.
-- Each major section must include at least one short paragraph; use bullets only where they add clarity.
-- Avoid empty bullet points or lists made entirely of single-sentence bullets.
-- Format FAQ as separate Q/A pairs (each Q on its own line, with a blank line between pairs).
-- Do NOT include an H1 or repeat the article title in the body. Start with "## Quick answer".
+- TL;DR: 3-5 bullets. Each must be a complete informative sentence — a real takeaway. Never a question. Never a metadata label like "Focus:" or "Intent:". At least one bullet must state a concrete action.
+- Format FAQ strictly as: **Q: [question]** on its own line, then A: [answer] starting the next line. Do NOT bold the "A:" prefix. Every answer must be 2-4 specific, useful sentences. Never write generic filler like "Start with one or two practical steps" or "Discuss with a clinician."
+- Do NOT include an H1 or repeat the article title. Start with "## Quick answer".
 - Do NOT mention any clinician names or personal names.
-- Do NOT include medical diagnosis or individualized advice.
-- Mention Present Health only in the final CTA section.
-- Use only the heading "How Present Health can help" for the CTA section (do not write "How the practice can help").
-- Start the Quick answer with a 1-2 sentence hook that reflects the HOOK above, then add 1 sentence on why it matters and 1 sentence on what a reader can do.
-- Key context must be the longest section and do the heavy lifting: explain why the hook matters now or is under-discussed in plain language, then give 2-4 simple, non-medical steps readers can consider.
-- Include 1-2 subtle sentences in the body that connect the topic to the value of direct primary care (e.g., continuity, access, longer visits), without sounding salesy and without naming Present Health.
-- Make the writing punchy and concise: short paragraphs (1-2 sentences, max 3), active voice, minimal filler.
-- Keep word count around ${brief.wordCountTarget} (450-700 ok).
-- Front-load value (no long scene-setting). Make every section practical and skimmable.
-- Use SEO best practices: primary keyword in the first paragraph, natural keyword variants in headings, and a compact FAQ with 3-5 questions.
-- Avoid hype, avoid guarantees, avoid prescriptions/medication language.
-- Default to cautious phrasing: "may", "can", "is associated with", "some evidence suggests".
-- Ban strong causality/guarantees: "will reduce risk", "prevents", "protects", "reverses", "cures", "clinically proven", "most significant protection".
-- Education disclaimer and emergency guidance are handled by the template; do not include them.
-- Quick answer must be 2-3 sentences and appear near the top.
-- How Present Health can help must include 3-6 bullets and ONE CTA link (e.g., ${'/pricing'}).
-- Reviewed-by block is handled by the template; do not include it.
+- No medical diagnosis or individualized advice.
+- Mention Present Health only in the CTA section.
+- Use only "How Present Health can help" for the CTA heading.
+- Quick answer: 3-4 sentences. Open with the HOOK, explain why it matters now, close with one thing the reader can do.
+- Key context is the heart of the article — write 500-700 words here. Break it into 2-4 h3 subheadings with natural, topic-specific titles (e.g. "### How the pathway works", "### What the evidence shows", "### Who should ask about this"). Explain mechanisms, summarise evidence, and give practical steps. Weave in 1-2 sentences connecting consistent primary care (continuity, longer visits, direct access) to better management of this topic — without naming Present Health.
+- FAQ: 3-5 Q&A pairs. Mirror real "People Also Ask" search queries. Every answer must be substantive.
+- Total word count: ${brief.wordCountTarget}–${brief.wordCountTarget + 300} words. Articles under 800 words are too thin and will be rejected. Prioritise depth and specificity.
+- SEO: primary keyword in the first paragraph, natural variants in h3 subheadings.
+- Cautious phrasing: "may", "can", "is associated with", "some evidence suggests".
+- Banned phrases: "will reduce risk", "prevents", "protects", "reverses", "cures", "clinically proven", "most significant protection".
+- Disclaimer and emergency guidance are template-handled; omit them.
+- How Present Health can help: 3-6 bullets specific to this topic, ONE CTA link (${'/pricing'}).
+- Reviewed-by block is template-handled; omit it.
 
 Evidence rules:
 - If ALLOWED_SOURCES is empty: do NOT use "research shows/studies show" framing and do NOT include numeric effect sizes or risk percentages.
