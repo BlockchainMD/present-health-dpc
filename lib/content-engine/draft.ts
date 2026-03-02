@@ -119,25 +119,23 @@ Return JSON only:
 function buildFallbackContent(brief: Brief): string {
     const secondary = brief.secondaryQuestions.filter(Boolean);
     const faqQuestion = secondary[0] || brief.primaryQuestion;
-    const angleLine = brief.angle ? `Focus: ${brief.angle}.` : 'Focus: practical, evidence-informed actions.';
-    const intentLine = brief.intent ? `Intent: ${brief.intent}.` : 'Intent: actionable guidance.';
     const hookSentence = ensureSentence(brief.hook || `An under-discussed aspect of ${brief.title} deserves more attention.`);
     const actionSentence = ensureSentence(brief.actionSteps?.[0] || 'Pick one small change to start this week and track it.');
+    const actionTwo = ensureSentence(brief.actionSteps?.[1] || 'Ask a clinician if symptoms persist or change.');
     return `## Quick answer
 ${hookSentence} ${ensureSentence(brief.metaDescription)} ${actionSentence}
 
 ## TL;DR
 - ${brief.primaryQuestion}
-- ${angleLine}
-- ${intentLine}
+- ${actionSentence}
+- ${actionTwo}
 
 ## Key context
-- Track patterns and triggers that matter most.
-- Focus on actions you can repeat consistently.
+More detail on this topic is being generated. Check back soon.
 
 ## FAQ
 **Q: ${faqQuestion}**
-A: Start with one or two small actions, track how you feel for a week, and adjust as needed.
+A: The answer depends on individual context. Track relevant symptoms for 1–2 weeks and review findings with a clinician.
 
 ## How Present Health can help
 - Personalized prevention planning
