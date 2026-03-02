@@ -17,6 +17,36 @@ const MAX_PER_RUN = 10;
 const DEFAULT_MAX_AUTO_PUBLISH_PER_DAY = 20;
 const DEFAULT_REFRESH_DAYS = 30;
 
+// Shared stopwords excluded from title similarity comparison.
+const TITLE_STOPWORDS = new Set([
+    'a', 'an', 'the', 'and', 'or', 'but', 'for', 'nor', 'so', 'yet',
+    'in', 'on', 'at', 'to', 'of', 'by', 'up', 'as', 'is', 'it', 'its',
+    'be', 'was', 'are', 'were', 'has', 'have', 'had', 'do', 'does', 'did',
+    'not', 'no', 'can', 'may', 'will', 'vs', 'how', 'what', 'why', 'when',
+    'where', 'who', 'which', 'that', 'this', 'with', 'from', 'your', 'our',
+    'new', 'more', 'most', 'just', 'than', 'into', 'about', 'over', 'top',
+]);
+
+/**
+ * Returns true when two article titles share enough significant words that
+ * they would be perceived as covering the same topic. Uses Jaccard-style
+ * overlap on the smaller title's significant-word set.
+ * Threshold: ≥50% of the smaller title's words found in the other.
+ */
+function titlesTooSimilar(a: string, b: string): boolean {
+    const tokenize = (s: string) =>
+        s.toLowerCase()
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .split(/\s+/)
+            .filter(w => w.length > 3 && !TITLE_STOPWORDS.has(w));
+    const setA = new Set(tokenize(a));
+    const setB = new Set(tokenize(b));
+    const smaller = Math.min(setA.size, setB.size);
+    if (smaller < 2) return false;
+    const overlap = [...setA].filter(w => setB.has(w)).length;
+    return overlap / smaller >= 0.5;
+}
+
 export async function runContentEngine(options: EngineOptions = {}): Promise<EngineResult> {
     const requested = typeof options.count === 'number' ? options.count : 5;
     const count = Math.min(Math.max(requested, 1), MAX_PER_RUN);
@@ -93,6 +123,15 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
         const MAX_DPC_PER_RUN = 1;
         let dpcCount = 0;
 
+        // Load recent article titles (last 7 days, non-discarded) for similarity checks.
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+        const recentTitles: string[] = (await prisma.article.findMany({
+            where: { createdAt: { gte: sevenDaysAgo }, status: { not: 'DISCARDED' } },
+            select: { title: true },
+        })).map(a => a.title);
+        // Also track titles created in this run so we don't create near-dupes within one run.
+        const runTitles: string[] = [];
+
         for (const signal of pool) {
             if (created.length >= count) break;
             const clusterInfo = classifyClusters(signal.title);
@@ -102,7 +141,19 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
             const isDpcTopic = DPC_KEYWORDS.some(keyword => lowerTitle.includes(keyword));
             if (isDpcTopic && dpcCount >= MAX_DPC_PER_RUN) continue;
 
+            // Cross-run cluster cap: don't publish more than MAX_PER_CLUSTER articles
+            // on the same cluster today even if they came from separate engine runs.
+            const clusterCountToday = await prisma.article.count({
+                where: { cluster, createdAt: { gte: todayStart }, status: { not: 'DISCARDED' } },
+            });
+            if (clusterCountToday >= MAX_PER_CLUSTER) continue;
+
             let brief = await generateBrief(signal);
+
+            // Title similarity deduplication: skip if a recent article covers the same topic.
+            const allPriorTitles = [...recentTitles, ...runTitles];
+            if (allPriorTitles.some(t => titlesTooSimilar(t, brief.title))) continue;
+
             const existing = await prisma.article.findFirst({
                 where: {
                     OR: [

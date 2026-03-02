@@ -316,17 +316,29 @@ function splitLongParagraphs(content: string): string {
 }
 
 function upgradeFaqAnswers(content: string, brief: Brief): string {
+    // Match placeholder answers regardless of bold markdown formatting around "A:"
+    // e.g. "A: ...", "**A:** ...", "**A: ...**"
+    const A = String.raw`\*{0,2}A:\*{0,2}`;
     const genericPatterns = [
-        /A:\s*Start with one or two practical steps and reassess after a week\.?/gi,
-        /A:\s*Start with one or two small actions and reassess after a week\.?/gi,
-        /A:\s*Start with one or two small actions and track how you feel for a week\.?/gi
+        new RegExp(`${A}\\s*Start with one or two practical steps and reassess after a week\\.?\\*{0,2}`, 'gi'),
+        new RegExp(`${A}\\s*Start with one or two small actions and reassess after a week\\.?\\*{0,2}`, 'gi'),
+        new RegExp(`${A}\\s*Start with one or two small actions[,]? (?:and )?track how you feel for a week[^.]*\\.\\*{0,2}`, 'gi'),
+        // buildSection FAQ fallback (added by ensureRequiredSections when FAQ is missing)
+        new RegExp(`${A}\\s*Discuss this with a clinician and track your symptoms for 1-2 weeks\\.?\\*{0,2}`, 'gi'),
     ];
     const cluster = brief.primaryCluster || brief.cluster;
     const playbook = getClusterPlaybook(cluster);
     const driverA = playbook.priorityDrivers[0] || 'context and history';
     const driverB = playbook.priorityDrivers[1] || 'pattern tracking';
-    const action = brief.actionSteps?.[0] || 'track your symptoms and context for 1-2 weeks';
-    const replacement = `A: The short answer depends on ${lowerFirst(driverA)} and ${lowerFirst(driverB)}. Start by ${lowerFirst(action)} and review your findings with a clinician if questions remain or symptoms change.`;
+    const rawAction = brief.actionSteps?.[0] || 'track your symptoms and context for 1-2 weeks';
+    // Normalise action step to gerund form so "Start by track..." doesn't happen
+    const actionPhrase = rawAction
+        .replace(/^start with\s+/i, '')
+        .replace(/^track\b/i, 'tracking')
+        .replace(/^log\b/i, 'logging')
+        .replace(/^monitor\b/i, 'monitoring')
+        .replace(/^schedule\b/i, 'scheduling');
+    const replacement = `A: The short answer depends on ${lowerFirst(driverA)} and ${lowerFirst(driverB)}. Start by ${lowerFirst(actionPhrase)} and review your findings with a clinician if questions remain or symptoms change.`;
 
     let updated = content;
     for (const pattern of genericPatterns) {
