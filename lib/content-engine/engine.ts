@@ -3,7 +3,7 @@ import { prisma } from '../prisma';
 import { fetchTopicSignals } from './sources';
 import { generateBrief } from './brief';
 import { generateDraft } from './draft';
-import { qaDraft } from './qa';
+import { qaDraft, isFallbackContent } from './qa';
 import { classifyCluster, classifyClusters, slugify } from './taxonomy';
 import { getClusterWeights } from './feedback';
 import { Brief, EngineOptions, EngineResult, InternalLinkSuggestion, TopicSignal } from './types';
@@ -45,6 +45,30 @@ function titlesTooSimilar(a: string, b: string): boolean {
     if (smaller < 2) return false;
     const overlap = [...setA].filter(w => setB.has(w)).length;
     return overlap / smaller >= 0.5;
+}
+
+/**
+ * Topics that are too rare, too specialist, or too off-brand for a DPC
+ * primary-care content strategy. Articles on these topics would attract
+ * zero DPC-funnel traffic and may confuse or alarm readers.
+ */
+const DPC_IRRELEVANT_KEYWORDS = [
+    // Ultra-rare genetic / specialist conditions
+    'setmelanotide', 'mc4r', 'bardet-biedl', 'alstrom',
+    // Specialist-only procedures
+    'pldd', 'percutaneous laser disc', 'endoscopic spine',
+    'transcatheter', 'embolization', 'ablation catheter',
+    // Competitor / vendor product promotion
+    'athenone', 'centerwell', 'caremore', 'oak street', 'iora health',
+    // Local geographic hooks unrelated to Present Health
+    'knoxville', 'nashville', 'memphis', 'houston', 'dallas',
+    // Paediatric-only clinical procedures out of DPC scope
+    'neonatal icu', 'nicu protocol', 'pediatric oncology',
+];
+
+function isDpcIrrelevant(title: string): boolean {
+    const lower = title.toLowerCase();
+    return DPC_IRRELEVANT_KEYWORDS.some(keyword => lower.includes(keyword));
 }
 
 export async function runContentEngine(options: EngineOptions = {}): Promise<EngineResult> {
@@ -140,6 +164,9 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
             const lowerTitle = signal.title.toLowerCase();
             const isDpcTopic = DPC_KEYWORDS.some(keyword => lowerTitle.includes(keyword));
             if (isDpcTopic && dpcCount >= MAX_DPC_PER_RUN) continue;
+
+            // Drop topics that are off-brand for a DPC primary-care funnel.
+            if (isDpcIrrelevant(signal.title)) continue;
 
             // Cross-run cluster cap: don't publish more than MAX_PER_CLUSTER articles
             // on the same cluster today even if they came from separate engine runs.

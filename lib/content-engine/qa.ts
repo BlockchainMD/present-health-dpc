@@ -60,7 +60,7 @@ export function qaDraft(brief: Brief, draft: Draft, options: QaOptions = {}): Dr
     content = upgradeFaqAnswers(content, brief);
     content = normalizeMarkdownFromBrief(content, brief);
     content = splitLongParagraphs(content);
-    content = trimToWordCount(content, Math.min(brief.wordCountTarget + 80, 750));
+    content = trimToWordCount(content, brief.wordCountTarget + 200);
 
     const qaFlags = collectQaFlags(content, brief);
 
@@ -425,4 +425,29 @@ function ensureSentence(value: string): string {
     if (!trimmed) return '';
     if (/[.!?]$/.test(trimmed)) return trimmed;
     return `${trimmed}.`;
+}
+
+/**
+ * Returns true when the content looks like it was produced by buildFallbackContent()
+ * rather than a successful AI generation. Used by the engine to discard articles
+ * that would publish near-empty stub content.
+ */
+export function isFallbackContent(content: string): boolean {
+    // TL;DR bullets that expose internal brief metadata (angle/intent fields)
+    const tldrMatch = content.match(/##\s+TL;DR([\s\S]*?)(?=##\s|$)/i);
+    if (tldrMatch && /^\s*-\s*(Focus:|Intent:)/im.test(tldrMatch[1])) return true;
+
+    // Key context body that is a known placeholder string or dangerously thin
+    const keyContextMatch = content.match(/##\s+Key context([\s\S]*?)(?=##\s|$)/i);
+    if (keyContextMatch) {
+        const body = keyContextMatch[1].trim();
+        if (/Key context (helps|can) clarify/i.test(body)) return true;
+        if (/Track patterns and triggers that matter most/i.test(body)) return true;
+        if (/More detail on this topic is being generated/i.test(body)) return true;
+        // Strip markdown symbols and count real words
+        const wordCount = body.replace(/[-*#>\[\]()!]/g, '').split(/\s+/).filter(Boolean).length;
+        if (wordCount < 40) return true;
+    }
+
+    return false;
 }
