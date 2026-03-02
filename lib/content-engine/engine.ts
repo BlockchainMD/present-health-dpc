@@ -279,6 +279,8 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
 
             created.push({ id: article.id, title: article.title, slug: article.slug });
             clusterCounts[cluster] = (clusterCounts[cluster] || 0) + 1;
+            runTitles.push(article.title);
+            recentTitles.push(article.title);
             if (isDpcTopic) dpcCount += 1;
             if (shouldAutoPublish) published += 1;
         }
