@@ -240,6 +240,10 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                         <ArticleMarkdown content={content} />
                     </div>
 
+                    <section className="mt-10">
+                        <AssessmentWidget articleSlug={article.slug || article.id} cluster={article.cluster || undefined} compact />
+                    </section>
+
                     {faqs.length ? (
                         <section className="mt-12">
                             <h2 className="text-2xl font-bold tracking-tight mb-4">Frequently asked questions</h2>
@@ -313,10 +317,6 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                             </div>
                             <div>Last reviewed: {formatLastUpdated(new Date(reviewerDate))}</div>
                         </div>
-                    </section>
-
-                    <section className="mt-8">
-                        <AssessmentWidget articleSlug={article.slug || article.id} cluster={article.cluster || undefined} compact />
                     </section>
 
                     <section className="mt-8">
