@@ -10,6 +10,7 @@ import { normalizeMarkdownForRender } from '@/lib/markdown-utils';
 import { stripTemplateOwnedSections } from '@/lib/content-engine/sections';
 import { DEFAULT_DISCLAIMER } from '@/lib/content-engine/disclaimer';
 import { CLINICAL_TEAM_URL, EDITORIAL_POLICY_URL, formatLastUpdated } from '@/lib/content-engine/policy';
+import { AssessmentWidget } from '@/components/assessment/AssessmentWidget';
 
 // ISR: revalidate every hour; also busted on-demand by the admin PATCH route.
 export const revalidate = 3600;
@@ -191,7 +192,11 @@ export default async function BlogPostPage({ params }: { params: SlugParams }) {
                 </div>
             </div>
 
-            <div className="mt-16 p-8 bg-muted/30 rounded-2xl border border-border text-center">
+            <div className="mt-8">
+                <AssessmentWidget articleSlug={article.slug || article.id} cluster={(article as any).cluster || undefined} compact />
+            </div>
+
+            <div className="mt-8 p-8 bg-muted/30 rounded-2xl border border-border text-center">
                 <h3 className="text-2xl font-bold mb-4">Ready to prioritize your health?</h3>
                 <p className="text-muted-foreground mb-6">
                     Join Present Health today for direct access to personalized primary care.
