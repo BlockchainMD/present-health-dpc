@@ -19,6 +19,7 @@ import { extractToc } from "@/lib/markdown-toc";
 import { markdownToPlainText } from "@/lib/markdown-plain";
 import { buildLearnArticleSchemas, coerceFaqs } from "@/lib/schema";
 import { CLINICAL_TEAM_URL, EDITORIAL_POLICY_URL, formatLastUpdated } from "@/lib/content-engine/policy";
+import { DEFAULT_DISCLAIMER } from "@/lib/content-engine/disclaimer";
 import { AssessmentWidget } from "@/components/assessment/AssessmentWidget";
 
 // ISR: cache article pages for 1 hour; on-demand revalidation via revalidatePath
@@ -295,25 +296,20 @@ export default async function LearnArticlePage({ params }: { params: TopicParams
                         </section>
                     ) : null}
 
-                    {/* E-E-A-T footer: reviewer attribution, editorial policy, last updated */}
-                    <section className="mt-12">
-                        <div className="rounded-xl border border-border bg-muted/20 p-5 text-sm text-muted-foreground space-y-1.5">
-                            <div className="font-medium text-foreground">
-                                {isClinical ? "Medically reviewed by" : "Editorial review by"}
-                            </div>
-                            <div>{reviewerName}</div>
-                            <div>
-                                <Link href={CLINICAL_TEAM_URL} className="text-primary hover:underline">
-                                    Clinical Team &amp; Medical Review Process
-                                </Link>
-                                {" · "}
-                                <Link href={EDITORIAL_POLICY_URL} className="text-primary hover:underline">
-                                    Editorial Policy
-                                </Link>
-                            </div>
-                            <div>Last reviewed: {formatLastUpdated(new Date(reviewerDate))}</div>
-                        </div>
-                    </section>
+                    {/* E-E-A-T fine print */}
+                    <footer className="mt-12 border-t border-border pt-4 text-xs text-muted-foreground space-y-1">
+                        <p>
+                            {isClinical ? "Medically reviewed" : "Editorially reviewed"} by {reviewerName}
+                            {" · "}Last reviewed: {formatLastUpdated(new Date(reviewerDate))}
+                        </p>
+                        <p>
+                            {DEFAULT_DISCLAIMER.shortText}{" "}
+                            <Link href={EDITORIAL_POLICY_URL} className="underline hover:text-foreground">Full disclaimer &amp; editorial policy</Link>
+                            {" · "}
+                            <Link href={CLINICAL_TEAM_URL} className="underline hover:text-foreground">Clinical team</Link>
+                        </p>
+                        <p>{DEFAULT_DISCLAIMER.emergencyText}</p>
+                    </footer>
 
                     <section className="mt-8">
                         <AssessmentWidget articleSlug={article.slug || article.id} cluster={article.cluster || undefined} compact />

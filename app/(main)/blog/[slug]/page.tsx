@@ -141,56 +141,20 @@ export default async function BlogPostPage({ params }: { params: SlugParams }) {
                 <Markdown content={content} />
             </div>
 
-            <div className="mt-10 space-y-4">
-                <div className="inline-flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50/60 px-3 py-2 text-xs text-emerald-800 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-300">
-                    <svg aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-emerald-600 dark:text-emerald-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>
-                        {isClinical ? 'Medically reviewed' : 'Editorially reviewed'} by{' '}
-                        <strong className="font-medium">{reviewerName}</strong>
-                        {article.reviewedAt ? (
-                            <>
-                                {' · '}
-                                <time dateTime={article.reviewedAt.toISOString()}>
-                                    {format(new Date(article.reviewedAt), 'MMM d, yyyy')}
-                                </time>
-                            </>
-                        ) : null}
-                    </span>
-                </div>
-                <div className="rounded-xl border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                    <span>{disclaimer.shortText}</span>
-                    <details className="group">
-                        <summary className="cursor-pointer text-primary text-sm">Read full disclaimer</summary>
-                        <div className="mt-2 text-xs text-muted-foreground max-w-xl">
-                            {disclaimer.fullText}
-                        </div>
-                    </details>
-                </div>
-                <div className="rounded-xl border border-amber-200 bg-amber-50/70 px-4 py-3 text-sm text-amber-900">
-                    <div className="font-semibold mb-1">Emergency guidance</div>
-                    <div>{disclaimer.emergencyText}</div>
-                </div>
-            </div>
-
-            <div className="mt-8 rounded-2xl border border-border bg-muted/20 p-6 text-sm text-muted-foreground">
-                <div className="font-medium text-foreground mb-2">Reviewed by</div>
-                <div className="space-y-1">
-                    <div>{article.reviewedByDisplayName || 'Present Health Clinical Team'}</div>
-                    <div>
-                        <Link href={CLINICAL_TEAM_URL} className="text-primary hover:underline">
-                            Clinical Team / Medical Review Process
-                        </Link>
-                    </div>
-                    <div>
-                        <Link href={EDITORIAL_POLICY_URL} className="text-primary hover:underline">
-                            Editorial Policy
-                        </Link>
-                    </div>
-                    <div>Last updated: {formatLastUpdated(new Date(article.updatedAt))}</div>
-                </div>
-            </div>
+            <footer className="mt-10 border-t border-border pt-4 text-xs text-muted-foreground space-y-1">
+                <p>
+                    {isClinical ? 'Medically reviewed' : 'Editorially reviewed'} by {reviewerName}
+                    {article.reviewedAt ? ` · ${format(new Date(article.reviewedAt), 'MMM d, yyyy')}` : ''}
+                    {' · '}Last updated: {formatLastUpdated(new Date(article.updatedAt))}
+                </p>
+                <p>
+                    {disclaimer.shortText}{' '}
+                    <Link href={EDITORIAL_POLICY_URL} className="underline hover:text-foreground">Full disclaimer &amp; editorial policy</Link>
+                    {' · '}
+                    <Link href={CLINICAL_TEAM_URL} className="underline hover:text-foreground">Clinical team</Link>
+                </p>
+                <p>{disclaimer.emergencyText}</p>
+            </footer>
 
             <div className="mt-8">
                 <AssessmentWidget articleSlug={article.slug || article.id} cluster={(article as any).cluster || undefined} compact />
