@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import type { Question } from '@/lib/assessment/questions';
 
-type Step = 'IDLE' | 'STARTING' | 'ANSWERING' | 'COMPLETING' | 'GATING' | 'CAPTURED';
+type Step = 'IDLE' | 'STARTING' | 'ANSWERING' | 'COMPLETING' | 'RESULTS';
 
-type CaptureResult = {
+type AssessmentResults = {
   summary: string;
   doctorFlags: string[];
   recommendedSlugs: string[];
@@ -35,11 +35,10 @@ export function AssessmentWidget({
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string[]>>({});
-  const [preview, setPreview] = useState('');
-  const [doctorFlagCount, setDoctorFlagCount] = useState(0);
+  const [results, setResults] = useState<AssessmentResults | null>(null);
   const [email, setEmail] = useState('');
   const [firstName, setFirstName] = useState('');
-  const [captureResult, setCaptureResult] = useState<CaptureResult | null>(null);
+  const [emailCaptured, setEmailCaptured] = useState(false);
   const [error, setError] = useState('');
 
   // Use refs so callbacks always have fresh state without stale closures
@@ -108,9 +107,12 @@ export function AssessmentWidget({
       }
       if (!res.ok) throw new Error((data.error as string) || 'Failed to complete');
 
-      setPreview((data.preview as string) || '');
-      setDoctorFlagCount((data.doctorFlagCount as number) || 0);
-      setStep('GATING');
+      setResults({
+        summary: (data.summary as string) || '',
+        doctorFlags: (data.doctorFlags as string[]) || [],
+        recommendedSlugs: (data.recommendedSlugs as string[]) || [],
+      });
+      setStep('RESULTS');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStep('ANSWERING');
@@ -166,12 +168,7 @@ export function AssessmentWidget({
         throw new Error('Server error — please try again');
       }
       if (!res.ok) throw new Error((data.error as string) || 'Failed to submit');
-      setCaptureResult({
-        summary: (data.summary as string) || '',
-        doctorFlags: (data.doctorFlags as string[]) || [],
-        recommendedSlugs: (data.recommendedSlugs as string[]) || [],
-      });
-      setStep('CAPTURED');
+      setEmailCaptured(true);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }

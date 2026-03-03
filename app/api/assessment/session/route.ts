@@ -111,11 +111,12 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Session already captured' }, { status: 400 });
       }
 
-      // Return existing preview if already completed
+      // Return existing results if already completed
       if (session.status === 'COMPLETED' && session.aiSummary) {
         return NextResponse.json({
-          preview: session.aiSummary.slice(0, 80),
-          doctorFlagCount: session.doctorFlags.length,
+          summary: session.aiSummary,
+          doctorFlags: session.doctorFlags,
+          recommendedSlugs: session.recommendedSlugs,
         });
       }
 
@@ -128,8 +129,9 @@ export async function POST(request: NextRequest) {
       await completeSession(token, result);
 
       return NextResponse.json({
-        preview: result.summary.slice(0, 80),
-        doctorFlagCount: result.doctorFlags.length,
+        summary: result.summary,
+        doctorFlags: result.doctorFlags,
+        recommendedSlugs: result.recommendedSlugs,
       });
     } catch (err) {
       console.error('[Assessment] complete error:', err);
