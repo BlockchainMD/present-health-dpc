@@ -9,10 +9,14 @@ async function main() {
       source: 'ASSESSMENT_LEAD',
       enabled: true,
       delayMinutes: 0,
-      subjectTemplate: 'Your Present Health report is ready',
+      subjectTemplate: 'Welcome to your personalized health insights',
       bodyTemplate: `Hi {{firstName}},
 
-Thank you for completing the Present Health assessment. Your personalized report is ready.
+Welcome to your personalized health insights from Present Health.
+
+You've already seen your full report — now we'll keep the insights coming. As we publish new articles matched to your health profile, we'll send them straight to your inbox.
+
+Here's a recap of your assessment results:
 
 {{summary}}
 
@@ -22,7 +26,7 @@ Topics to consider discussing with your doctor:
 {{/if}}
 
 {{#if recommendedSlugs}}
-Articles we recommend for you:
+Articles we've matched to your profile:
 {{recommendedSlugs}}
 {{/if}}
 
@@ -40,7 +44,7 @@ To your health,
 The Present Health Team
 
 ---
-This is not medical advice. Please consult your physician before making any health decisions.
+You signed up for personalized health insights at https://presenthealthmd.com. This is not medical advice. Please consult your physician before making any health decisions.
 To unsubscribe, reply with "unsubscribe" in the subject line.`,
       followUpEnabled: true,
       followUpDelayHours: 72,
