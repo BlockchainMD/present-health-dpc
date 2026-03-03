@@ -288,64 +288,9 @@ export function AssessmentWidget({
     );
   }
 
-  // ── GATING ────────────────────────────────────────────────────────────────
-  if (step === 'GATING') {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-xl">Your health insights are ready</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            {doctorFlagCount > 0
-              ? `We found ${doctorFlagCount} topic${doctorFlagCount !== 1 ? 's' : ''} to discuss with your doctor and personalized article recommendations.`
-              : 'We put together personalized article recommendations based on your responses.'}
-          </p>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative rounded-lg border bg-muted/30 p-4 overflow-hidden">
-            <p className="text-sm text-muted-foreground line-clamp-2 select-none blur-[2px]">
-              {preview}…
-            </p>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background/95 flex items-end justify-center pb-3">
-              <span className="text-xs text-muted-foreground font-medium">
-                Enter your email to unlock your full report
-              </span>
-            </div>
-          </div>
-
-          <form onSubmit={handleCapture} className="space-y-3">
-            <input name="hp" type="text" className="hidden" tabIndex={-1} autoComplete="off" />
-            <Input
-              type="text"
-              placeholder="First name (optional)"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-            <Input
-              type="email"
-              placeholder="Your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoComplete="email"
-            />
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
-            <Button
-              type="submit"
-              disabled={!email.trim()}
-              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
-            >
-              Get my full report
-            </Button>
-            <p className="text-xs text-center text-muted-foreground">No spam. Unsubscribe anytime.</p>
-          </form>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // ── CAPTURED ──────────────────────────────────────────────────────────────
-  if (step === 'CAPTURED' && captureResult) {
-    const { summary, doctorFlags, recommendedSlugs } = captureResult;
+  // ── RESULTS ──────────────────────────────────────────────────────────────
+  if (step === 'RESULTS' && results) {
+    const { summary, doctorFlags, recommendedSlugs } = results;
     return (
       <Card>
         <CardHeader>
@@ -355,7 +300,6 @@ export function AssessmentWidget({
             </svg>
             <CardTitle className="text-lg">Your personalized health summary</CardTitle>
           </div>
-          <p className="text-xs text-muted-foreground">Check your email — we sent you a copy too.</p>
         </CardHeader>
         <CardContent className="space-y-4">
           {summary ? (
@@ -396,6 +340,53 @@ export function AssessmentWidget({
               </ul>
             </div>
           ) : null}
+
+          {/* Optional email signup — not a gate */}
+          <div className="rounded-lg border border-emerald-200 bg-emerald-50/40 dark:border-emerald-800/40 dark:bg-emerald-950/20 p-4">
+            {emailCaptured ? (
+              <div className="flex items-center gap-2">
+                <svg className="h-5 w-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                </svg>
+                <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                  You&apos;re signed up! We&apos;ll send personalized health insights to your inbox.
+                </p>
+              </div>
+            ) : (
+              <>
+                <p className="text-sm font-medium mb-1">Get ongoing personalized insights</p>
+                <p className="text-xs text-muted-foreground mb-3">
+                  We&apos;ll match new articles and health tips to your profile — delivered to your inbox.
+                </p>
+                <form onSubmit={handleCapture} className="space-y-2">
+                  <input name="hp" type="text" className="hidden" tabIndex={-1} autoComplete="off" />
+                  <Input
+                    type="text"
+                    placeholder="First name (optional)"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                  />
+                  <Input
+                    type="email"
+                    placeholder="Your email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                  {error ? <p className="text-sm text-red-600">{error}</p> : null}
+                  <Button
+                    type="submit"
+                    disabled={!email.trim()}
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white disabled:opacity-50"
+                  >
+                    Sign up for free
+                  </Button>
+                  <p className="text-xs text-center text-muted-foreground">No spam. Unsubscribe anytime.</p>
+                </form>
+              </>
+            )}
+          </div>
 
           <div className="rounded-lg border bg-muted/30 p-4">
             <p className="text-sm font-medium mb-1">Ready for healthcare that has time for you?</p>

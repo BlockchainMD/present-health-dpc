@@ -189,12 +189,16 @@ async function sendWelcomeEmail(params: {
 
   const textBody = `${greeting}
 
-Your personalized Present Health report is ready. Here's a summary of what we found based on your responses:
+Welcome to your personalized health insights from Present Health.
+
+You've already seen your full report — now we'll keep the insights coming. As we publish new articles matched to your health profile, we'll send them straight to your inbox so you stay informed on the topics that matter most to you.
+
+Here's a recap of your assessment results:
 
 ${summary}
 
 ${doctorFlags.length > 0 ? `Topics to consider discussing with your doctor:\n${flagLines}\n` : ''}
-${recommendedSlugs.length > 0 ? `We've selected these articles for you:\n${articleLinks}\n` : ''}
+${recommendedSlugs.length > 0 ? `Articles we've matched to your profile:\n${articleLinks}\n` : ''}
 
 Ready to experience healthcare that actually has time for you?
 
@@ -210,7 +214,7 @@ To your health,
 The Present Health Team
 
 ---
-This email was sent because you completed a health assessment at ${baseUrl}. This is not medical advice.`;
+This email was sent because you signed up for personalized health insights at ${baseUrl}. This is not medical advice.`;
 
   const htmlBody = `<!DOCTYPE html>
 <html>
@@ -218,7 +222,9 @@ This email was sent because you completed a health assessment at ${baseUrl}. Thi
 <body style="font-family:system-ui,sans-serif;color:#1a1a1a;max-width:600px;margin:0 auto;padding:24px">
   <img src="${baseUrl}/logo.png" alt="Present Health" style="height:40px;margin-bottom:24px" onerror="this.style.display='none'" />
   <p>${greeting}</p>
-  <p>Your personalized Present Health report is ready. Here's a summary based on your responses:</p>
+  <p>Welcome to your personalized health insights from Present Health.</p>
+  <p>You've already seen your full report — now we'll keep the insights coming. As we publish new articles matched to your health profile, we'll send them straight to your inbox.</p>
+  <p>Here's a recap of your assessment results:</p>
   <div style="background:#f8fafc;border-left:4px solid #10b981;padding:16px;border-radius:4px;margin:16px 0">
     ${summary.replace(/\n/g, '<br />').replace(/---[\s\S]*$/, '')}
   </div>
@@ -240,13 +246,13 @@ This email was sent because you completed a health assessment at ${baseUrl}. Thi
     <p>Present Health DPC offers telehealth-first Direct Primary Care with transparent flat-fee pricing and direct physician access.</p>
     <a href="${baseUrl}/join" style="display:inline-block;background:#10b981;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:600">Join Present Health</a>
   </div>
-  <p style="font-size:12px;color:#6b7280;margin-top:24px">This is not medical advice. Please consult your physician before making health decisions.</p>
+  <p style="font-size:12px;color:#6b7280;margin-top:24px">You signed up for personalized health insights at ${baseUrl}. This is not medical advice. Please consult your physician before making health decisions.</p>
 </body>
 </html>`;
 
   await sendEmail({
     to: email,
-    subject: 'Your Present Health report is ready',
+    subject: 'Welcome to your personalized health insights',
     text: textBody,
     html: htmlBody,
   }).catch((err: unknown) => {
