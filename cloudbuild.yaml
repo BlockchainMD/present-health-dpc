@@ -1,16 +1,16 @@
+# DEPRECATED: Deployment now uses .github/workflows/deploy-cloud-run.yml
+# This file is kept for reference only. Do NOT use for production deploys.
 steps:
-  # Build with layer caching using Kaniko
   - name: 'gcr.io/kaniko-project/executor:latest'
     args:
       - '--destination=gcr.io/$PROJECT_ID/present-health-dpc:$COMMIT_SHA'
       - '--destination=gcr.io/$PROJECT_ID/present-health-dpc:latest'
       - '--cache=true'
-      - '--cache-ttl=168h'  # Cache for 7 days
+      - '--cache-ttl=168h'
       - '--build-arg=DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy'
       - '--build-arg=NEXT_PUBLIC_BUILD_ID=$COMMIT_SHA'
       - '--build-arg=NEXT_PUBLIC_BUILD_TIME=$BUILD_ID'
 
-  # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
@@ -25,7 +25,7 @@ steps:
       - 'managed'
       - '--allow-unauthenticated'
       - '--update-env-vars'
-      - 'DATABASE_URL=postgresql://present_health_user:secure_password_123@localhost/present_health?host=/cloudsql/present-health-dpc-2025:us-central1:present-health-db,NEXTAUTH_SECRET=present-health-production-secret-2025-v1,NEXTAUTH_URL=https://presenthealthmd.com'
+      - 'DATABASE_URL=SET_VIA_GITHUB_SECRETS,NEXTAUTH_SECRET=SET_VIA_GITHUB_SECRETS,NEXTAUTH_URL=https://presenthealthmd.com'
       - '--add-cloudsql-instances'
       - 'present-health-dpc-2025:us-central1:present-health-db'
 
