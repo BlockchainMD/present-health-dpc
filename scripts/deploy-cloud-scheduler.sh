@@ -185,16 +185,47 @@ create_or_update \
     '{"jobLimit":1,"jobType":"REFRESH_STRATEGY","strategyDays":30}' \
     "Present Health: weekly CTR-weighted cluster strategy refresh"
 
+# ── Job 5: Auto-response follow-up emails — every 30 minutes ────────────────
+# Processes due auto-response emails (72h assessment follow-ups, drip sequences).
+# Calls the existing run-queue endpoint with AUTO_RESPONSE_CRON_SECRET.
+create_or_update_custom \
+    "present-health-auto-response" \
+    "*/30 * * * *" \
+    "America/Chicago" \
+    "${SERVICE_URL}/api/admin/auto-responses/run-queue" \
+    '{"limit":50}' \
+    "$AUTO_RESPONSE_HEADERS" \
+    "Present Health: auto-response follow-up emails every 30 minutes" \
+    "300s"
+
+# ── Job 6: Stale lead alerts — daily at 9am CT ─────────────────────────────
+# Sends a digest email to admins about leads that have been uncontacted >48h.
+# Reuses CONTENT_ENGINE_CRON_SECRET for auth.
+create_or_update_custom \
+    "present-health-stale-leads" \
+    "0 9 * * *" \
+    "America/Chicago" \
+    "${SERVICE_URL}/api/admin/stale-leads" \
+    '{"limit":100}' \
+    "$CONTENT_HEADERS" \
+    "Present Health: daily stale lead alert digest" \
+    "300s"
+
 echo ""
 echo "✅  All Cloud Scheduler jobs deployed successfully."
 echo ""
 echo "Next steps:"
-echo "  1. Add CONTENT_ENGINE_CRON_SECRET=$CONTENT_ENGINE_CRON_SECRET"
-echo "     to your Cloud Run service environment variables."
+echo "  1. Add these env vars to your Cloud Run service:"
+echo "     CONTENT_ENGINE_CRON_SECRET=$CONTENT_ENGINE_CRON_SECRET"
+echo "     AUTO_RESPONSE_CRON_SECRET=$AUTO_RESPONSE_CRON_SECRET"
 echo ""
-echo "  2. Seed the ContentSchedule table so the engine knows what to run:"
+echo "  2. Ensure LEADS_NOTIFY_EMAIL or ADMIN_NOTIFY_EMAIL is set for stale lead alerts."
+echo ""
+echo "  3. Seed the ContentSchedule table so the engine knows what to run:"
 echo "     npx tsx scripts/setup-content-schedules.ts"
 echo ""
-echo "  3. Optionally trigger a manual run to verify everything works:"
+echo "  4. Optionally trigger manual runs to verify everything works:"
 echo "     gcloud scheduler jobs run present-health-content-engine --location=$REGION"
+echo "     gcloud scheduler jobs run present-health-auto-response --location=$REGION"
+echo "     gcloud scheduler jobs run present-health-stale-leads --location=$REGION"
 echo ""

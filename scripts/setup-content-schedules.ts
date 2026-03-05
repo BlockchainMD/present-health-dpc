@@ -111,6 +111,7 @@ const SCHEDULES: ScheduleSpec[] = [
             useFeedback: true,
             reviewType: 'CLINICAL',
             reviewLabel: 'Present Health Clinical Team',
+            daysOfWeek: [1, 3, 5],  // Mon=1, Wed=3, Fri=5 — skip other days
             sources: {
                 trends: false,
                 news: false,

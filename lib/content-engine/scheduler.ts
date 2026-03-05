@@ -24,6 +24,15 @@ export async function enqueueDueSchedules(now = new Date()) {
         if (now < scheduledTime) continue;
         if (schedule.lastRunAt && schedule.lastRunAt >= scheduledTime) continue;
 
+        // daysOfWeek guard: if options.daysOfWeek is set (e.g. [1,3,5] for MWF),
+        // skip this schedule on days not in the array (0=Sun, 1=Mon, ..., 6=Sat).
+        const rawOpts = schedule.options && typeof schedule.options === 'object' && !Array.isArray(schedule.options)
+            ? schedule.options as Record<string, any> : {};
+        if (Array.isArray(rawOpts.daysOfWeek)) {
+            const tzDay = new Date(now.toLocaleString('en-US', { timeZone: schedule.timezone })).getDay();
+            if (!rawOpts.daysOfWeek.includes(tzDay)) continue;
+        }
+
         const options = normalizeOptions(schedule.options, schedule.maxDaily || undefined);
 
         await prisma.$transaction([
