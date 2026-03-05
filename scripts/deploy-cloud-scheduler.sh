@@ -4,7 +4,7 @@ set -eo pipefail
 # =============================================================================
 # Deploy Cloud Scheduler jobs for Present Health content automation.
 #
-# This script creates (or updates) four Cloud Scheduler jobs:
+# This script creates (or updates) six Cloud Scheduler jobs:
 #
 #   1. present-health-content-engine  — Runs content generation every 2 hours.
 #      Enqueues and executes ContentSchedule entries (CONTENT, GSC_SYNC, etc.)
@@ -20,11 +20,18 @@ set -eo pipefail
 #   4. present-health-refresh-strategy — Recomputes CTR-weighted cluster
 #      strategy, runs every Monday at 7am CT.
 #
+#   5. present-health-auto-response   — Processes due auto-response follow-up
+#      emails every 30 minutes.
+#
+#   6. present-health-stale-leads     — Sends stale lead alert digests daily
+#      at 9am CT.
+#
 # Usage:
 #   CONTENT_ENGINE_CRON_SECRET=<secret> bash scripts/deploy-cloud-scheduler.sh
 #   (Omit the env var to be prompted or auto-generate a secret)
 #
-# After first run, add CONTENT_ENGINE_CRON_SECRET to Cloud Run env vars.
+# After first run, add CONTENT_ENGINE_CRON_SECRET and AUTO_RESPONSE_CRON_SECRET
+# to your Cloud Run service environment variables.
 # =============================================================================
 
 echo "Deploying Cloud Scheduler jobs for Present Health Content Engine"
@@ -54,7 +61,23 @@ if [ -z "$CONTENT_ENGINE_CRON_SECRET" ]; then
     fi
 fi
 
-HEADERS="x-cron-secret=${CONTENT_ENGINE_CRON_SECRET},Content-Type=application/json"
+CONTENT_HEADERS="x-cron-secret=${CONTENT_ENGINE_CRON_SECRET},Content-Type=application/json"
+
+# ── Auto-response secret resolution ─────────────────────────────────────────
+if [ -z "$AUTO_RESPONSE_CRON_SECRET" ]; then
+    read -rp "Enter AUTO_RESPONSE_CRON_SECRET (press Enter to auto-generate): " ar_secret
+    if [ -z "$ar_secret" ]; then
+        AUTO_RESPONSE_CRON_SECRET=$(openssl rand -hex 32)
+        echo "Generated secret: $AUTO_RESPONSE_CRON_SECRET"
+        echo ""
+        echo "⚠️  Copy this secret — you will need to add it to Cloud Run env vars!"
+        echo ""
+    else
+        AUTO_RESPONSE_CRON_SECRET="$ar_secret"
+    fi
+fi
+
+AUTO_RESPONSE_HEADERS="x-cron-secret=${AUTO_RESPONSE_CRON_SECRET},Content-Type=application/json"
 
 # ── Helper: create or update a scheduler job ─────────────────────────────────
 create_or_update() {
@@ -72,7 +95,7 @@ create_or_update() {
         --time-zone="$TZ" \
         --uri="$CRON_ENDPOINT" \
         --http-method=POST \
-        --headers="$HEADERS" \
+        --headers="$CONTENT_HEADERS" \
         --message-body="$BODY" \
         --description="$DESC" \
         2>/dev/null || \
@@ -82,8 +105,44 @@ create_or_update() {
         --time-zone="$TZ" \
         --uri="$CRON_ENDPOINT" \
         --http-method=POST \
-        --headers="$HEADERS" \
+        --headers="$CONTENT_HEADERS" \
         --message-body="$BODY" \
+        --description="$DESC"
+}
+
+# ── Helper: create or update a scheduler job with custom URI and headers ─────
+create_or_update_custom() {
+    local JOB_NAME="$1"
+    local SCHEDULE="$2"
+    local TZ="$3"
+    local URI="$4"
+    local BODY="$5"
+    local JOB_HEADERS="$6"
+    local DESC="$7"
+    local DEADLINE="${8:-180s}"
+
+    echo "  → $JOB_NAME  ($SCHEDULE $TZ)"
+
+    gcloud scheduler jobs create http "$JOB_NAME" \
+        --location="$REGION" \
+        --schedule="$SCHEDULE" \
+        --time-zone="$TZ" \
+        --uri="$URI" \
+        --http-method=POST \
+        --headers="$JOB_HEADERS" \
+        --message-body="$BODY" \
+        --attempt-deadline="$DEADLINE" \
+        --description="$DESC" \
+        2>/dev/null || \
+    gcloud scheduler jobs update http "$JOB_NAME" \
+        --location="$REGION" \
+        --schedule="$SCHEDULE" \
+        --time-zone="$TZ" \
+        --uri="$URI" \
+        --http-method=POST \
+        --headers="$JOB_HEADERS" \
+        --message-body="$BODY" \
+        --attempt-deadline="$DEADLINE" \
         --description="$DESC"
 }
 
