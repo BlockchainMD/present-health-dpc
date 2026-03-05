@@ -40,7 +40,7 @@ export async function generateBrief(signal: TopicSignal): Promise<Brief> {
         actionSteps: ['Pick one small change to start this week', 'Track progress for 7 days', 'Ask a clinician if symptoms persist'],
         safetyNotes: ['Do not provide medical diagnosis or individualized advice', 'Encourage seeking care for alarming symptoms'],
         keywords: [topic.toLowerCase()],
-        metaTitle: trimMetaTitle(`${topic}: Practical guide`),
+        metaTitle: trimMetaTitle(`${topic}: What to Know in ${new Date().getFullYear()}`),
         metaDescription: trimMetaDescription(`A concise, actionable guide to ${topic} with key context and practical takeaways.`),
         wordCountTarget,
         ctaType: 'BOOK_CALL',
@@ -67,6 +67,7 @@ Rules:
 - Keep it concise, punchy, and actionable. Prefer short headings, tight phrasing, and 1-2 sentence paragraphs.
 - The hook must be a specific, thought-provoking nugget (1-2 sentences) that explains why this topic is timely or under-discussed.
 - Optimize for SEO with a clear primary keyword, 3-6 secondary keywords, and "People Also Ask" style questions.
+- metaTitle should be compelling and click-worthy (50-60 chars). Use formats like: "[Topic]: What to Know in ${new Date().getFullYear()}", "[Number] Things About [Topic] Your Doctor Wants You to Know", "[Topic] Explained: Causes, Symptoms & What to Do". Never use generic suffixes like "Practical guide".
 - Include a subtle, topic-relevant DPC value hook in the outline or action steps (e.g., continuity, longer visits, direct access) without naming Present Health.
 - Output valid JSON only.
 
@@ -166,7 +167,7 @@ function buildHook(signal: TopicSignal, topic: string) {
 }
 
 function trimMetaTitle(title: string) {
-    return title.length <= 60 ? title : `${title.slice(0, 57).trim()}…`;
+    return title.length <= 65 ? title : `${title.slice(0, 62).trim()}…`;
 }
 
 function trimMetaDescription(desc: string) {

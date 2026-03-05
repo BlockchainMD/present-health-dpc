@@ -1,3 +1,6 @@
+// DEPRECATED: /blog/[slug] is redirected to /learn/[slug] via next.config.ts.
+// The canonical article route is /learn/[topicSlug]. This page is kept as a
+// fallback but should not receive direct traffic.
 import { prisma } from '@/lib/prisma';
 import { format } from 'date-fns';
 import { notFound } from 'next/navigation';

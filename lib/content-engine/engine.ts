@@ -6,7 +6,7 @@ import { generateDraft } from './draft';
 import { qaDraft, isFallbackContent, extractFaqs } from './qa';
 import { classifyCluster, classifyClusters, slugify } from './taxonomy';
 import { getClusterWeights } from './feedback';
-import { Brief, EngineOptions, EngineResult, InternalLinkSuggestion, TopicSignal } from './types';
+import { Brief, Draft, EngineOptions, EngineResult, InternalLinkSuggestion, TopicSignal } from './types';
 import { getSeoHealthSnapshot } from '../seo-health/service';
 import { DEFAULT_DISCLAIMER } from './disclaimer';
 import { lintMarkdown } from './lint';
@@ -425,13 +425,11 @@ function injectInternalLinks(content: string, links: InternalLinkSuggestion[]): 
 // ---------------------------------------------------------------------------
 
 /**
- * Appends a concise "Sources & references" section to the article content
- * when the originating signal has a real URL.  This adds E-E-A-T signals
- * (cited sources) without cluttering the main article structure.
+ * Appends a concise "Sources & references" section to the article content.
+ * Uses the signal URL when available, otherwise falls back to AI-cited
+ * sources from the draft (for curated topics that lack a source URL).
  */
-function appendSourcesSection(content: string, signal: TopicSignal): string {
-    if (!signal.url || !signal.url.startsWith('http')) return content;
-
+function appendSourcesSection(content: string, signal: TopicSignal, draft?: Draft): string {
     const kindLabel: Record<string, string> = {
         research: 'Research study',
         trial: 'Clinical trial',
@@ -441,16 +439,28 @@ function appendSourcesSection(content: string, signal: TopicSignal): string {
         curated: '',
     };
 
-    const label = kindLabel[signal.kind] || 'Reference';
-    if (!label) return content; // Skip curated (no external URL to cite)
+    // Signal has a real URL — use it directly
+    if (signal.url && signal.url.startsWith('http')) {
+        const label = kindLabel[signal.kind] || 'Reference';
+        if (!label) {
+            // Curated with a URL is unusual; still cite it
+        }
+        const sourceName = signal.source.replace(/\s*\([^)]*\)\s*/g, '').trim();
+        return (
+            content.trimEnd() +
+            `\n\n## Sources & references\n\n` +
+            `- [${signal.title || sourceName}](${signal.url}) — *${sourceName}* (${label || 'Reference'})\n`
+        );
+    }
 
-    const sourceName = signal.source.replace(/\s*\([^)]*\)\s*/g, '').trim();
+    // Fall back to AI-cited sources (e.g. curated topics with no signal URL)
+    const cited = draft?.citedSources?.filter(s => s.url && s.title);
+    if (cited && cited.length > 0) {
+        const lines = cited.map(s => `- [${s.title}](${s.url})`).join('\n');
+        return content.trimEnd() + `\n\n## Sources & references\n\n${lines}\n`;
+    }
 
-    return (
-        content.trimEnd() +
-        `\n\n## Sources & references\n\n` +
-        `- [${signal.title || sourceName}](${signal.url}) — *${sourceName}* (${label})\n`
-    );
+    return content;
 }
 
 async function buildInternalLinks(brief: Brief): Promise<InternalLinkSuggestion[]> {

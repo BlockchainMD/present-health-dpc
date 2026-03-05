@@ -56,9 +56,11 @@ Rules:
 - No medical diagnosis or individualized advice.
 - Mention Present Health only in the CTA section.
 - Use only "How Present Health can help" for the CTA heading.
-- Quick answer: 3-4 sentences. Open with the HOOK, explain why it matters now, close with one thing the reader can do.
+- Quick answer: 3-4 sentences. Open with a 1-2 sentence direct answer to the primary question that could stand alone as a cited snippet — use specific facts, numbers, or timeframes, not vague advice. Then explain why it matters now using the HOOK, and close with one thing the reader can do.
 - Key context is the heart of the article — write 800-1200 words here. Break it into 3-5 h3 subheadings with natural, topic-specific titles (e.g. "### How the pathway works", "### What the evidence shows", "### Who should ask about this"). Explain mechanisms, summarise evidence, and give practical steps. Weave in 1-2 sentences connecting consistent primary care (continuity, longer visits, direct access) to better management of this topic — without naming Present Health.
-- FAQ: 3-5 Q&A pairs. Mirror real "People Also Ask" search queries. Every answer must be substantive.
+- Include a "### Key takeaway" callout (1-2 sentences) at the end of Key context that summarizes the most important actionable fact. This should be a self-contained, citable statement.
+- Use definition-style phrasing for key terms (e.g., "Sleep apnea is a condition where…") at least once in Key context to support featured snippet and AI extraction.
+- FAQ: 3-5 Q&A pairs. Mirror real "People Also Ask" search queries. Every answer must be substantive. Lead each FAQ answer with a direct factual answer in the first sentence before elaborating.
 - Total word count: ${brief.wordCountTarget}–${brief.wordCountTarget + 300} words. Articles under 1200 words are too thin and will be rejected. Prioritise depth and specificity.
 - SEO: primary keyword in the first paragraph, natural variants in h3 subheadings.
 - Cautious phrasing: "may", "can", "is associated with", "some evidence suggests".
