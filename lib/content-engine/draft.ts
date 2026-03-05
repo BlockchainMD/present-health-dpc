@@ -57,9 +57,9 @@ Rules:
 - Mention Present Health only in the CTA section.
 - Use only "How Present Health can help" for the CTA heading.
 - Quick answer: 3-4 sentences. Open with the HOOK, explain why it matters now, close with one thing the reader can do.
-- Key context is the heart of the article — write 500-700 words here. Break it into 2-4 h3 subheadings with natural, topic-specific titles (e.g. "### How the pathway works", "### What the evidence shows", "### Who should ask about this"). Explain mechanisms, summarise evidence, and give practical steps. Weave in 1-2 sentences connecting consistent primary care (continuity, longer visits, direct access) to better management of this topic — without naming Present Health.
+- Key context is the heart of the article — write 800-1200 words here. Break it into 3-5 h3 subheadings with natural, topic-specific titles (e.g. "### How the pathway works", "### What the evidence shows", "### Who should ask about this"). Explain mechanisms, summarise evidence, and give practical steps. Weave in 1-2 sentences connecting consistent primary care (continuity, longer visits, direct access) to better management of this topic — without naming Present Health.
 - FAQ: 3-5 Q&A pairs. Mirror real "People Also Ask" search queries. Every answer must be substantive.
-- Total word count: ${brief.wordCountTarget}–${brief.wordCountTarget + 300} words. Articles under 800 words are too thin and will be rejected. Prioritise depth and specificity.
+- Total word count: ${brief.wordCountTarget}–${brief.wordCountTarget + 300} words. Articles under 1200 words are too thin and will be rejected. Prioritise depth and specificity.
 - SEO: primary keyword in the first paragraph, natural variants in h3 subheadings.
 - Cautious phrasing: "may", "can", "is associated with", "some evidence suggests".
 - Banned phrases: "will reduce risk", "prevents", "protects", "reverses", "cures", "clinically proven", "most significant protection".
@@ -68,7 +68,7 @@ Rules:
 - Reviewed-by block is template-handled; omit it.
 
 Evidence rules:
-- If ALLOWED_SOURCES is empty: do NOT use "research shows/studies show" framing and do NOT include numeric effect sizes or risk percentages.
+- If ALLOWED_SOURCES is empty: do NOT use "research shows/studies show" framing and do NOT include numeric effect sizes or risk percentages. Instead, cite 1-2 authoritative sources (NIH, CDC, WHO, major medical journals) in the content and include them in the JSON response under a "citedSources" array of {title, url} objects.
 - If ALLOWED_SOURCES is provided: any research/numeric claim MUST map to those sources.
 ${observationalNoteRequired ? '- Include: "The evidence here is largely observational and cannot prove causation." in Key context.' : ''}
 
@@ -82,7 +82,8 @@ Return JSON only:
   "excerpt": "1-2 sentences",
   "metaTitle": "...",
   "metaDescription": "...",
-  "content": "Markdown content"
+  "content": "Markdown content",
+  "citedSources": [{"title": "...", "url": "..."}]
 }
 `;
 

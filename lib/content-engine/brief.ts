@@ -12,7 +12,7 @@ export async function generateBrief(signal: TopicSignal): Promise<Brief> {
     const intent = pickIntent(cleanedTitle);
     const slug = slugify(cleanedTitle);
 
-    const wordCountTarget = 950 + (slug.length * 7) % 250;
+    const wordCountTarget = 1500 + (slug.length * 7) % 400;
     const hook = buildHook(signal, topic);
     const fallback: Brief = {
         title: cleanedTitle || signal.title,
@@ -100,7 +100,7 @@ Return JSON with:
         const parsed = await generateJson<any>(prompt, 0.4);
         if (!parsed) return fallback;
 
-        const normalizedWordCount = clampNumber(parsed.wordCountTarget ?? wordCountTarget, 900, 1400);
+        const normalizedWordCount = clampNumber(parsed.wordCountTarget ?? wordCountTarget, 1500, 2200);
 
         return {
             ...fallback,

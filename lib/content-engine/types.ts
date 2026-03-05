@@ -45,6 +45,7 @@ export type Draft = {
     metaDescription: string;
     qaFlags?: string[];
     internalLinks?: InternalLinkSuggestion[];
+    citedSources?: { title: string; url: string }[];
 };
 
 export type EngineOptions = {

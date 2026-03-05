@@ -3,7 +3,7 @@ import { prisma } from '../prisma';
 import { fetchTopicSignals } from './sources';
 import { generateBrief } from './brief';
 import { generateDraft } from './draft';
-import { qaDraft, isFallbackContent } from './qa';
+import { qaDraft, isFallbackContent, extractFaqs } from './qa';
 import { classifyCluster, classifyClusters, slugify } from './taxonomy';
 import { getClusterWeights } from './feedback';
 import { Brief, EngineOptions, EngineResult, InternalLinkSuggestion, TopicSignal } from './types';
@@ -246,8 +246,9 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
             const internalLinks = await buildInternalLinks(brief);
             const contentWithLinks = injectInternalLinks(qa.content, internalLinks);
 
-            // Append a sources section when we have a real reference URL.
-            const contentWithSources = appendSourcesSection(contentWithLinks, signal);
+            // Append a sources section when we have a real reference URL,
+            // or fall back to AI-cited sources for curated topics.
+            const contentWithSources = appendSourcesSection(contentWithLinks, signal, draft);
 
             // Stagger the publish time to spread articles across the day.
             // Articles with a future publishedAt are visible on the site only
@@ -278,6 +279,8 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                 }
             }
 
+            const faqs = extractFaqs(contentWithSources);
+
             const article = await prisma.article.create({
                 data: {
                     title: qa.title || brief.title,
@@ -286,6 +289,7 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                     excerpt: qa.excerpt,
                     metaTitle: qa.metaTitle,
                     metaDescription: qa.metaDescription,
+                    faqs: faqs.length > 0 ? faqs : undefined,
                     status: shouldAutoPublish ? 'PUBLISHED' : 'DRAFT',
                     publishedAt: scheduledPublishAt,
                     featuredImage: featuredImage || null,

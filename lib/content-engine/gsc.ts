@@ -102,9 +102,9 @@ function extractSlug(pageUrl: string) {
     try {
         const url = new URL(pageUrl);
         const parts = url.pathname.split('/').filter(Boolean);
-        const blogIndex = parts.indexOf('blog');
-        if (blogIndex === -1 || blogIndex === parts.length - 1) return null;
-        return parts[blogIndex + 1];
+        const routeIndex = parts.findIndex(p => p === 'learn' || p === 'blog');
+        if (routeIndex === -1 || routeIndex === parts.length - 1) return null;
+        return parts[routeIndex + 1];
     } catch {
         return null;
     }

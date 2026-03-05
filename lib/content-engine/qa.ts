@@ -60,7 +60,7 @@ export function qaDraft(brief: Brief, draft: Draft, options: QaOptions = {}): Dr
     content = upgradeFaqAnswers(content, brief);
     content = normalizeMarkdownFromBrief(content, brief);
     content = splitLongParagraphs(content);
-    content = trimToWordCount(content, brief.wordCountTarget + 200);
+    content = trimToWordCount(content, brief.wordCountTarget + 400);
 
     const qaFlags = collectQaFlags(content, brief);
 
@@ -425,6 +425,39 @@ function ensureSentence(value: string): string {
     if (!trimmed) return '';
     if (/[.!?]$/.test(trimmed)) return trimmed;
     return `${trimmed}.`;
+}
+
+/**
+ * Extracts FAQ pairs from article markdown content.
+ * Looks for `**Q: ...** / A: ...` patterns in the FAQ section.
+ */
+export function extractFaqs(content: string): { question: string; answer: string }[] {
+    const faqSection = content.match(/##\s+FAQ([\s\S]*?)(?=\n##\s|$)/i);
+    if (!faqSection) return [];
+
+    const body = faqSection[1];
+    const faqs: { question: string; answer: string }[] = [];
+
+    // Match **Q: question** followed by A: answer on next line(s)
+    const qPattern = /\*{0,2}Q:\s*(.*?)\*{0,2}\s*$/gm;
+    let match: RegExpExecArray | null;
+
+    while ((match = qPattern.exec(body)) !== null) {
+        const question = match[1].replace(/\*+/g, '').trim();
+        if (!question) continue;
+
+        // Collect answer lines starting after this Q line
+        const afterQ = body.slice(match.index + match[0].length);
+        const answerMatch = afterQ.match(/^\s*\*{0,2}A:\*{0,2}\s*([\s\S]*?)(?=\n\s*\*{0,2}Q:|$)/i);
+        if (answerMatch) {
+            const answer = answerMatch[1].trim();
+            if (answer) {
+                faqs.push({ question, answer });
+            }
+        }
+    }
+
+    return faqs;
 }
 
 /**
