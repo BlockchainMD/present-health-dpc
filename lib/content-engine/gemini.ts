@@ -1,6 +1,6 @@
 import { VertexAI } from '@google-cloud/vertexai';
 
-const DEFAULT_MODEL = 'gemini-2.0-flash';
+const DEFAULT_MODEL = 'gemini-3-flash-preview';
 const GCP_PROJECT = process.env.GOOGLE_CLOUD_PROJECT || 'present-health-dpc-2025';
 const GCP_LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
 
