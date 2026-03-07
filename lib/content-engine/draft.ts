@@ -20,15 +20,28 @@ export async function generateDraft(brief: Brief): Promise<Draft> {
     const observationalNoteRequired = playbook.observationalLimitRequired || LIFESTYLE_CLUSTERS.has(cluster);
 
     const prompt = `
-Write a concise, high-utility health article based on this brief. Output must be cluster-aware, safety-first, and easy to review.
+Write an original, high-utility health article inspired by the topic below. You are writing a standalone health explainer — NOT summarizing or referencing a news article, study abstract, or press release.
 
-BRIEF:
-${JSON.stringify(brief, null, 2)}
+CRITICAL ORIGINALITY RULES:
+- Write as a health educator explaining a topic to patients. Never as a journalist covering a story.
+- Do NOT reference news coverage, headlines, reports, or media in the article text.
+- Do NOT use the source title or headline verbatim anywhere in the content.
+- Do NOT open with "Coverage on...", "A new report...", "Recent headlines...", or similar journalistic framing.
+- The HOOK below is a content direction seed — do NOT copy it into the article. Use it to understand WHY this topic matters, then write your own opening.
+- Open the Quick Answer with a direct, specific health fact — a number, timeframe, or mechanism — not a reference to why the topic is trending.
 
+TOPIC: ${brief.title}
 PRIMARY_CLUSTER: ${cluster}
 SECONDARY_CLUSTERS: ${secondaryClusters.join(', ') || 'none'}
 ALLOWED_SOURCES: ${allowedSources.length ? allowedSources.join(', ') : 'none'}
-HOOK: ${brief.hook || 'none'}
+HOOK (direction seed, do NOT copy): ${brief.hook || 'none'}
+ANGLE: ${brief.angle || 'none'}
+INTENT: ${brief.intent || 'none'}
+PRIMARY_QUESTION: ${brief.primaryQuestion}
+SECONDARY_QUESTIONS: ${brief.secondaryQuestions?.join('; ') || 'none'}
+ACTION_STEPS: ${brief.actionSteps?.join('; ') || 'none'}
+KEYWORDS: ${brief.keywords?.join(', ') || 'none'}
+WORD_COUNT_TARGET: ${brief.wordCountTarget}
 
 Cluster playbook (must be reflected in content):
 - Priority drivers: ${playbook.priorityDrivers.join('; ')}
@@ -56,7 +69,7 @@ Rules:
 - No medical diagnosis or individualized advice.
 - Mention Present Health only in the CTA section.
 - Use only "How Present Health can help" for the CTA heading.
-- Quick answer: 3-4 sentences. Open with a 1-2 sentence direct answer to the primary question that could stand alone as a cited snippet — use specific facts, numbers, or timeframes, not vague advice. Then explain why it matters now using the HOOK, and close with one thing the reader can do.
+- Quick answer: 3-4 sentences. Open with a 1-2 sentence direct answer to the PRIMARY_QUESTION that could stand alone as a cited snippet — use specific facts, numbers, or timeframes. Do NOT reference news stories, coverage, or trending topics. Then explain why it matters for the reader's health, and close with one thing the reader can do today.
 - Key context is the heart of the article — write 800-1200 words here. Break it into 3-5 h3 subheadings with natural, topic-specific titles (e.g. "### How the pathway works", "### What the evidence shows", "### Who should ask about this"). Explain mechanisms, summarise evidence, and give practical steps. Weave in 1-2 sentences connecting consistent primary care (continuity, longer visits, direct access) to better management of this topic — without naming Present Health.
 - Include a "### Key takeaway" callout (1-2 sentences) at the end of Key context that summarizes the most important actionable fact. This should be a self-contained, citable statement.
 - Use definition-style phrasing for key terms (e.g., "Sleep apnea is a condition where…") at least once in Key context to support featured snippet and AI extraction.

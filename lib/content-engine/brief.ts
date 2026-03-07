@@ -127,43 +127,25 @@ function trimTopic(topic: string, max: number) {
 }
 
 function buildHook(signal: TopicSignal, topic: string) {
-    const publishedAt = signal.publishedAt ? new Date(signal.publishedAt) : null;
-    const ageDays = publishedAt ? (Date.now() - publishedAt.getTime()) / (1000 * 60 * 60 * 24) : null;
-    const isRecent = ageDays !== null && ageDays <= 30;
-    const isVeryRecent = ageDays !== null && ageDays <= 7;
-    const timing = isVeryRecent ? 'this week' : isRecent ? 'this month' : '';
+    // Hooks are seed prompts for the AI — they should frame WHY the underlying
+    // health topic matters, NOT reference news headlines or source material.
     const kind = signal.kind;
     if (kind === 'trend') {
-        if (isRecent) {
-            return `Search interest in ${topic} is rising ${timing}, suggesting people are actively looking for clearer answers.`;
-        }
-        return `Search interest in ${topic} keeps resurfacing, suggesting people are still looking for clearer answers.`;
+        return `People are actively searching for clearer answers on this topic — write about the underlying health question, not the search trend itself.`;
     }
     if (kind === 'news') {
-        if (isRecent) {
-            return `Coverage on ${topic} ${timing} is bringing renewed attention to a topic many patients still find confusing.`;
-        }
-        return `Even outside the headlines, ${topic} remains confusing for many patients and deserves a clear explainer.`;
+        return `This topic is timely because of recent developments. Focus on the health implications for patients, not the news coverage.`;
     }
     if (kind === 'research') {
-        if (isRecent) {
-            return `New research on ${topic} ${timing} is adding nuance to what actually matters for day-to-day decisions.`;
-        }
-        return `Evidence on ${topic} keeps evolving, and the practical takeaways are easy to miss.`;
+        return `New evidence is adding nuance to this topic. Explain what the findings mean for day-to-day health decisions.`;
     }
     if (kind === 'trial') {
-        if (isRecent) {
-            return `Clinical trial activity around ${topic} ${timing} signals growing focus on real-world outcomes.`;
-        }
-        return `Trial activity around ${topic} suggests the field is still searching for clearer real-world answers.`;
+        return `Clinical trial activity signals growing focus on real-world outcomes for this topic.`;
     }
     if (kind === 'guideline') {
-        if (isRecent) {
-            return `Guideline updates around ${topic} ${timing} are shifting how clinicians frame everyday decisions.`;
-        }
-        return `Guidelines on ${topic} keep shifting, making it hard to know which everyday choices matter most.`;
+        return `Guideline updates are shifting how clinicians approach this topic — explain what changed and why it matters for patients.`;
     }
-    return `An under-discussed aspect of ${topic} has outsized impact on everyday health decisions.`;
+    return `This topic has outsized impact on everyday health decisions and deserves a clear, original explainer.`;
 }
 
 function trimMetaTitle(title: string) {
