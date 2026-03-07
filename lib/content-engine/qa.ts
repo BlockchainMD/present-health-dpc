@@ -55,6 +55,7 @@ export function qaDraft(brief: Brief, draft: Draft, options: QaOptions = {}): Dr
     content = stripTemplateOwnedSections(content);
     content = stripDeprecatedSections(content);
     content = mergeHelpSections(content);
+    content = stripFillerOpener(content);
     content = ensureHook(content, brief);
     content = ensureRequiredSections(content, brief);
     content = upgradeFaqAnswers(content, brief);
@@ -217,6 +218,15 @@ function collectQaFlags(content: string, brief: Brief): string[] {
 
     if (!/## quick answer/i.test(content) || lower.indexOf('## quick answer') > lower.indexOf('## tl;dr')) {
         flags.push('Quick answer missing or not near top');
+    }
+
+    // Flag Quick Answer if it still contains filler opener patterns after cleanup
+    const qaMatch = content.match(/##\s+Quick answer([\s\S]*?)(?=\n##\s|$)/i);
+    if (qaMatch) {
+        const qaBody = qaMatch[1].trim();
+        if (/^coverage\s+on\b/i.test(qaBody) || /is\s+bringing\s+renewed\s+attention/i.test(qaBody)) {
+            flags.push('Quick answer uses filler opener instead of direct answer');
+        }
     }
 
 
@@ -401,6 +411,43 @@ function mergeHelpBodies(bodies: string[]): string {
         }
     }
     return output.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/**
+ * Strips filler opener sentences from Quick Answer that just restate the
+ * headline or use generic "coverage on..." framing instead of a direct answer.
+ */
+function stripFillerOpener(content: string): string {
+    const pattern = /##\s+Quick answer([\s\S]*?)(?=\n##\s|$)/i;
+    const match = content.match(pattern);
+    if (!match) return content;
+
+    const body = match[1].trim();
+    const lines = body.split('\n');
+
+    // Patterns that indicate a filler opener (case-insensitive, first sentence)
+    const fillerPatterns = [
+        /^coverage\s+on\b/i,
+        /^recent\s+(coverage|reporting|headlines|news)\s+(on|about|regarding)\b/i,
+        /^this\s+week['']?s?\s+(coverage|headlines|news)\s+(on|about|is)\b/i,
+        /^a\s+new\s+(report|article|story)\s+(on|about|from)\b/i,
+        /^headlines\s+(this\s+week|today|recently)\s+(are|about|on)\b/i,
+        /is\s+bringing\s+renewed\s+attention\s+to\b/i,
+        /many\s+patients\s+still\s+find\s+confusing/i,
+    ];
+
+    const firstLine = lines[0]?.trim() || '';
+    const isFiller = fillerPatterns.some(p => p.test(firstLine));
+    if (!isFiller) return content;
+
+    // Remove the filler sentence(s) from the first line
+    // Split on sentence boundaries and drop matching sentences
+    const sentences = firstLine.split(/(?<=[.!?])\s+/);
+    const cleaned = sentences.filter(s => !fillerPatterns.some(p => p.test(s)));
+    lines[0] = cleaned.join(' ').trim();
+
+    const updatedBody = lines.filter(l => l.trim()).join('\n');
+    return content.replace(pattern, `## Quick answer\n${updatedBody}\n`);
 }
 
 function ensureHook(content: string, brief: Brief): string {
