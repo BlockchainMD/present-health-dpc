@@ -48,11 +48,12 @@ export async function generateBrief(signal: TopicSignal): Promise<Brief> {
     };
 
     const prompt = `
-You are a senior health content strategist for Present Health. Create a brief for an article with high SEO value and high diversity.
+You are a senior health content strategist for Present Health. Create a brief for an original health article.
 
-Topic: "${cleanedTitle || signal.title}"
-Source: ${signal.source}
-Hook seed: ${hook}
+The topic below comes from a signal source (news, research, trend, etc.). Your job is to TRANSFORM it into a patient-facing health explainer topic — NOT to cover the source story itself.
+
+SIGNAL TOPIC: "${cleanedTitle || signal.title}"
+SIGNAL SOURCE TYPE: ${signal.source}
 Cluster: ${cluster}
 Angle preference: ${angle}
 Intent preference: ${intent}
@@ -62,10 +63,12 @@ Allowed sources: ${signal.url || 'none'}
 Risk level: ${riskLevel}
 
 Rules:
+- The article TITLE must be an original, patient-facing health topic title — NOT the signal headline. Reframe the underlying health question for a general audience.
 - Do NOT mention any clinician names or personal names.
+- Do NOT reference the source article, news outlet, or journalist framing.
 - Do NOT over-index on DPC or insurance; save Present Health mention for the CTA only.
 - Keep it concise, punchy, and actionable. Prefer short headings, tight phrasing, and 1-2 sentence paragraphs.
-- The hook must be a specific, thought-provoking nugget (1-2 sentences) that explains why this topic is timely or under-discussed.
+- The hook must explain why this health topic matters to patients right now — NOT reference media coverage.
 - Optimize for SEO with a clear primary keyword, 3-6 secondary keywords, and "People Also Ask" style questions.
 - metaTitle should be compelling and click-worthy (50-60 chars). Use formats like: "[Topic]: What to Know in ${new Date().getFullYear()}", "[Number] Things About [Topic] Your Doctor Wants You to Know", "[Topic] Explained: Causes, Symptoms & What to Do". Never use generic suffixes like "Practical guide".
 - Include a subtle, topic-relevant DPC value hook in the outline or action steps (e.g., continuity, longer visits, direct access) without naming Present Health.
