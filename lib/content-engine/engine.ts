@@ -211,6 +211,16 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                 || (reviewType === 'EDITORIAL' ? 'Present Health Editorial Team' : 'Present Health Clinical Team');
 
             const draft = await generateDraft(brief);
+
+            // Gate: reject thin Gemini output before QA pads it with placeholders.
+            // A real draft should be at least 400 words; anything under is truncated garbage.
+            const rawWordCount = draft.content.replace(/[-*#>\[\]()!]/g, '').split(/\s+/).filter(Boolean).length;
+            if (rawWordCount < 400) {
+                console.warn(`Skipping thin draft (${rawWordCount} words) for "${brief.title}"`);
+                warnings.push(`Thin draft skipped (${rawWordCount} words): ${brief.title}`);
+                continue;
+            }
+
             const qa = qaDraft(brief, draft, { reviewLabel });
 
             // If AI generation failed and we got fallback stub content, skip rather
