@@ -1,12 +1,20 @@
 import { VertexAI } from '@google-cloud/vertexai';
 
-const DEFAULT_MODEL = 'gemini-2.5-flash';
-const DRAFT_MODEL = 'gemini-2.5-pro';
+const DEFAULT_MODEL = 'gemini-3-flash-preview';
+const DRAFT_MODEL = 'gemini-3-flash-preview';
 const GCP_PROJECT = process.env.GOOGLE_CLOUD_PROJECT || 'present-health-dpc-2025';
-const GCP_LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
 
-function getVertexClient() {
-    return new VertexAI({ project: GCP_PROJECT, location: GCP_LOCATION });
+// Gemini 3 models require the global endpoint
+const GEMINI3_LOCATION = 'global';
+const LEGACY_LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
+
+function isGemini3(modelId: string) {
+    return modelId.startsWith('gemini-3');
+}
+
+function getVertexClient(modelId: string) {
+    const location = isGemini3(modelId) ? GEMINI3_LOCATION : LEGACY_LOCATION;
+    return new VertexAI({ project: GCP_PROJECT, location });
 }
 
 export type GeminiModelTier = 'fast' | 'quality';
@@ -16,11 +24,11 @@ export async function generateJson<T>(
     temperature: number,
     tier: GeminiModelTier = 'fast'
 ): Promise<T | null> {
-    const client = getVertexClient();
     const modelId = tier === 'quality'
         ? (process.env.GEMINI_QUALITY_MODEL || DRAFT_MODEL)
         : (process.env.GEMINI_MODEL || DEFAULT_MODEL);
 
+    const client = getVertexClient(modelId);
     const model = client.getGenerativeModel({ model: modelId });
 
     try {
