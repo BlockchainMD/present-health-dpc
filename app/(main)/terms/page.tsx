@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Terms of Service | Present Health",
+    description: "Terms and conditions for using Present Health messaging-first primary care services.",
+};
+
 export default function TermsOfService() {
     return (
         <section className="py-20 bg-background">

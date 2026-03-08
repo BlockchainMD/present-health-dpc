@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Privacy Policy | Present Health",
+    description: "How Present Health collects, uses, and protects your personal information.",
+};
+
 export default function PrivacyPolicy() {
     return (
         <section className="py-20 bg-background">

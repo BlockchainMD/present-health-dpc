@@ -14,9 +14,32 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://presenthealthmd.com"),
   title: "Present Health | Messaging-First Primary Care",
   description:
     "Full-service primary care by message, phone, or video. One plan: $99/month. Everything included. Adults 18+.",
+  openGraph: {
+    siteName: "Present Health",
+    type: "website",
+    title: "Present Health | Messaging-First Primary Care",
+    description:
+      "Full-service primary care by message, phone, or video. One plan: $99/month. Everything included. Adults 18+.",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Present Health — Messaging-First Primary Care",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Present Health | Messaging-First Primary Care",
+    description:
+      "Full-service primary care by message, phone, or video. One plan: $99/month. Everything included. Adults 18+.",
+    images: ["/og-image.png"],
+  },
 };
 
 export default function RootLayout({
