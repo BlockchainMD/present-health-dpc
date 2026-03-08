@@ -1,20 +1,16 @@
-import { VertexAI } from '@google-cloud/vertexai';
+import { GoogleGenAI } from '@google/genai';
 
 const DEFAULT_MODEL = 'gemini-3-flash-preview';
 const DRAFT_MODEL = 'gemini-3-flash-preview';
 const GCP_PROJECT = process.env.GOOGLE_CLOUD_PROJECT || 'present-health-dpc-2025';
+const GCP_LOCATION = 'global';
 
-// Gemini 3 models require the global endpoint
-const GEMINI3_LOCATION = 'global';
-const LEGACY_LOCATION = process.env.VERTEX_AI_LOCATION || 'us-central1';
-
-function isGemini3(modelId: string) {
-    return modelId.startsWith('gemini-3');
-}
-
-function getVertexClient(modelId: string) {
-    const location = isGemini3(modelId) ? GEMINI3_LOCATION : LEGACY_LOCATION;
-    return new VertexAI({ project: GCP_PROJECT, location });
+function getClient() {
+    return new GoogleGenAI({
+        vertexai: true,
+        project: GCP_PROJECT,
+        location: GCP_LOCATION,
+    });
 }
 
 export type GeminiModelTier = 'fast' | 'quality';
@@ -28,20 +24,20 @@ export async function generateJson<T>(
         ? (process.env.GEMINI_QUALITY_MODEL || DRAFT_MODEL)
         : (process.env.GEMINI_MODEL || DEFAULT_MODEL);
 
-    const client = getVertexClient(modelId);
-    const model = client.getGenerativeModel({ model: modelId });
+    const client = getClient();
 
     try {
-        const result = await model.generateContent({
-            contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            generationConfig: {
+        const response = await client.models.generateContent({
+            model: modelId,
+            contents: prompt,
+            config: {
                 temperature,
                 responseMimeType: 'application/json',
                 maxOutputTokens: 65536,
             }
         });
 
-        const text = result.response?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const text = response.text || '';
         if (!text) {
             console.error(`Gemini (${modelId}) returned empty response`);
             return null;
