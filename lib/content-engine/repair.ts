@@ -17,7 +17,9 @@ const HEADING_ALIASES: HeadingAlias[] = [
     { heading: 'Reviewed by', aliases: ['reviewed by'] }
 ];
 
-const SUBHEADINGS = ['urgent now', 'book soon', 'routine'];
+// Legacy subheadings from old article format. "routine" removed because it's
+// a common health word that causes false-positive mid-sentence breaks.
+const SUBHEADINGS = ['urgent now', 'book soon'];
 const INLINE_HEADING_TERMS = [
     'Quick answer',
     'TL;DR',
@@ -110,5 +112,8 @@ function buildInlinePattern(phrases: string[]) {
         .sort((a, b) => b.length - a.length)
         .map(value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
     if (!escaped.length) return null;
-    return new RegExp(`([^\\n])\\s+(${escaped.join('|')})\\b`, 'gi');
+    // Only split before a heading term when it follows a sentence-ending
+    // punctuation mark. This avoids breaking mid-sentence occurrences like
+    // "for routine follow-ups" or "check the FAQ section".
+    return new RegExp(`([.!?:])\\s+(${escaped.join('|')})\\b`, 'gi');
 }
