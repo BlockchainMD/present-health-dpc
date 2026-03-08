@@ -62,7 +62,9 @@ Rules:
   5) How Present Health can help
 - Do NOT add extra h2 headings. Use h3 subheadings (###) freely within sections.
 - Headings must be on their own lines with a blank line before and after.
-- TL;DR: 3-5 bullets. Each must be a complete informative sentence — a real takeaway. Never a question. Never a metadata label like "Focus:" or "Intent:". At least one bullet must state a concrete action.
+- TL;DR: exactly 4 bullets, each following this pattern: **Bold lead-in phrase** followed by a single concise sentence (max 20 words). The bold phrase is a 2-4 word label that captures the point (e.g. "**Recovery matters most:**", "**Start with compound lifts:**"). Never a question. Never a metadata label like "Focus:" or "Intent:". At least one bullet must state a concrete action. Example format:
+  - **Bold label:** One clear, specific sentence.
+  - **Another label:** One clear, specific sentence.
 - Format FAQ strictly as: **Q: [question]** on its own line, then A: [answer] starting the next line. Do NOT bold the "A:" prefix. Every answer must be 2-4 specific, useful sentences. Never write generic filler like "Start with one or two practical steps" or "Discuss with a clinician."
 - Do NOT include an H1 or repeat the article title. Start with "## Quick answer".
 - Do NOT mention any clinician names or personal names.
