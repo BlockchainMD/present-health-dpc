@@ -27,11 +27,15 @@ export default function TermsOfService() {
                     <p>
                         Membership fees are billed on a recurring basis. You may cancel your membership at any time in accordance with our cancellation policy.
                     </p>
-                    <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">4. Medical Emergencies</h2>
+                    <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">4. Website Content &amp; No Physician-Patient Relationship</h2>
+                    <p>
+                        The educational articles, blog posts, and other content on the Present Health website are provided for general informational purposes only. This content does not constitute medical advice, diagnosis, or treatment and does not establish a physician-patient relationship between you and any Present Health clinician. Always consult a qualified healthcare provider regarding any medical condition or health concern. Do not disregard professional medical advice or delay seeking it because of something you have read on this website.
+                    </p>
+                    <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">5. Medical Emergencies</h2>
                     <p>
                         Present Health is NOT for medical emergencies. If you have a medical emergency, call 911 or go to the nearest emergency room immediately.
                     </p>
-                    <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">5. Contact Us</h2>
+                    <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">6. Contact Us</h2>
                     <p>
                         If you have any questions about these Terms, please contact us at support@presenthealthmd.com.
                     </p>
