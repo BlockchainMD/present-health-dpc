@@ -1,5 +1,3 @@
-import Head from "next/head";
-
 type JsonLdProps = {
     data: Record<string, unknown>;
     id?: string;
@@ -19,12 +17,10 @@ export function JsonLd({ data, id }: JsonLdProps) {
     const scriptId = id || `jsonld-${hashString(json).slice(0, 8)}`;
 
     return (
-        <Head>
-            <script
-                id={scriptId}
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: json }}
-            />
-        </Head>
+        <script
+            id={scriptId}
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: json }}
+        />
     );
 }
