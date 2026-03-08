@@ -49,6 +49,8 @@ export function repairMarkdown(content: string) {
             continue;
         }
         if (trimmed.startsWith('##') || trimmed.startsWith('###')) {
+            // Skip empty heading markers (e.g. bare "##" or "###" with no text)
+            if (/^#{2,6}\s*$/.test(trimmed)) continue;
             repaired.push(line);
             continue;
         }
