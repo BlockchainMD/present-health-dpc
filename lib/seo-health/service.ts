@@ -992,7 +992,7 @@ async function computeSeoHealthReport(config: SeoHealthConfig): Promise<SeoHealt
         } else {
             const issue = buildIssue({
                 code: "BROKEN_INTERNAL_LINK",
-                severity: "CRITICAL",
+                severity: "WARNING",
                 message: `${broken.length} broken internal link(s) found.`,
                 pagePath: page.path,
                 url: page.url,
