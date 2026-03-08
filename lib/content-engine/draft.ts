@@ -69,15 +69,17 @@ Rules:
 - No medical diagnosis or individualized advice.
 - Mention Present Health only in the CTA section.
 - Use only "How Present Health can help" for the CTA heading.
-- Quick answer: 3-4 sentences. Open with a 1-2 sentence direct answer to the PRIMARY_QUESTION that could stand alone as a cited snippet — use specific facts, numbers, or timeframes. Do NOT reference news stories, coverage, or trending topics. Then explain why it matters for the reader's health, and close with one thing the reader can do today.
+- Quick answer: open with a 1-line italic disclaimer: *This article is for educational purposes only and is not medical advice. Talk to your physician before making changes to your health routine.* Then 3-4 sentences: a direct answer to the PRIMARY_QUESTION that could stand alone as a cited snippet — use specific facts, numbers, or timeframes. Do NOT reference news stories, coverage, or trending topics. Explain why it matters for the reader's health, and close with one thing the reader can do today.
 - Key context is the heart of the article — write 800-1200 words here. Break it into 3-5 h3 subheadings with natural, topic-specific titles (e.g. "### How the pathway works", "### What the evidence shows", "### Who should ask about this"). Explain mechanisms, summarise evidence, and give practical steps. Weave in 1-2 sentences connecting consistent primary care (continuity, longer visits, direct access) to better management of this topic — without naming Present Health.
+- If the topic involves high-intensity exercise, supplements, fasting, or any intervention with contraindications, include a "### Who should use caution" subsection in Key context listing specific populations who should seek medical clearance first.
 - Include a "### Key takeaway" callout (1-2 sentences) at the end of Key context that summarizes the most important actionable fact. This should be a self-contained, citable statement.
 - Use definition-style phrasing for key terms (e.g., "Sleep apnea is a condition where…") at least once in Key context to support featured snippet and AI extraction.
 - FAQ: 3-5 Q&A pairs. Mirror real "People Also Ask" search queries. Every answer must be substantive. Lead each FAQ answer with a direct factual answer in the first sentence before elaborating.
 - Total word count: ${brief.wordCountTarget}–${brief.wordCountTarget + 300} words. Articles under 1200 words are too thin and will be rejected. Prioritise depth and specificity.
 - SEO: primary keyword in the first paragraph, natural variants in h3 subheadings.
 - Cautious phrasing: "may", "can", "is associated with", "some evidence suggests".
-- Banned phrases: "will reduce risk", "prevents", "protects", "reverses", "cures", "clinically proven", "most significant protection".
+- Banned phrases: "will reduce risk", "prevents", "protects", "reverses", "cures", "clinically proven", "most significant protection", "your minimum effective dose is".
+- When citing general guidelines (e.g. 150 min/week of moderate activity), attribute them to the source body (CDC, WHO, ACSM) rather than stating them as direct recommendations.
 - Disclaimer and emergency guidance are template-handled; omit them.
 - How Present Health can help: 3-6 bullets specific to this topic, ONE CTA link (${'/pricing'}).
 - Reviewed-by block is template-handled; omit it.
