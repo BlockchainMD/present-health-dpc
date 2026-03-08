@@ -103,7 +103,7 @@ Return JSON only:
 `;
 
     try {
-        const parsed = await generateJson<any>(prompt, 0.5);
+        const parsed = await generateJson<any>(prompt, 0.5, 'quality');
         if (!parsed) return fallback;
 
         let draft = {
