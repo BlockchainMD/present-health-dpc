@@ -197,11 +197,11 @@ export default async function AdminLayout({
                         Content Ops
                     </Link>
                     <Link
-                        href="/admin/analytics"
+                        href="/admin/gsc"
                         className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
                     >
                         <BarChart3 className="h-4 w-4" />
-                        Analytics
+                        Search Console
                     </Link>
                     <Link
                         href="/admin/seo-health"
