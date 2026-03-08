@@ -276,7 +276,7 @@ function buildSafetyPrompt(article: ArticleSafetyInput, stateNames: string[]) {
         "Check for:",
         "- overpromising outcomes",
         "- diagnosing language",
-        "- treatment recommendations that should only come from a physician",
+        "- treatment recommendations that should only come from a physician (prescribing medications, specific supplement dosages, or individual treatment plans — NOT general wellness/fitness education like exercise guidelines, dietary patterns, or widely-published public health recommendations such as CDC/WHO activity guidelines)",
         "- missing disclaimers",
         "- claims without citations",
         "- scope-of-practice issues (implying DPC replaces emergency/specialty care)",
@@ -409,7 +409,7 @@ function heuristicAnalyze(article: ArticleSafetyInput) {
             suggestedFix: "Replace with educational context and advise consultation with a licensed clinician for diagnosis.",
         },
         {
-            regex: /\b(you should take|start taking|stop taking|dose|dosage)\b/gi,
+            regex: /\b(you should take|start taking|stop taking|(?:recommended |daily |maximum |mg |medication )(?:dose|dosage))\b/gi,
             severity: "MUST_FIX",
             category: "TREATMENT_RECOMMENDATION",
             reason: "This can be interpreted as direct treatment guidance.",
