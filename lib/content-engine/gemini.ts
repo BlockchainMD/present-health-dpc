@@ -6,11 +6,20 @@ const GCP_PROJECT = process.env.GOOGLE_CLOUD_PROJECT || 'present-health-dpc-2025
 const GCP_LOCATION = 'global';
 
 function getClient() {
-    return new GoogleGenAI({
+    // The SDK auto-detects GOOGLE_API_KEY / GEMINI_API_KEY from env and uses
+    // them for "express mode" auth, which conflicts with global-endpoint ADC.
+    // Temporarily hide them so the SDK uses ADC instead.
+    const saved = { g: process.env.GOOGLE_API_KEY, k: process.env.GEMINI_API_KEY };
+    delete process.env.GOOGLE_API_KEY;
+    delete process.env.GEMINI_API_KEY;
+    const client = new GoogleGenAI({
         vertexai: true,
         project: GCP_PROJECT,
         location: GCP_LOCATION,
     });
+    if (saved.g) process.env.GOOGLE_API_KEY = saved.g;
+    if (saved.k) process.env.GEMINI_API_KEY = saved.k;
+    return client;
 }
 
 export type GeminiModelTier = 'fast' | 'quality';
