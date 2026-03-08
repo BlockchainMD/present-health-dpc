@@ -213,9 +213,9 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
             const draft = await generateDraft(brief);
 
             // Gate: reject thin Gemini output before QA pads it with placeholders.
-            // A real draft should be at least 400 words; anything under is truncated garbage.
+            // A real draft should be at least 300 words; anything under is truncated/fallback.
             const rawWordCount = draft.content.replace(/[-*#>\[\]()!]/g, '').split(/\s+/).filter(Boolean).length;
-            if (rawWordCount < 400) {
+            if (rawWordCount < 300) {
                 console.warn(`Skipping thin draft (${rawWordCount} words) for "${brief.title}"`);
                 warnings.push(`Thin draft skipped (${rawWordCount} words): ${brief.title}`);
                 continue;
