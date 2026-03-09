@@ -1,4 +1,5 @@
 import { prisma } from './prisma';
+import { sendGA4ServerEvent } from './ga4-measurement';
 
 export interface ConversionEventParams {
     type: string;
@@ -28,6 +29,13 @@ export async function recordConversionEvent(params: ConversionEventParams) {
             attributionSessionId: params.attributionSessionId,
             leadId: params.leadId,
             userId: params.userId
+        });
+
+        // Forward to GA4 via Measurement Protocol (fire-and-forget)
+        sendGA4ServerEvent(params.type, {
+            leadId: params.leadId,
+            userId: params.userId,
+            sessionId: params.attributionSessionId,
         });
 
         return event;

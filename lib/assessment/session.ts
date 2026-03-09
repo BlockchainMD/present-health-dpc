@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { sendEmail } from '@/lib/email';
 import { notifyUnifiedLeadCreated } from '@/lib/notify';
+import { recordConversionEvent } from '@/lib/conversion';
 import type { AssessmentSession } from '@prisma/client';
 import type { SynthesisResult } from './engine';
 import { SIGNAL_MAP } from './signals';
@@ -60,7 +61,7 @@ export async function completeSession(
   token: string,
   result: SynthesisResult
 ): Promise<AssessmentSession> {
-  return prisma.assessmentSession.update({
+  const session = await prisma.assessmentSession.update({
     where: { token },
     data: {
       status: 'COMPLETED',
@@ -70,6 +71,13 @@ export async function completeSession(
       completedAt: new Date(),
     },
   });
+
+  void recordConversionEvent({
+    type: 'ASSESSMENT_COMPLETED',
+    metadata: { token, cluster: session.cluster, signalCount: session.signals.length },
+  });
+
+  return session;
 }
 
 export async function captureEmail(
@@ -162,6 +170,13 @@ export async function captureEmail(
     summary: session.aiSummary || '',
     doctorFlags: session.doctorFlags,
     recommendedSlugs: session.recommendedSlugs,
+  });
+
+  // Record conversion event (also forwards to GA4 via Measurement Protocol)
+  void recordConversionEvent({
+    type: 'ASSESSMENT_LEAD_CAPTURED',
+    leadId: lead.id,
+    metadata: { token, cluster: session.cluster, signalCount: session.signals.length },
   });
 
   // Admin notification

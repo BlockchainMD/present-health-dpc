@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import type { Question } from '@/lib/assessment/questions';
+import { trackEvent, AnalyticsEvents } from '@/lib/analytics';
 
 type Step = 'IDLE' | 'STARTING' | 'ANSWERING' | 'COMPLETING' | 'RESULTS';
 
@@ -67,6 +68,7 @@ export function AssessmentWidget({
       setCurrentIndex(0);
       setAnswers({});
       setStep('ANSWERING');
+      trackEvent({ eventType: AnalyticsEvents.ASSESSMENT_START, metadata: { cluster, articleSlug } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStep('IDLE');
@@ -113,11 +115,12 @@ export function AssessmentWidget({
         recommendedSlugs: (data.recommendedSlugs as string[]) || [],
       });
       setStep('RESULTS');
+      trackEvent({ eventType: AnalyticsEvents.ASSESSMENT_COMPLETE, metadata: { cluster, articleSlug } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setStep('ANSWERING');
     }
-  }, []);
+  }, [cluster, articleSlug]);
 
   const currentQuestion = questions[currentIndex] ?? null;
   const isMulti = currentQuestion?.type === 'multi';
@@ -169,6 +172,7 @@ export function AssessmentWidget({
       }
       if (!res.ok) throw new Error((data.error as string) || 'Failed to submit');
       setEmailCaptured(true);
+      trackEvent({ eventType: AnalyticsEvents.LEAD_CAPTURE, metadata: { cluster, articleSlug } });
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }
