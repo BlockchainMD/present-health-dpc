@@ -354,12 +354,12 @@ export function buildPricingSchemas(): SchemaBlock[] {
     const blocks: SchemaBlock[] = [
         {
             "@context": "https://schema.org",
-            "@type": "Product",
+            "@type": "Service",
             name: "Present Health Membership",
             description:
                 "Messaging-first primary care membership with secure messaging, video when clinically appropriate, and no per-visit fees.",
-            brand: {
-                "@type": "Brand",
+            provider: {
+                "@type": "MedicalBusiness",
                 name: "Present Health",
             },
             offers: [
@@ -391,11 +391,11 @@ export function buildPricingSchemas(): SchemaBlock[] {
         },
         {
             "@context": "https://schema.org",
-            "@type": "Product",
+            "@type": "Service",
             name: "Present Health Single Visit",
             description: "One message-based or video clinical encounter for a specific health concern.",
-            brand: {
-                "@type": "Brand",
+            provider: {
+                "@type": "MedicalBusiness",
                 name: "Present Health",
             },
             offers: {
@@ -413,11 +413,11 @@ export function buildPricingSchemas(): SchemaBlock[] {
         },
         {
         "@context": "https://schema.org",
-        "@type": "Product",
+        "@type": "Service",
         name: "Present Health Employer / Group Membership",
         description: `Employer groups at $${EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS}/employee/month.`,
-        brand: {
-            "@type": "Brand",
+        provider: {
+            "@type": "MedicalBusiness",
             name: "Present Health",
         },
         offers: {

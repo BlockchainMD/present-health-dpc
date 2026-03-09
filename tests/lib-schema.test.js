@@ -44,7 +44,7 @@ test('buildPricingSchemas returns membership, single-visit, employer, and breadc
   const blocks = schema.buildPricingSchemas();
   assert.equal(blocks.length, 4);
   const types = schema.schemaTypeList(blocks);
-  assert.ok(types.includes('Product'));
+  assert.ok(types.includes('Service'));
   assert.ok(types.includes('BreadcrumbList'));
 });
 

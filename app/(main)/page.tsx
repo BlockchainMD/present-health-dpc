@@ -183,26 +183,20 @@ function FeatureCard({ icon, title, description }: FeatureCardProps) {
 }
 
 function ScenarioSection() {
-    const productSchema = {
+    const serviceSchema = {
         "@context": "https://schema.org",
-        "@type": "Product",
+        "@type": "Service",
         "name": "Present Health Membership",
         "description": "Full-service primary care for adults 18+ with messaging-first access and video when clinically appropriate.",
-        "brand": {
-            "@type": "Brand",
+        "provider": {
+            "@type": "MedicalBusiness",
             "name": "Present Health"
         },
         "offers": {
             "@type": "Offer",
             "priceCurrency": "USD",
             "price": "99.00",
-            "itemCondition": "https://schema.org/NewCondition",
-            "availability": "https://schema.org/InStock",
-            "url": "https://www.presenthealth.com/join",
-            "seller": {
-                "@type": "Organization",
-                "name": "Present Health"
-            }
+            "url": "https://www.presenthealthmd.com/pricing"
         }
     };
 
@@ -223,7 +217,7 @@ function ScenarioSection() {
 
     return (
         <section id="features" className="w-full py-24 md:py-32 bg-slate-50 border-y border-border">
-            <SchemaBlocks blocks={[productSchema, hsaFAQ]} idPrefix="homepage-mid" />
+            <SchemaBlocks blocks={[serviceSchema, hsaFAQ]} idPrefix="homepage-mid" />
             <div className="container px-4 md:px-6 mx-auto max-w-6xl">
                 <div className="text-center mb-16 max-w-3xl mx-auto">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Healthcare that respects your time</h2>
