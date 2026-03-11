@@ -9,6 +9,7 @@ const CONVERSION_TYPE_TO_GA4: Record<string, string> = {
   CHECKOUT_COMPLETED: 'purchase',
   SUBSCRIPTION_STARTED: 'subscription_start',
   CONSULTATION_BOOKED: 'consultation_booked',
+  SINGLE_VISIT_REQUESTED: 'generate_lead',
   ASSESSMENT_COMPLETED: 'assessment_complete',
   ASSESSMENT_LEAD_CAPTURED: 'assessment_lead_captured',
 };
