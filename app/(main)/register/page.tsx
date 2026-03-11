@@ -91,7 +91,7 @@ function RegisterForm() {
         });
 
         try {
-            const checkoutRes = await fetch("/api/membership/checkout", {
+            const checkoutRes = await fetch("/api/stripe/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

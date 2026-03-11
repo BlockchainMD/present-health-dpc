@@ -30,7 +30,6 @@ export async function POST(req: Request) {
 
         let userId = "";
         let email = "";
-        let leadId: string | null = null;
         let attributionSessionId: string | null = null;
         let setupFlow: "token" | "session" = "token";
 
@@ -50,7 +49,6 @@ export async function POST(req: Request) {
 
             userId = existingUser.id;
             email = existingUser.email;
-            leadId = existingUser.leadId;
             attributionSessionId = existingUser.attributionSessionId;
         } else {
             setupFlow = "session";
@@ -58,6 +56,9 @@ export async function POST(req: Request) {
             const checkoutSession = await stripe.checkout.sessions.retrieve(sessionId);
             if (checkoutSession.status !== "complete" || !checkoutSession.subscription) {
                 return NextResponse.json({ message: "This checkout is not ready for account setup yet." }, { status: 400 });
+            }
+            if (checkoutSession.metadata?.requiresPasswordSetup !== "true") {
+                return NextResponse.json({ message: "This checkout does not require account setup here." }, { status: 400 });
             }
 
             userId = cleanString(checkoutSession.metadata?.userId);
@@ -75,7 +76,6 @@ export async function POST(req: Request) {
                 return NextResponse.json({ message: "This checkout does not match an account waiting for setup." }, { status: 400 });
             }
 
-            leadId = existingUser.leadId;
             attributionSessionId = existingUser.attributionSessionId || cleanString(checkoutSession.metadata?.attributionSessionId) || null;
 
             await prisma.user.update({

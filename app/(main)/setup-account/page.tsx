@@ -27,7 +27,7 @@ export default function SetupAccountPage() {
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         if (!token && !sessionId) {
-            setSubmitState({ status: "error", message: "Missing account setup token." });
+            setSubmitState({ status: "error", message: "Missing account setup details." });
             return;
         }
 
@@ -94,7 +94,7 @@ export default function SetupAccountPage() {
                         <div className="space-y-4 text-sm text-muted-foreground">
                             {checkout === "success" ? (
                                 <p>
-                                    We sent an account setup email as soon as your payment finished. Use that link to create your password and open your dashboard.
+                                    If this page does not load your setup form automatically, use the account setup email we sent as soon as your payment finished.
                                 </p>
                             ) : (
                                 <p>Open the account setup link from your email to create your password.</p>
