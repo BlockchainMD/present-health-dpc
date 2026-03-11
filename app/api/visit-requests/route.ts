@@ -60,11 +60,12 @@ export async function POST(req: Request) {
             },
             true
         );
+        const unifiedLeadId = "leadId" in result ? result.leadId : null;
 
         await enqueueAutoResponse({
             source: AutoResponseSource.GENERAL_CONTACT,
             leadRefType: "SingleVisitRequest",
-            leadRefId: result.leadId || sourceRecordId,
+            leadRefId: unifiedLeadId || sourceRecordId,
             email,
             firstName,
             state: servedState.name,
@@ -74,7 +75,7 @@ export async function POST(req: Request) {
         await recordConversionEvent({
             type: "SINGLE_VISIT_REQUESTED",
             attributionSessionId,
-            leadId: result.leadId || null,
+            leadId: unifiedLeadId,
             metadata: {
                 source: "VisitRequestAPI",
                 offer: "single_visit",
