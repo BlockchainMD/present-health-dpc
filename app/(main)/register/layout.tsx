@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Create Your Account | Present Health",
-    description: "Sign up for a Present Health membership — text-first primary care starting at $99/month. No insurance required.",
+    title: "Start Membership | Present Health",
+    description: "Start your Present Health membership checkout and set your password after payment. Messaging-first primary care for adults 18+.",
 };
 
 export default function RegisterLayout({ children }: { children: React.ReactNode }) {
