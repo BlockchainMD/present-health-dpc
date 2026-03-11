@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
 import { recordConversionEvent } from "@/lib/conversion";
+import { sendMemberSetupEmail } from "@/lib/member-account-setup";
 import { MEMBERSHIP_TIERS, normalizeCoverageType } from "@/lib/pricing";
 import {
     upsertUnifiedLeadFromCampaignLead,
@@ -65,7 +66,7 @@ export async function POST(req: Request) {
         // Find user and their attribution info
         const user = await prisma.user.findUnique({
             where: { id: session.metadata.userId },
-            select: { id: true, leadId: true, attributionSessionId: true }
+            select: { id: true, email: true, name: true, leadId: true, attributionSessionId: true }
         });
 
         const plan = normalizeCoverageType(session.metadata.plan);
@@ -130,6 +131,17 @@ export async function POST(req: Request) {
                 },
                 false
             );
+        }
+
+        if (session.metadata.requiresPasswordSetup === "true" && normalizedEmail) {
+            const emailResult = await sendMemberSetupEmail({
+                userId: session.metadata.userId,
+                email: normalizedEmail,
+                firstName: user?.name?.split(" ")[0] || null,
+            });
+            if (!emailResult.ok) {
+                console.warn("[StripeWebhook] Failed to send member setup email:", emailResult.reason);
+            }
         }
 
         await recordConversionEvent({
