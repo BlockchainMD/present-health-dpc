@@ -31,9 +31,17 @@ export async function POST(req: Request) {
             return NextResponse.json({ message: "This account setup link is invalid or expired." }, { status: 400 });
         }
 
+        const existingUser = await prisma.user.findUnique({
+            where: { id: payload.userId },
+            select: { id: true, email: true, leadId: true, attributionSessionId: true },
+        });
+        if (!existingUser || existingUser.email !== payload.email) {
+            return NextResponse.json({ message: "This account setup link is invalid or expired." }, { status: 400 });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = await prisma.user.update({
-            where: { id: payload.userId, email: payload.email },
+            where: { id: payload.userId },
             data: { password: hashedPassword },
             select: { id: true, email: true, leadId: true, attributionSessionId: true },
         });
