@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,7 @@ type SubmitState =
     | { status: "success"; message: string }
     | { status: "error"; message: string };
 
-export default function ActivatePage() {
+function ActivatePageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
@@ -139,5 +139,13 @@ export default function ActivatePage() {
                 </CardFooter>
             </Card>
         </div>
+    );
+}
+
+export default function ActivatePage() {
+    return (
+        <Suspense fallback={<div className="container mx-auto px-4 py-20">Loading...</div>}>
+            <ActivatePageContent />
+        </Suspense>
     );
 }
