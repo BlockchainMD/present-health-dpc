@@ -20,12 +20,13 @@ export default function SetupAccountPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const token = searchParams.get("token");
+    const sessionId = searchParams.get("session_id");
     const checkout = searchParams.get("checkout");
     const [submitState, setSubmitState] = useState<SubmitState>({ status: "idle" });
 
     async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        if (!token) {
+        if (!token && !sessionId) {
             setSubmitState({ status: "error", message: "Missing account setup token." });
             return;
         }
@@ -45,7 +46,7 @@ export default function SetupAccountPage() {
             const res = await fetch("/api/account/setup", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, password }),
+                body: JSON.stringify({ token, sessionId, password }),
             });
             const data = await res.json().catch(() => null);
             if (!res.ok) {
@@ -83,13 +84,13 @@ export default function SetupAccountPage() {
                 <CardHeader>
                     <CardTitle>Finish account setup</CardTitle>
                     <CardDescription>
-                        {token
+                        {token || sessionId
                             ? "Set your password to open your Present Health dashboard."
                             : "Your membership checkout is complete. Check your email for the account setup link."}
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {!token ? (
+                    {!token && !sessionId ? (
                         <div className="space-y-4 text-sm text-muted-foreground">
                             {checkout === "success" ? (
                                 <p>

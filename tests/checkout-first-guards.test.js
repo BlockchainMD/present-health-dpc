@@ -23,9 +23,11 @@ test('Stripe checkout supports guest setup and webhook sends account setup email
   const setupPageSource = readSource('app/(main)/setup-account/page.tsx');
 
   assert.match(checkoutSource, /requiresPasswordSetup: guestCheckout \? "true" : "false"/);
-  assert.match(checkoutSource, /successUrl = guestCheckout/);
+  assert.match(checkoutSource, /setup-account\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
   assert.match(checkoutSource, /First name, last name, and email are required before checkout/);
   assert.match(webhookSource, /sendMemberSetupEmail/);
   assert.match(setupRouteSource, /parseMemberSetupToken/);
+  assert.match(setupRouteSource, /sessionId/);
   assert.match(setupPageSource, /Set your password to open your Present Health dashboard/);
+  assert.match(setupPageSource, /session_id/);
 });

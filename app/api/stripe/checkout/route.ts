@@ -151,7 +151,7 @@ export async function POST(req: Request) {
         const unitAmount = (billing === "annual" ? MEMBERSHIP_ANNUAL_DOLLARS : tier.monthlyDollars) * 100;
         const productName = `${tier.name} Membership (${billing === "annual" ? "Annual" : "Monthly"})`;
         const successUrl = guestCheckout
-            ? absoluteUrl("/setup-account?checkout=success")
+            ? absoluteUrl("/setup-account?checkout=success&session_id={CHECKOUT_SESSION_ID}")
             : absoluteUrl("/dashboard?success=true");
         const cancelUrl = guestCheckout
             ? absoluteUrl(`/register?plan=${encodeURIComponent(plan)}&billing=${encodeURIComponent(billing)}&canceled=true`)
