@@ -2,27 +2,21 @@
 description: Deploy the application to production by pushing to GitHub
 ---
 
-To deploy the application to Google Cloud Run (via Cloud Build), follow these steps:
+Production deploy path:
 
-1.  **Stage all changes**
-    ```bash
-    git add .
-    ```
+1. **Local -> GitHub**
+   - Preferred path: `launchd` autosync daemon `com.presenthealth.autosync`
+   - Fallback:
+   ```bash
+   git add -A
+   git commit -m "Your descriptive commit message here"
+   git push origin master
+   ```
 
-2.  **Commit changes**
-    *   Use a descriptive commit message explaining what features or fixes are included.
-    ```bash
-    git commit -m "Your descriptive commit message here"
-    ```
+2. **GitHub -> Cloud Run**
+   - `.github/workflows/deploy-cloud-run.yml` deploys on every push.
 
-3.  **Push to master**
-    *   This automatically triggers the Cloud Build pipeline defined in `cloudbuild.yaml`.
-    ```bash
-    git push origin master
-    ```
-
-4.  **Verify Deployment**
-    *   You can check the build status in the Google Cloud Console or by running:
-    ```bash
-    gcloud builds list --limit=1
-    ```
+3. **Verify deployment with gcloud**
+   ```bash
+   gcloud run services describe present-health-dpc --region=us-central1 --format='value(status.url)'
+   ```

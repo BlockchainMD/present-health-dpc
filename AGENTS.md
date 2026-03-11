@@ -1,0 +1,11 @@
+# Core Principles
+
+- Local -> GitHub is automatic for this repo. Keep the `launchd` agent `com.presenthealth.autosync` installed and running. It autosyncs `/Users/jonathanrouwhorst/presenthealthdpc` to private `origin/master` via `scripts/autosync/git-autosync-daemon.sh`.
+- GitHub -> Cloud is automatic. Every push triggers `.github/workflows/deploy-cloud-run.yml`, which builds and deploys Cloud Run service `present-health-dpc` in project `present-health-dpc-2025`, region `us-central1`.
+- Use `gcloud` whenever cloud state matters: verify Cloud Run, Artifact Registry, service accounts, deploy status, and runtime config directly instead of guessing.
+- After fixing any mistake, append one concise `symptom -> fix` note to `Mistake Memory` in this file.
+
+# Mistake Memory
+
+- Source/runtime mismatch -> run `npm run build`, fix every blocking type/prerender error, then restart the fresh built server before trusting the UI.
+- Page copy fixed but browser title still stale -> update route metadata/layout files, not just the page component.
