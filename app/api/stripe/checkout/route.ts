@@ -3,7 +3,12 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { stripe } from "@/lib/stripe";
 import { prisma } from "@/lib/prisma";
-import { MEMBERSHIP_TIERS, normalizeCoverageType } from "@/lib/pricing";
+import {
+    MEMBERSHIP_ANNUAL_DOLLARS,
+    MEMBERSHIP_TIERS,
+    normalizeBillingCadence,
+    normalizeCoverageType,
+} from "@/lib/pricing";
 import { resolveServedState } from "@/lib/state-availability";
 import { getOrCreateAttributionSession } from "@/lib/attribution";
 import { recordConversionEvent } from "@/lib/conversion";
@@ -23,6 +28,7 @@ export async function POST(req: Request) {
         const payload = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
         const planRaw = payload.plan;
         const plan = normalizeCoverageType(planRaw);
+        const billing = normalizeBillingCadence(payload.billing);
         const stateRaw = typeof payload.state === "string" ? payload.state.trim() : "";
         if (!stateRaw) {
             return NextResponse.json({ message: "State is required before checkout." }, { status: 400 });
@@ -42,8 +48,8 @@ export async function POST(req: Request) {
         const attributionSessionId = await getOrCreateAttributionSession(req);
 
         const tier = MEMBERSHIP_TIERS[plan];
-        const unitAmount = tier.monthlyDollars * 100;
-        const productName = `${tier.name} Membership`;
+        const unitAmount = (billing === "annual" ? MEMBERSHIP_ANNUAL_DOLLARS : tier.monthlyDollars) * 100;
+        const productName = `${tier.name} Membership (${billing === "annual" ? "Annual" : "Monthly"})`;
 
         const checkoutSession = await stripe.checkout.sessions.create({
             mode: 'subscription',
@@ -57,7 +63,7 @@ export async function POST(req: Request) {
                         },
                         unit_amount: unitAmount,
                         recurring: {
-                            interval: 'month',
+                            interval: billing === "annual" ? 'year' : 'month',
                         },
                     },
                     quantity: 1,
@@ -68,6 +74,7 @@ export async function POST(req: Request) {
                 userId: session.user.id,
                 attributionSessionId: attributionSessionId || "",
                 plan,
+                billing,
                 state: servedState.name,
                 monthlyRate: String(tier.monthlyDollars),
             },
@@ -88,6 +95,7 @@ export async function POST(req: Request) {
             metadata: {
                 source: "StripeCheckoutAPI",
                 plan,
+                billing,
                 state: servedState.name,
                 monthlyRate: tier.monthlyDollars,
                 checkoutSessionId: checkoutSession.id,

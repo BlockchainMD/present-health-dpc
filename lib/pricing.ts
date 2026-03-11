@@ -1,4 +1,5 @@
 export type CoverageType = "individual" | "couple" | "family";
+export type BillingCadence = "monthly" | "annual";
 
 export const MEMBERSHIP_MONTHLY_DOLLARS = 99;
 export const MEMBERSHIP_ANNUAL_DOLLARS = 990;
@@ -75,4 +76,9 @@ export function normalizeCoverageType(value: unknown): CoverageType {
     if (value === "couple") return "couple";
     if (value === "family") return "family";
     return "individual";
+}
+
+export function normalizeBillingCadence(value: unknown): BillingCadence {
+    if (value === "annual" || value === "yearly") return "annual";
+    return "monthly";
 }

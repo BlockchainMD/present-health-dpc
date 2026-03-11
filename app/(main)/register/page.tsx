@@ -8,7 +8,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { signIn } from 'next-auth/react';
-import { MEMBERSHIP_TIERS, normalizeCoverageType } from '@/lib/pricing';
+import {
+    MEMBERSHIP_ANNUAL_DOLLARS,
+    MEMBERSHIP_TIERS,
+    normalizeBillingCadence,
+    normalizeCoverageType,
+} from '@/lib/pricing';
 import { US_STATES } from '@/lib/us-states';
 import { trackEvent } from '@/lib/track-event';
 
@@ -17,13 +22,17 @@ type StateOption = { name: string; slug: string };
 function RegisterForm() {
     const searchParams = useSearchParams();
     const plan = searchParams.get('plan');
+    const billing = searchParams.get('billing');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
 
     const planKey = normalizeCoverageType(plan);
+    const billingCadence = normalizeBillingCadence(billing);
     const planName = MEMBERSHIP_TIERS[planKey].name;
-    const price = `$${MEMBERSHIP_TIERS[planKey].monthlyDollars}/mo`;
+    const price = billingCadence === "annual"
+        ? `$${MEMBERSHIP_ANNUAL_DOLLARS}/year`
+        : `$${MEMBERSHIP_TIERS[planKey].monthlyDollars}/mo`;
     const fallbackStateOptions = useMemo(
         () => US_STATES.map((state) => ({ name: state.name, slug: state.slug })),
         []
@@ -42,7 +51,7 @@ function RegisterForm() {
                 }
 
                 const normalized = data.states
-                    .map((state: any) => ({
+                    .map((state: { name?: string; slug?: string }) => ({
                         name: typeof state?.name === "string" ? state.name : "",
                         slug: typeof state?.slug === "string" ? state.slug : "",
                     }))
@@ -79,14 +88,14 @@ function RegisterForm() {
         trackEvent({
             eventType: "REGISTER_FORM_SUBMIT",
             path: "/register",
-            metadata: { plan: planKey, state },
+            metadata: { plan: planKey, state, billing: billingCadence },
         });
 
         try {
             const res = await fetch("/api/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ firstName, lastName, email, phone, password, state, plan: planKey }),
+                body: JSON.stringify({ firstName, lastName, email, phone, password, state, plan: planKey, billing: billingCadence }),
             });
 
             if (!res.ok) {
@@ -109,7 +118,7 @@ function RegisterForm() {
             const checkoutRes = await fetch("/api/stripe/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ plan: planKey, state }),
+                body: JSON.stringify({ plan: planKey, state, billing: billingCadence }),
             });
 
             if (!checkoutRes.ok) {
@@ -119,8 +128,8 @@ function RegisterForm() {
 
             const { url } = await checkoutRes.json();
             window.location.href = url;
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Registration failed");
             setIsLoading(false);
         }
     }

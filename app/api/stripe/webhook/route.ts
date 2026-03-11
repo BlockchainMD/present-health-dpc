@@ -23,9 +23,10 @@ export async function POST(req: Request) {
             signature,
             process.env.STRIPE_WEBHOOK_SECRET!
         );
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : "Unknown webhook error";
         return NextResponse.json(
-            { message: `Webhook Error: ${error.message}` },
+            { message: `Webhook Error: ${message}` },
             { status: 400 }
         );
     }
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
         create: {
             stripeEventId: event.id,
             type: event.type,
-            metadata: event as any,
+            metadata: JSON.parse(JSON.stringify(event)),
         }
     });
 
@@ -68,6 +69,7 @@ export async function POST(req: Request) {
         });
 
         const plan = normalizeCoverageType(session.metadata.plan);
+        const billing = session.metadata.billing === "annual" ? "annual" : "monthly";
         const membershipTier = UnifiedLeadMembershipTier.INDIVIDUAL;
         const monthlyRate = MEMBERSHIP_TIERS[plan].monthlyDollars;
         const normalizedEmail = String(session.customer_details?.email || session.customer_email || "").trim().toLowerCase();
@@ -123,6 +125,7 @@ export async function POST(req: Request) {
                         stripeCustomerId: String(subscription.customer || ""),
                         stripeSubscriptionId: subscription.id,
                         userId: session.metadata.userId,
+                        billing,
                     },
                 },
                 false
@@ -140,6 +143,7 @@ export async function POST(req: Request) {
                 leadId: user?.leadId,
                 attributionSessionId: user?.attributionSessionId || session.metadata.attributionSessionId,
                 plan,
+                billing,
                 monthlyRate,
                 state: session.metadata.state || null,
             }
@@ -165,6 +169,7 @@ export async function POST(req: Request) {
             metadata: {
                 source: "StripeWebhook",
                 plan,
+                billing,
                 monthlyRate,
                 state: session.metadata.state || null,
             },

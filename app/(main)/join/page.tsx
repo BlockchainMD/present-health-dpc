@@ -89,9 +89,14 @@ export default function JoinPage() {
                     </div>
 
                     <div className="mt-auto pt-3">
-                        <Button asChild size="lg" className="w-full">
-                            <Link href="/register?plan=individual&billing=monthly">Continue to Enrollment</Link>
-                        </Button>
+                        <div className="grid gap-3">
+                            <Button asChild size="lg" className="w-full">
+                                <Link href="/register?plan=individual&billing=monthly">Start Monthly Membership</Link>
+                            </Button>
+                            <Button asChild size="lg" variant="outline" className="w-full">
+                                <Link href="/register?plan=individual&billing=annual">Choose Annual Billing</Link>
+                            </Button>
+                        </div>
                     </div>
                 </div>
 

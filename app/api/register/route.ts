@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { UnifiedLeadMembershipTier } from "@prisma/client";
 import { getOrCreateAttributionSession } from "@/lib/attribution";
 import { recordConversionEvent } from "@/lib/conversion";
-import { normalizeCoverageType } from "@/lib/pricing";
+import { normalizeBillingCadence, normalizeCoverageType } from "@/lib/pricing";
 import { resolveServedState } from "@/lib/state-availability";
 import { upsertUnifiedLeadFromCampaignLead, upsertUnifiedLeadFromWebsiteRegistration } from "@/lib/unified-leads";
 
@@ -39,6 +39,7 @@ export async function POST(req: Request) {
         const password = typeof body.password === 'string' ? body.password : '';
         const stateRaw = typeof body.state === "string" ? body.state.trim() : "";
         const plan = normalizeCoverageType(body.plan);
+        const billing = normalizeBillingCadence(body.billing);
         const membershipTier = mapPlanToTier(plan);
         const monthlyMembershipRate = mapTierToMonthlyRate(membershipTier);
 
@@ -103,6 +104,7 @@ export async function POST(req: Request) {
                             lastName,
                             state: servedState.name,
                             plan,
+                            billing,
                             sourcePage: "/register",
                         }
                         : {
@@ -110,6 +112,7 @@ export async function POST(req: Request) {
                             lastName,
                             state: servedState.name,
                             plan,
+                            billing,
                             sourcePage: "/register",
                         };
 
@@ -142,6 +145,10 @@ export async function POST(req: Request) {
                     sourceRecordId: `register:${email}`,
                     membershipTier,
                     monthlyMembershipRate,
+                    sourceMeta: {
+                        plan,
+                        billing,
+                    },
                 },
                 true
             );
@@ -172,6 +179,7 @@ export async function POST(req: Request) {
                 unifiedLeadId,
                 state: servedState.name,
                 plan,
+                billing,
             },
         });
 
