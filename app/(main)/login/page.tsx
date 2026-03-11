@@ -36,8 +36,8 @@ export default function LoginPage() {
 
             router.push("/dashboard");
             router.refresh();
-        } catch (err: any) {
-            setError(err.message);
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Invalid email or password");
         } finally {
             setIsLoading(false);
         }
@@ -74,7 +74,7 @@ export default function LoginPage() {
                 </CardContent>
                 <CardFooter className="flex justify-center">
                     <p className="text-sm text-muted-foreground">
-                        Don't have an account? <Link href="/register" className="text-primary hover:underline">Sign up</Link>
+                        Don&apos;t have an account? <Link href="/register" className="text-primary hover:underline">Sign up</Link>
                     </p>
                 </CardFooter>
             </Card>

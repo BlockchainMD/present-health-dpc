@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 
-import { sendEmail } from "@/lib/email";
-import { absoluteUrl } from "@/lib/site-url";
+import { sendEmail } from "./email";
+import { absoluteUrl } from "./site-url";
 
 const MEMBER_ACTIVATION_TOKEN_VERSION = 1;
 const MEMBER_ACTIVATION_TTL_MS = 1000 * 60 * 60 * 24 * 7;
