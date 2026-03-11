@@ -91,7 +91,7 @@ function RegisterForm() {
         });
 
         try {
-            const checkoutRes = await fetch("/api/stripe/checkout", {
+            const checkoutRes = await fetch("/api/membership/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -107,13 +107,13 @@ function RegisterForm() {
 
             if (!checkoutRes.ok) {
                 const data = await checkoutRes.json().catch(() => null);
-                throw new Error(data?.message || "Failed to continue to checkout");
+                throw new Error(data?.message || "Failed to start checkout");
             }
 
             const { url } = await checkoutRes.json();
             window.location.href = url;
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : "Failed to continue to checkout");
+            setError(err instanceof Error ? err.message : "Failed to start checkout");
             setIsLoading(false);
         }
     }
@@ -131,7 +131,7 @@ function RegisterForm() {
                     <form onSubmit={onSubmit} className="space-y-4">
                         {canceled && !error && (
                             <div className="p-4 text-sm rounded-md bg-amber-50 border border-amber-200 text-amber-900">
-                                Checkout was canceled. Your membership details were not submitted.
+                                Checkout was canceled. Your details are still here when you are ready to continue.
                             </div>
                         )}
                         {error && (
