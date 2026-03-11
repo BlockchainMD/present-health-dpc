@@ -6,17 +6,17 @@ require('./helpers/register-ts');
 const pricing = require('../lib/pricing.ts');
 
 test('pricing constants reflect current single-plan business model', () => {
-  assert.equal(pricing.MEMBERSHIP_MONTHLY_DOLLARS, 49);
-  assert.equal(pricing.MEMBERSHIP_ANNUAL_DOLLARS, 490);
+  assert.equal(pricing.MEMBERSHIP_MONTHLY_DOLLARS, 99);
+  assert.equal(pricing.MEMBERSHIP_ANNUAL_DOLLARS, 990);
   assert.equal(pricing.MEMBERSHIP_ANNUAL_SAVINGS_DOLLARS, 98);
-  assert.equal(pricing.SINGLE_VISIT_DOLLARS, 49);
+  assert.equal(pricing.SINGLE_VISIT_DOLLARS, 99);
   assert.equal(pricing.EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS, 29);
 });
 
 test('membership tiers all map to same monthly price in single-plan model', () => {
-  assert.equal(pricing.MEMBERSHIP_TIERS.individual.monthlyDollars, 49);
-  assert.equal(pricing.MEMBERSHIP_TIERS.couple.monthlyDollars, 49);
-  assert.equal(pricing.MEMBERSHIP_TIERS.family.monthlyDollars, 49);
+  assert.equal(pricing.MEMBERSHIP_TIERS.individual.monthlyDollars, 99);
+  assert.equal(pricing.MEMBERSHIP_TIERS.couple.monthlyDollars, 99);
+  assert.equal(pricing.MEMBERSHIP_TIERS.family.monthlyDollars, 99);
 });
 
 test('normalizeCoverageType keeps supported values', () => {
