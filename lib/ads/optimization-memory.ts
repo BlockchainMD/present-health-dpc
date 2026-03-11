@@ -77,9 +77,12 @@ function parseMetrics(raw: unknown): MetricSnapshot {
     const clicks = toNumber(source.clicks);
     const conversions = toNumber(source.conversions);
     const cost = toNumber(source.cost);
-    const ctr = toNumber(source.ctr, impressions > 0 ? clicks / impressions : 0);
-    const cvr = toNumber(source.cvr, clicks > 0 ? conversions / clicks : 0);
-    const cpa = toNumber(source.cpa, conversions > 0 ? cost / conversions : Number.POSITIVE_INFINITY);
+    const computedCtr = impressions > 0 ? clicks / impressions : 0;
+    const computedCvr = clicks > 0 ? conversions / clicks : 0;
+    const computedCpa = conversions > 0 ? cost / conversions : Number.POSITIVE_INFINITY;
+    const ctr = source.ctr === null || source.ctr === undefined ? computedCtr : toNumber(source.ctr, computedCtr);
+    const cvr = source.cvr === null || source.cvr === undefined ? computedCvr : toNumber(source.cvr, computedCvr);
+    const cpa = source.cpa === null || source.cpa === undefined ? computedCpa : toNumber(source.cpa, computedCpa);
     return { impressions, clicks, conversions, cost, ctr, cvr, cpa };
 }
 

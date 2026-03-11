@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from '@/lib/authz';
 import { getFullPromptContext } from '@/lib/ads/brand-context';
+import { getCampaignExperimentSummary } from '@/lib/ads/optimizer';
 
 export async function GET(
   request: NextRequest,
@@ -31,6 +32,7 @@ export async function GET(
     }
 
     const brandContext = getFullPromptContext();
+    const experimentMemory = await getCampaignExperimentSummary(campaign.id);
 
     // Format previous attempts
     let previousAttempts = "";
@@ -48,6 +50,10 @@ export async function GET(
       });
     }
 
+    const performanceMemory = experimentMemory
+      ? `\n# PERFORMANCE MEMORY\n${experimentMemory.promptText}\n`
+      : "";
+
     const prompt = `
 # MISSION
 Act as a Senior Direct Response Copywriter and Healthcare Marketing Strategist for Present Health. 
@@ -58,6 +64,7 @@ STRICTLY avoid phrases or hooks used in the provided history. focus on the speci
 # BRAND CONTEXT
 ${brandContext}
 ${previousAttempts}
+${performanceMemory}
 # CAMPAIGN TARGET
 - Persona: ${campaign.persona}
 - Intent: ${campaign.intent}

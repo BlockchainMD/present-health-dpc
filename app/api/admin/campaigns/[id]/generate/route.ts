@@ -1,8 +1,8 @@
 import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateLandingPageSpec } from '@/lib/ads/generator';
-import { generateAdPlan } from '@/lib/ads/google-ads';
 import { PipelineManager } from '@/lib/ads/pipeline';
+import { generateOptimizedAdPlan } from '@/lib/ads/optimizer';
 import { requireAdmin } from '@/lib/authz';
 
 export async function POST(
@@ -47,7 +47,7 @@ export async function POST(
         await PipelineManager.saveArtifact(run.id, 'LANDING_PAGE_SPEC', lpSpec);
 
         // 4. Generate Ad Plan Artifact
-        const adPlan = await generateAdPlan(campaign as any);
+        const adPlan = await generateOptimizedAdPlan(campaign as any);
         await PipelineManager.saveArtifact(run.id, 'AD_PLAN', adPlan);
 
         // 5. Update CampaignRun with all legacy fields (for backward compatibility of the LP Page)

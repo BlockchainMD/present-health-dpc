@@ -42,7 +42,7 @@ export function generateAdPlan(campaign: CampaignSpec): AdPlan {
     });
 
     // 2. Combined Benefits
-    const benefitDesc = campaign.benefits.slice(0, 2).join(". ");
+    const benefitDesc = benefits.slice(0, 2).join(". ");
     if (benefitDesc.length <= 90) descriptions.push(benefitDesc);
 
     // 3. Standard Value Prop
