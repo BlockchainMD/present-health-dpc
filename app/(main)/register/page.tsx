@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { signIn } from 'next-auth/react';
 import {
     MEMBERSHIP_ANNUAL_DOLLARS,
     MEMBERSHIP_TIERS,
@@ -23,6 +22,7 @@ function RegisterForm() {
     const searchParams = useSearchParams();
     const plan = searchParams.get('plan');
     const billing = searchParams.get('billing');
+    const canceled = searchParams.get('canceled');
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
     const [stateOptions, setStateOptions] = useState<StateOption[]>([]);
@@ -83,7 +83,6 @@ function RegisterForm() {
         const lastName = formData.get("lastName") as string;
         const email = formData.get("email") as string;
         const phone = formData.get("phone") as string;
-        const password = formData.get("password") as string;
         const state = formData.get("state") as string;
         trackEvent({
             eventType: "REGISTER_FORM_SUBMIT",
@@ -92,44 +91,29 @@ function RegisterForm() {
         });
 
         try {
-            const res = await fetch("/api/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ firstName, lastName, email, phone, password, state, plan: planKey, billing: billingCadence }),
-            });
-
-            if (!res.ok) {
-                const data = await res.json();
-                throw new Error(data.message || "Registration failed");
-            }
-
-            // Automatically sign in the user
-            const signInRes = await signIn("credentials", {
-                email,
-                password,
-                redirect: false,
-            });
-
-            if (signInRes?.error) {
-                throw new Error(signInRes.error);
-            }
-
-            // Create Stripe Checkout Session
             const checkoutRes = await fetch("/api/stripe/checkout", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ plan: planKey, state, billing: billingCadence }),
+                body: JSON.stringify({
+                    firstName,
+                    lastName,
+                    email,
+                    phone,
+                    state,
+                    plan: planKey,
+                    billing: billingCadence,
+                }),
             });
 
             if (!checkoutRes.ok) {
                 const data = await checkoutRes.json().catch(() => null);
-                throw new Error(data?.message || "Failed to create checkout session");
+                throw new Error(data?.message || "Failed to continue to checkout");
             }
 
             const { url } = await checkoutRes.json();
             window.location.href = url;
         } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : "Registration failed");
+            setError(err instanceof Error ? err.message : "Failed to continue to checkout");
             setIsLoading(false);
         }
     }
@@ -138,13 +122,18 @@ function RegisterForm() {
         <div className="container mx-auto px-4 py-20 flex justify-center items-center min-h-[calc(100vh-80px)]">
             <Card className="w-full max-w-md">
                 <CardHeader>
-                    <CardTitle>Create your account</CardTitle>
+                    <CardTitle>Start membership</CardTitle>
                     <CardDescription>
-                        You selected <span className="font-semibold text-primary">{planName}</span> ({price}).
+                        You selected <span className="font-semibold text-primary">{planName}</span> ({price}). We&apos;ll send your account setup link after checkout.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={onSubmit} className="space-y-4">
+                        {canceled && !error && (
+                            <div className="p-4 text-sm rounded-md bg-amber-50 border border-amber-200 text-amber-900">
+                                Checkout was canceled. Your membership details were not submitted.
+                            </div>
+                        )}
                         {error && (
                             <div className="p-4 text-sm rounded-md bg-red-50 border border-red-100 flex flex-col gap-2">
                                 <span className="text-red-800 font-medium">{error}</span>
@@ -197,21 +186,17 @@ function RegisterForm() {
                                 ))}
                             </select>
                         </div>
-                        <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
-                            <Input id="password" name="password" type="password" required disabled={isLoading} />
-                        </div>
                         <p className="text-xs text-muted-foreground">
-                            We verify your state eligibility before checkout.
+                            We verify your state eligibility before checkout. After payment, you&apos;ll get an email to set your password and open your dashboard.
                         </p>
                         <Button type="submit" className="w-full" disabled={isLoading}>
-                            {isLoading ? "Creating account..." : "Continue to Payment"}
+                            {isLoading ? "Redirecting to checkout..." : "Continue to secure checkout"}
                         </Button>
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-center">
                     <p className="text-sm text-muted-foreground">
-                        Already have an account? <Link href="/login" className="text-primary hover:underline">Sign in</Link>
+                        Already a member? <Link href="/login" className="text-primary hover:underline">Sign in</Link>
                     </p>
                 </CardFooter>
             </Card>
