@@ -36,7 +36,7 @@ export const authOptions: NextAuthOptions = {
                     }
                 });
 
-                if (!user || user.role !== 'ADMIN') {
+                if (!user) {
                     return null;
                 }
 

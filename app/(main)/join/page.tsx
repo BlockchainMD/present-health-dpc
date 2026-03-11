@@ -85,7 +85,7 @@ export default function JoinPage() {
                     </ul>
 
                     <div className="mt-6 rounded-lg border border-border/70 bg-muted/30 p-3 text-sm text-muted-foreground">
-                        Create your account, confirm state eligibility, and continue to secure checkout.
+                        Enter your basic details, confirm state eligibility, and continue to secure checkout.
                     </div>
 
                     <div className="mt-auto pt-3">
