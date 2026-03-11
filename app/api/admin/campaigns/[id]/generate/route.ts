@@ -47,7 +47,23 @@ export async function POST(
         await PipelineManager.saveArtifact(run.id, 'LANDING_PAGE_SPEC', lpSpec);
 
         // 4. Generate Ad Plan Artifact
-        const adPlan = await generateOptimizedAdPlan(campaign);
+        const campaignInput: Parameters<typeof generateOptimizedAdPlan>[0] = {
+            id: campaign.id,
+            slug: campaign.slug,
+            persona: campaign.persona,
+            intent: campaign.intent,
+            seedKeywords: campaign.seedKeywords,
+            strategy: campaign.strategy === 'EDUCATIONAL' ? 'EDUCATIONAL' : 'TRANSACTIONAL',
+            layoutType: campaign.layoutType === 'EDUCATIONAL' ? 'EDUCATIONAL' : 'CONVERSION',
+            benefits: campaign.benefits,
+            proofPoints: campaign.proofPoints,
+            disclaimers: campaign.disclaimers,
+            budgetDaily: campaign.budgetDaily,
+            targetCpa: campaign.targetCpa,
+            geo: campaign.geo || "",
+            tone: campaign.tone || "",
+        };
+        const adPlan = await generateOptimizedAdPlan(campaignInput);
         await PipelineManager.saveArtifact(run.id, 'AD_PLAN', adPlan);
 
         // 5. Update CampaignRun with all legacy fields (for backward compatibility of the LP Page)
