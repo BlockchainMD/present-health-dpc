@@ -12,22 +12,22 @@ test('/register is checkout-first and no longer asks for password before Stripe'
 
   assert.doesNotMatch(source, /signIn\(/);
   assert.doesNotMatch(source, /name="password"/);
-  assert.match(source, /After checkout, you&apos;ll set your password on the next screen/);
-  assert.match(source, /fetch\("\/api\/stripe\/checkout"/);
+  assert.match(source, /We&apos;ll send your account setup link after checkout/);
+  assert.match(source, /fetch\("\/api\/membership\/checkout"/);
 });
 
-test('Stripe checkout supports guest setup and webhook sends account setup email', () => {
-  const checkoutSource = readSource('app/api/stripe/checkout/route.ts');
+test('membership checkout supports guest setup and activation closes the loop', () => {
+  const checkoutSource = readSource('app/api/membership/checkout/route.ts');
+  const activateRouteSource = readSource('app/api/membership/activate/route.ts');
   const webhookSource = readSource('app/api/stripe/webhook/route.ts');
-  const setupRouteSource = readSource('app/api/account/setup/route.ts');
-  const setupPageSource = readSource('app/(main)/setup-account/page.tsx');
+  const activatePageSource = readSource('app/(main)/activate/page.tsx');
+  const tokenSource = readSource('lib/member-activation.ts');
 
-  assert.match(checkoutSource, /requiresPasswordSetup: guestCheckout \? "true" : "false"/);
-  assert.match(checkoutSource, /setup-account\?checkout=success&session_id=\{CHECKOUT_SESSION_ID\}/);
-  assert.match(checkoutSource, /First name, last name, and email are required before checkout/);
-  assert.match(webhookSource, /sendMemberSetupEmail/);
-  assert.match(setupRouteSource, /parseMemberSetupToken/);
-  assert.match(setupRouteSource, /sessionId/);
-  assert.match(setupPageSource, /Set your password to open your Present Health dashboard/);
-  assert.match(setupPageSource, /session_id/);
+  assert.match(checkoutSource, /checkoutMode: "guest"/);
+  assert.match(checkoutSource, /success_url: absoluteUrl\("\/activate\?session_id=\{CHECKOUT_SESSION_ID\}"\)/);
+  assert.match(activateRouteSource, /parseMemberActivationToken/);
+  assert.match(webhookSource, /sendMemberActivationEmail/);
+  assert.match(activatePageSource, /Set your password to open your Present Health dashboard/);
+  assert.match(activatePageSource, /session_id/);
+  assert.match(tokenSource, /buildMemberActivationUrl/);
 });
