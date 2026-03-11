@@ -130,7 +130,7 @@ Return JSON only:
 { "${schemaKey}": ["...", "..."] }
     `.trim();
 
-    const response = await openai.chat.completions.create({
+    const requestOptions = {
         model: "gpt-5.2",
         reasoning_effort: "medium",
         messages: [
@@ -147,7 +147,9 @@ Return JSON only:
             },
         ],
         response_format: { type: "json_object" },
-    } as any);
+    } satisfies Parameters<typeof openai.chat.completions.create>[0];
+
+    const response = await openai.chat.completions.create(requestOptions);
 
     const payload = parseJsonObject(response.choices[0]?.message?.content);
     const values = Array.isArray(payload[schemaKey]) ? payload[schemaKey] : [];

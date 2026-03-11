@@ -104,7 +104,8 @@ Return valid JSON only in the following schema. No extra text, no markdown code 
 `.trim();
 
     return NextResponse.json({ prompt });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to build prompt';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

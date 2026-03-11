@@ -47,7 +47,7 @@ export async function POST(
         await PipelineManager.saveArtifact(run.id, 'LANDING_PAGE_SPEC', lpSpec);
 
         // 4. Generate Ad Plan Artifact
-        const adPlan = await generateOptimizedAdPlan(campaign as any);
+        const adPlan = await generateOptimizedAdPlan(campaign);
         await PipelineManager.saveArtifact(run.id, 'AD_PLAN', adPlan);
 
         // 5. Update CampaignRun with all legacy fields (for backward compatibility of the LP Page)
@@ -82,8 +82,9 @@ export async function POST(
         });
 
         return NextResponse.json(updatedRun);
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Failed to generate assets';
         console.error('Error generating assets:', error);
-        return NextResponse.json({ error: error.message || 'Failed to generate assets' }, { status: 500 });
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
