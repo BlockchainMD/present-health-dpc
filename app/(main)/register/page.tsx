@@ -124,7 +124,7 @@ function RegisterForm() {
                 <CardHeader>
                     <CardTitle>Start membership</CardTitle>
                     <CardDescription>
-                        You selected <span className="font-semibold text-primary">{planName}</span> ({price}). We&apos;ll send your account setup link after checkout.
+                        You selected <span className="font-semibold text-primary">{planName}</span> ({price}). After checkout, you&apos;ll set your password on the next screen and we&apos;ll email the setup link as backup.
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -187,7 +187,7 @@ function RegisterForm() {
                             </select>
                         </div>
                         <p className="text-xs text-muted-foreground">
-                            We verify your state eligibility before checkout. After payment, you&apos;ll get an email to set your password and open your dashboard.
+                            We verify your state eligibility before checkout. After payment, you&apos;ll set your password on the next screen and can open your dashboard immediately.
                         </p>
                         <Button type="submit" className="w-full" disabled={isLoading}>
                             {isLoading ? "Redirecting to checkout..." : "Continue to secure checkout"}

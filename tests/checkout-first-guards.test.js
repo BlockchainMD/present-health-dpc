@@ -12,7 +12,7 @@ test('/register is checkout-first and no longer asks for password before Stripe'
 
   assert.doesNotMatch(source, /signIn\(/);
   assert.doesNotMatch(source, /name="password"/);
-  assert.match(source, /We&apos;ll send your account setup link after checkout/);
+  assert.match(source, /After checkout, you&apos;ll set your password on the next screen/);
   assert.match(source, /fetch\("\/api\/stripe\/checkout"/);
 });
 
