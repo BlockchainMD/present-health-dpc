@@ -32,15 +32,21 @@ export default async function DashboardPage() {
     },
   });
 
-  const feedItems = getHealthbookFeedItems();
+  if (!user?.email) {
+    redirect("/login");
+  }
+
+  const feedGeneratedAt = Date.now();
+  const feedItems = getHealthbookFeedItems(feedGeneratedAt);
 
   return (
     <MemberDashboardShell
-      userName={user?.name ?? null}
-      userEmail={user?.email ?? null}
-      subscriptionStatus={user?.subscriptionStatus || "inactive"}
-      memberSinceLabel={memberSinceFormatter.format(user?.createdAt ?? new Date())}
+      userName={user.name ?? null}
+      userEmail={user.email}
+      subscriptionStatus={user.subscriptionStatus || "inactive"}
+      memberSinceLabel={memberSinceFormatter.format(user.createdAt)}
       feedItems={feedItems}
+      feedGeneratedAt={feedGeneratedAt}
     />
   );
 }

@@ -45,6 +45,8 @@
 }
 
 :root {
+  --font-geist-sans: "Avenir Next", "Segoe UI", "Helvetica Neue", sans-serif;
+  --font-geist-mono: "SFMono-Regular", "Menlo", "Monaco", "Consolas", monospace;
   --radius: 0.625rem;
   /* Off-White/Cream Background */
   --background: #FDFBF7;

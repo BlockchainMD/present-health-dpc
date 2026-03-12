@@ -13,6 +13,7 @@ test("/dashboard keeps member-only gating and loads Healthbook feed data", () =>
   assert.match(dashboardSource, /redirect\("\/login"\)/);
   assert.match(dashboardSource, /redirect\("\/admin"\)/);
   assert.match(dashboardSource, /getHealthbookFeedItems/);
+  assert.match(dashboardSource, /feedGeneratedAt/);
   assert.match(dashboardSource, /MemberDashboardShell/);
 });
 
@@ -23,6 +24,7 @@ test("member dashboard shell exposes care overview and Healthbook tabs", () => {
   assert.match(shellSource, /TabsTrigger value="healthbook"/);
   assert.match(shellSource, /Email care team/);
   assert.match(shellSource, /What your membership covers/);
+  assert.match(shellSource, /feedGeneratedAt/);
 });
 
 test("Healthbook feed preserves filterable signal stream behavior", () => {
@@ -33,6 +35,7 @@ test("Healthbook feed preserves filterable signal stream behavior", () => {
   assert.match(feedSource, /activeSourceType/);
   assert.match(feedSource, /Latest signal stream/);
   assert.match(feedSource, /countHealthbookItemsWithinHours/);
+  assert.match(feedSource, /initialNow/);
   assert.match(dataSource, /HEALTHBOOK_CATEGORIES/);
   assert.match(dataSource, /HEALTHBOOK_SOURCE_TYPES/);
   assert.match(dataSource, /formatHealthbookRelativeTimestamp/);

@@ -11,3 +11,5 @@
 - Page copy fixed but browser title still stale -> update route metadata/layout files, not just the page component.
 - Register checkout can inherit a logged-in admin session -> prefer submitted guest identity on `/register`; do not trust session email for that form.
 - Legacy auth rows can carry non-email values in `User.email` -> normalize the row in Postgres and let session hydration refresh from the canonical DB email.
+- `next build` can fail on a stale `.next/lock` -> clear the orphaned build process before retrying.
+- `next/font/google` can fail builds on network fetches -> use local CSS font variables in the root layout when build determinism matters.

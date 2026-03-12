@@ -18,6 +18,7 @@ import { cn } from "@/lib/utils";
 
 type HealthbookFeedProps = {
   items: HealthbookFeedItem[];
+  initialNow: number;
 };
 
 type FilterGroupProps = {
@@ -189,11 +190,11 @@ function FeedRow({ item, isExpanded, now, onToggle }: FeedRowProps) {
   );
 }
 
-export function HealthbookFeed({ items }: HealthbookFeedProps) {
+export function HealthbookFeed({ items, initialNow }: HealthbookFeedProps) {
   const [activeCategory, setActiveCategory] = useState<HealthbookCategory>(HEALTHBOOK_CATEGORIES[0]);
   const [activeSourceType, setActiveSourceType] = useState<HealthbookSourceType>(HEALTHBOOK_SOURCE_TYPES[0]);
   const [expandedId, setExpandedId] = useState("");
-  const [now, setNow] = useState(() => Date.now());
+  const [now, setNow] = useState(initialNow);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {

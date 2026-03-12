@@ -21,6 +21,7 @@ type MemberDashboardShellProps = {
   subscriptionStatus: string;
   memberSinceLabel: string;
   feedItems: HealthbookFeedItem[];
+  feedGeneratedAt: number;
 };
 
 function getFirstName(userName: string | null, userEmail: string | null) {
@@ -43,6 +44,7 @@ export function MemberDashboardShell({
   subscriptionStatus,
   memberSinceLabel,
   feedItems,
+  feedGeneratedAt,
 }: MemberDashboardShellProps) {
   const firstName = getFirstName(userName, userEmail);
   const status = subscriptionStatus || "inactive";
@@ -170,7 +172,7 @@ export function MemberDashboardShell({
             </TabsContent>
 
             <TabsContent value="healthbook" className="mt-0">
-              <HealthbookFeed items={feedItems} />
+              <HealthbookFeed items={feedItems} initialNow={feedGeneratedAt} />
             </TabsContent>
           </Tabs>
         </div>
