@@ -71,9 +71,9 @@ export async function POST(request: NextRequest) {
         });
 
         return NextResponse.json({ success: true, brief });
-    } catch (error: any) {
+    } catch (error: unknown) {
         return NextResponse.json(
-            { success: false, error: error?.message || "Failed to generate content brief" },
+            { success: false, error: error instanceof Error ? error.message : "Failed to generate content brief" },
             { status: 500 }
         );
     }

@@ -108,8 +108,8 @@ export function HealthbookSeoWorkspace({
       }
 
       router.push(`/admin/content-briefs?brief=${data.brief.id}`);
-    } catch (e: any) {
-      setError(e?.message || "Failed to generate content brief");
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : "Failed to generate content brief");
     } finally {
       setGenerating(false);
     }
