@@ -17,6 +17,7 @@
 /out/
 /healthbook/
 /.gcloud-tmp/
+/.tmp/
 
 # production
 /build
