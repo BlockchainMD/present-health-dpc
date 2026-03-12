@@ -27,8 +27,10 @@ export function HeroBackgroundMedia() {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const [isDesktop, setIsDesktop] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(true);
-    const [shouldRenderVideo, setShouldRenderVideo] = useState(false);
+    const [isEnhancementReady, setIsEnhancementReady] = useState(false);
     const [isVideoVisible, setIsVideoVisible] = useState(false);
+    const shouldUseVideo = isDesktop && !prefersReducedMotion;
+    const shouldRenderVideo = shouldUseVideo && isEnhancementReady;
 
     useEffect(() => {
         const desktopQuery = window.matchMedia(DESKTOP_QUERY);
@@ -51,12 +53,12 @@ export function HeroBackgroundMedia() {
     }, []);
 
     useEffect(() => {
-        const shouldUseVideo = isDesktop && !prefersReducedMotion;
-
         if (!shouldUseVideo) {
-            setShouldRenderVideo(false);
-            setIsVideoVisible(false);
             videoRef.current?.pause();
+            return;
+        }
+
+        if (isEnhancementReady) {
             return;
         }
 
@@ -68,7 +70,8 @@ export function HeroBackgroundMedia() {
             if ("requestIdleCallback" in window) {
                 idleId = window.requestIdleCallback(() => {
                     if (!cancelled) {
-                        setShouldRenderVideo(true);
+                        setIsVideoVisible(false);
+                        setIsEnhancementReady(true);
                     }
                 }, { timeout: 1200 });
                 return;
@@ -76,7 +79,8 @@ export function HeroBackgroundMedia() {
 
             timeoutId = window.setTimeout(() => {
                 if (!cancelled) {
-                    setShouldRenderVideo(true);
+                    setIsVideoVisible(false);
+                    setIsEnhancementReady(true);
                 }
             }, 250);
         };
@@ -99,7 +103,7 @@ export function HeroBackgroundMedia() {
                 window.clearTimeout(timeoutId);
             }
         };
-    }, [isDesktop, prefersReducedMotion]);
+    }, [isEnhancementReady, shouldUseVideo]);
 
     useEffect(() => {
         if (!shouldRenderVideo || !videoRef.current) {
@@ -140,6 +144,7 @@ export function HeroBackgroundMedia() {
                     className={`absolute inset-0 h-full w-full object-cover object-[70%_center] transition-opacity duration-700 ease-out md:object-[60%_center] xl:object-[55%_center] ${isVideoVisible ? "opacity-100" : "opacity-0"}`}
                     loop
                     muted
+                    onLoadStart={() => setIsVideoVisible(false)}
                     playsInline
                     poster={HERO_VIDEO.posterJpg}
                     preload="metadata"

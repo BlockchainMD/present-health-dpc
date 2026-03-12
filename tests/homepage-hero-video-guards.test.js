@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -33,6 +34,6 @@ test("hero background media stays poster-first with desktop-only motion", () => 
   assert.match(mediaSource, /min-width: 768px/);
   assert.match(mediaSource, /document\.readyState === "complete"/);
   assert.match(mediaSource, /requestIdleCallback/);
-  assert.match(mediaSource, /setShouldRenderVideo\(true\)/);
+  assert.match(mediaSource, /setIsEnhancementReady\(true\)/);
   assert.match(mediaSource, /setIsVideoVisible\(false\)/);
 });
