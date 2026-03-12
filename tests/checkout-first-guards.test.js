@@ -22,7 +22,10 @@ test('stripe checkout supports guest setup and activation closes the loop', () =
   const activatePageSource = readSource('app/(main)/activate/page.tsx');
   const tokenSource = readSource('lib/member-activation.ts');
 
+  assert.match(checkoutSource, /const hasGuestIdentity = Boolean\(firstName && lastName && email\)/);
+  assert.match(checkoutSource, /if \(hasGuestIdentity\)/);
   assert.match(checkoutSource, /checkoutMode: "guest"/);
+  assert.match(checkoutSource, /Your signed-in account email is invalid\. Sign out and complete the form again\./);
   assert.match(checkoutSource, /success_url: absoluteUrl\("\/activate\?session_id=\{CHECKOUT_SESSION_ID\}"\)/);
   assert.match(checkoutSource, /First name, last name, and email are required before checkout/);
   assert.match(webhookSource, /sendMemberActivationEmail/);
