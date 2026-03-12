@@ -131,11 +131,10 @@ function HeroSection() {
                         Accepting New Members
                     </Badge>
                     <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-white md:text-6xl">
-                        Text your care team. Get a real answer.
+                        Skip the 3-week wait. Text a clinician now.
                     </h1>
                     <p className="mt-5 max-w-2xl text-lg text-slate-200 md:text-xl">
-                        Primary care that starts with a message and stays close when life gets complicated. Sick visits,
-                        chronic care, prescriptions, labs, and follow-up for $99/month.
+                        Full-service primary care — sick visits, chronic care, prescriptions, labs — for $99/month. No appointments. No hold music.
                     </p>
                     <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
                         <Button asChild size="lg" className="h-12 bg-white px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
@@ -612,8 +611,8 @@ function FinalCTASection() {
     return (
         <section className="bg-primary py-16 text-primary-foreground md:py-20">
             <div className="container px-4 md:px-6 mx-auto max-w-4xl text-center">
-                <h2 className="text-3xl font-bold tracking-tight md:text-5xl mb-6 text-foreground">Ready to upgrade your primary care?</h2>
-                <p className="text-xl text-muted-foreground mb-10 max-w-2xl mx-auto">
+                <h2 className="text-3xl font-bold tracking-tight md:text-5xl mb-6 text-white">Ready to upgrade your primary care?</h2>
+                <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
                     Join Present Health today and experience healthcare that revolves around you.
                 </p>
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -623,7 +622,7 @@ function FinalCTASection() {
                         </Link>
                     </Button>
                 </div>
-                <p className="mt-4 text-sm text-primary-foreground/80">
+                <p className="mt-4 text-sm text-white/70">
                     Limited spots. We keep our practice small so every member gets real attention.
                 </p>
             </div>
