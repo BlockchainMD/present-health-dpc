@@ -98,12 +98,12 @@ function ChannelIcons({ inverted = false }: { inverted?: boolean }) {
                 return (
                     <div
                         key={channel.label}
-                        className={`flex items-center gap-2 rounded-full px-4 py-2 ${inverted ? "border border-white/15 bg-white/8 backdrop-blur-sm" : "border border-border"}`}
+                        className={`flex items-center gap-2 rounded-full px-4 py-2 ${inverted ? "border border-white/15 bg-white/10 backdrop-blur-sm" : "border border-border"}`}
                     >
                         <span
                             className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${channel.isPrimary
                                 ? inverted
-                                    ? "bg-emerald-400/18 text-emerald-100"
+                                    ? "bg-emerald-400/20 text-emerald-100"
                                     : "bg-primary/15 text-primary"
                                 : inverted
                                     ? "bg-white/12 text-slate-100"
@@ -122,7 +122,7 @@ function ChannelIcons({ inverted = false }: { inverted?: boolean }) {
 
 function HeroSection() {
     return (
-        <section className="relative isolate overflow-hidden bg-slate-950 pt-24 pb-18 text-white md:pt-28 md:pb-24">
+        <section className="relative isolate overflow-hidden bg-slate-950 pt-24 pb-20 text-white md:pt-28 md:pb-24">
             <HeroBackgroundMedia />
             <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#f6f2ea]" />
             <div className="container relative z-10 mx-auto px-4 md:px-6">
@@ -141,20 +141,20 @@ function HeroSection() {
                         <Button asChild size="lg" className="h-12 bg-white px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
                             <Link href="/join">Start Membership - $99/mo</Link>
                         </Button>
-                        <div className="rounded-full border border-white/14 bg-white/8 px-4 py-2 text-sm text-slate-100 backdrop-blur-sm">
+                        <div className="rounded-full border border-white/14 bg-white/10 px-4 py-2 text-sm text-slate-100 backdrop-blur-sm">
                             No insurance needed. No per-visit fees. Cancel anytime.
                         </div>
                     </div>
                     <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-slate-100">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-2 backdrop-blur-sm">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
                             Board-certified physician-led care
                         </div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-2 backdrop-blur-sm">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
                             Licensed across {STATES.length} states
                         </div>
-                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-2 backdrop-blur-sm">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
                             Adults 18+ with fast digital access
                         </div>
