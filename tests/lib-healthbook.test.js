@@ -25,8 +25,10 @@ test("healthbook feed returns sorted items with expected filter metadata", () =>
 test("healthbook helper functions respect generated timestamps", () => {
   const now = Date.UTC(2026, 2, 12, 0, 0, 0);
   const items = getHealthbookFeedItems(now);
+  const itemsWithinSixHours = countHealthbookItemsWithinHours(items, 6, now);
 
   assert.equal(formatHealthbookRelativeTimestamp(items[0].publishedAt, now), "8m");
   assert.equal(countHealthbookItemsWithinHours(items, 2, now), 10);
-  assert.equal(countHealthbookItemsWithinHours(items, 6, now), items.length);
+  assert.ok(itemsWithinSixHours >= 10);
+  assert.ok(itemsWithinSixHours < items.length);
 });

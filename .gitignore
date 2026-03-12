@@ -15,6 +15,7 @@
 # next.js
 /.next/
 /out/
+/healthbook/
 
 # production
 /build
