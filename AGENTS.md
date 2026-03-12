@@ -20,3 +20,4 @@
 - X bearer tokens can still fail on v2 search -> mint a fresh app-only token from API key/secret and confirm the app is attached to a Project with the required API access level.
 - Batch media export loops can silently mangle hero asset names -> generate final clip filenames explicitly and verify the output directory before wiring UI.
 - Hero media effects can trip React lint with synchronous resets -> derive video rendering from capability state and only flip readiness from async callbacks.
+- Cloud Run deploys from Apple Silicon can fail with `exec format error` -> use GitHub Actions or Cloud Build for linux/amd64 images instead of local arm64 Docker pushes.
