@@ -16,6 +16,7 @@
 /.next/
 /out/
 /healthbook/
+/.gcloud-tmp/
 
 # production
 /build
