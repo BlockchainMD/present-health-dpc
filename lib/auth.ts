@@ -25,6 +25,10 @@ type AuthorizedUser = {
     role?: string;
 };
 
+function isValidEmail(value: unknown) {
+    return typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 export const authOptions: NextAuthOptions = {
     adapter: PrismaAdapter(prisma),
     session: {
@@ -86,6 +90,22 @@ export const authOptions: NextAuthOptions = {
                 session.user.role = typeof token.role === "string" ? token.role : undefined;
                 session.user.email = typeof token.email === "string" ? token.email : session.user.email;
                 session.user.name = typeof token.name === "string" ? token.name : session.user.name;
+
+                if (session.user.id && !isValidEmail(session.user.email)) {
+                    const currentUser = await prisma.user.findUnique({
+                        where: { id: session.user.id },
+                        select: { email: true, name: true, role: true },
+                    });
+
+                    if (currentUser) {
+                        session.user.email = currentUser.email;
+                        session.user.name = currentUser.name ?? session.user.name;
+                        session.user.role = currentUser.role ?? session.user.role;
+                        token.email = currentUser.email;
+                        token.name = currentUser.name ?? token.name;
+                        token.role = currentUser.role ?? token.role;
+                    }
+                }
             }
             return session;
         },
