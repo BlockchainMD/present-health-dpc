@@ -344,7 +344,7 @@ async function refreshHealthbookFeed(now: number) {
   return [];
 }
 
-async function loadPeterAttiaFeedItems() {
+async function loadPeterAttiaFeedItems(): Promise<HealthbookFeedItem[]> {
   const feed = await parseFeed("https://peterattiamd.com/feed/");
 
   return buildItemsFromRss(feed.items.slice(0, 6), {
@@ -355,7 +355,7 @@ async function loadPeterAttiaFeedItems() {
   });
 }
 
-async function loadNejmFeedItems() {
+async function loadNejmFeedItems(): Promise<HealthbookFeedItem[]> {
   const feed = await parseFeed("https://www.nejm.org/action/showFeed?type=etoc&feed=rss&jc=nejm");
 
   return buildItemsFromRss(feed.items, {
@@ -367,7 +367,7 @@ async function loadNejmFeedItems() {
   });
 }
 
-async function loadStatFeedItems() {
+async function loadStatFeedItems(): Promise<HealthbookFeedItem[]> {
   const feed = await parseFeed("https://www.statnews.com/feed/");
 
   return buildItemsFromRss(feed.items, {
@@ -379,7 +379,7 @@ async function loadStatFeedItems() {
   });
 }
 
-async function loadLongevityTechnologyFeedItems() {
+async function loadLongevityTechnologyFeedItems(): Promise<HealthbookFeedItem[]> {
   const feed = await parseFeed("https://longevity.technology/feed/");
 
   return buildItemsFromRss(feed.items, {
@@ -390,7 +390,9 @@ async function loadLongevityTechnologyFeedItems() {
   });
 }
 
-async function loadGoogleNewsFeedItems(query: (typeof GOOGLE_NEWS_QUERIES)[number]) {
+async function loadGoogleNewsFeedItems(
+  query: (typeof GOOGLE_NEWS_QUERIES)[number],
+): Promise<HealthbookFeedItem[]> {
   const encodedQuery = encodeURIComponent(query);
   const feed = await parseFeed(
     `https://news.google.com/rss/search?q=${encodedQuery}&hl=en-US&gl=US&ceid=US:en`,
@@ -447,7 +449,10 @@ async function loadGoogleNewsFeedItems(query: (typeof GOOGLE_NEWS_QUERIES)[numbe
     .filter((item): item is HealthbookFeedItem => Boolean(item));
 }
 
-async function loadPreprintFeedItems(server: "medrxiv" | "biorxiv", now: number) {
+async function loadPreprintFeedItems(
+  server: "medrxiv" | "biorxiv",
+  now: number,
+): Promise<HealthbookFeedItem[]> {
   const interval = getPreprintInterval(now);
   const response = await fetchJson<PreprintApiResponse>(
     `https://api.${server}.org/details/${server}/${interval.startDate}/${interval.endDate}`,
@@ -560,7 +565,7 @@ function buildItemsFromRss(
     defaultCategory: Exclude<HealthbookCategory, "All">;
     requireRelevance?: boolean;
   },
-) {
+): HealthbookFeedItem[] {
   return items
     .map((item) => {
       const title = normalizeWhitespace(item.title || "");
