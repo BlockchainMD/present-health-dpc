@@ -286,6 +286,15 @@ export async function getHealthbookFeedItems(now = Date.now()) {
   return healthbookCache.refreshPromise;
 }
 
+export async function getHealthbookFeedSnapshot(now = Date.now()) {
+  const items = await getHealthbookFeedItems(now);
+
+  return {
+    items,
+    generatedAt: Date.now(),
+  };
+}
+
 async function refreshHealthbookFeed(now: number) {
   const sourceResults = await Promise.allSettled([
     loadPeterAttiaFeedItems(),
@@ -297,7 +306,7 @@ async function refreshHealthbookFeed(now: number) {
     loadPreprintFeedItems("biorxiv", now),
   ]);
 
-  const liveItems = sourceResults.flatMap((result, index) => {
+  const liveItems = sourceResults.flatMap<HealthbookFeedItem>((result, index) => {
     if (result.status === "fulfilled") {
       return result.value;
     }

@@ -12,7 +12,7 @@ test("/dashboard keeps member-only gating and loads Healthbook feed data", () =>
 
   assert.match(dashboardSource, /redirect\("\/login"\)/);
   assert.match(dashboardSource, /redirect\("\/admin"\)/);
-  assert.match(dashboardSource, /getHealthbookFeedItems/);
+  assert.match(dashboardSource, /getHealthbookFeedSnapshot/);
   assert.match(dashboardSource, /MemberDashboardShell/);
 });
 
