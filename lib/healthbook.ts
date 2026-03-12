@@ -398,7 +398,7 @@ async function loadGoogleNewsFeedItems(
     `https://news.google.com/rss/search?q=${encodedQuery}&hl=en-US&gl=US&ceid=US:en`,
   );
 
-  return feed.items
+  const mappedItems: Array<HealthbookFeedItem | null> = feed.items
     .map((item) => {
       const publishedAt = getParsedFeedItemDate(item);
       const url = normalizeUrl(item.link);
@@ -445,8 +445,9 @@ async function loadGoogleNewsFeedItems(
         }),
         signal,
       } satisfies HealthbookFeedItem;
-    })
-    .filter(isHealthbookFeedItem);
+    });
+
+  return mappedItems.filter(isHealthbookFeedItem);
 }
 
 async function loadPreprintFeedItems(
@@ -460,7 +461,7 @@ async function loadPreprintFeedItems(
 
   const items = Array.isArray(response.collection) ? response.collection : [];
 
-  return items
+  const mappedItems: Array<HealthbookFeedItem | null> = items
     .map((entry) => {
       const title = normalizeWhitespace(entry.title || "");
       const publishedAt = toIsoDate(entry.date);
@@ -507,8 +508,9 @@ async function loadPreprintFeedItems(
         }),
         signal,
       } satisfies HealthbookFeedItem;
-    })
-    .filter(isHealthbookFeedItem);
+    });
+
+  return mappedItems.filter(isHealthbookFeedItem);
 }
 
 async function parseFeed(url: string) {
@@ -566,7 +568,7 @@ function buildItemsFromRss(
     requireRelevance?: boolean;
   },
 ): HealthbookFeedItem[] {
-  return items
+  const mappedItems: Array<HealthbookFeedItem | null> = items
     .map((item) => {
       const title = normalizeWhitespace(item.title || "");
       const publishedAt = getParsedFeedItemDate(item);
@@ -617,8 +619,9 @@ function buildItemsFromRss(
         }),
         signal,
       } satisfies HealthbookFeedItem;
-    })
-    .filter(isHealthbookFeedItem);
+    });
+
+  return mappedItems.filter(isHealthbookFeedItem);
 }
 
 function getParsedFeedItemDate(item: ParsedFeedItem) {
