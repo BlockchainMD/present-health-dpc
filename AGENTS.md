@@ -9,3 +9,4 @@
 
 - Source/runtime mismatch -> run `npm run build`, fix every blocking type/prerender error, then restart the fresh built server before trusting the UI.
 - Page copy fixed but browser title still stale -> update route metadata/layout files, not just the page component.
+- Register checkout can inherit a logged-in admin session -> prefer submitted guest identity on `/register`; do not trust session email for that form.

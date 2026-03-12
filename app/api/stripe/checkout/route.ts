@@ -16,6 +16,10 @@ function cleanString(value: unknown) {
     return typeof value === "string" ? value.trim() : "";
 }
 
+function isValidEmail(value: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
 export async function POST(req: Request) {
     try {
         const session = await getServerSession(authOptions);
@@ -25,6 +29,11 @@ export async function POST(req: Request) {
         const plan = normalizeCoverageType(payload.plan);
         const billing = normalizeBillingCadence(payload.billing);
         const stateRaw = cleanString(payload.state);
+        const firstName = cleanString(payload.firstName);
+        const lastName = cleanString(payload.lastName);
+        const email = cleanString(payload.email).toLowerCase();
+        const phone = cleanString(payload.phone);
+        const hasGuestIdentity = Boolean(firstName && lastName && email);
 
         if (!stateRaw) {
             return NextResponse.json({ message: "State is required before checkout." }, { status: 400 });
@@ -46,13 +55,12 @@ export async function POST(req: Request) {
         const unitAmount = (billing === "annual" ? MEMBERSHIP_ANNUAL_DOLLARS : tier.monthlyDollars) * 100;
         const productName = `${tier.name} Membership (${billing === "annual" ? "Annual" : "Monthly"})`;
 
-        if (!session?.user) {
-            const firstName = cleanString(payload.firstName);
-            const lastName = cleanString(payload.lastName);
-            const email = cleanString(payload.email).toLowerCase();
-            const phone = cleanString(payload.phone);
+        if (hasGuestIdentity) {
+            if (!isValidEmail(email)) {
+                return NextResponse.json({ message: "Enter a valid email address before checkout." }, { status: 400 });
+            }
 
-            if (!firstName || !lastName || !email) {
+            if (!firstName || !lastName) {
                 return NextResponse.json(
                     { message: "First name, last name, and email are required before checkout." },
                     { status: 400 }
@@ -196,6 +204,29 @@ export async function POST(req: Request) {
             return NextResponse.json({ url: checkoutSession.url });
         }
 
+        if (!session?.user?.id) {
+            return NextResponse.json(
+                { message: "Complete the form before checkout or sign in again." },
+                { status: 401 }
+            );
+        }
+
+        const signedInUser = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: {
+                id: true,
+                email: true,
+                leadId: true,
+            },
+        });
+
+        if (!signedInUser?.email || !isValidEmail(signedInUser.email)) {
+            return NextResponse.json(
+                { message: "Your signed-in account email is invalid. Sign out and complete the form again." },
+                { status: 400 }
+            );
+        }
+
         const checkoutSession = await stripe.checkout.sessions.create({
             mode: "subscription",
             payment_method_types: ["card"],
@@ -214,29 +245,24 @@ export async function POST(req: Request) {
                     quantity: 1,
                 },
             ],
-            customer_email: session.user.email!,
+            customer_email: signedInUser.email,
             metadata: {
-                userId: session.user.id,
+                userId: signedInUser.id,
                 attributionSessionId: attributionSessionId || "",
                 plan,
                 billing,
                 state: servedState.name,
                 monthlyRate: String(tier.monthlyDollars),
             },
-            success_url: `${process.env.NEXTAUTH_URL}/dashboard?success=true`,
-            cancel_url: `${process.env.NEXTAUTH_URL}/dashboard?canceled=true`,
-        });
-
-        const user = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: { leadId: true },
+            success_url: absoluteUrl("/dashboard?success=true"),
+            cancel_url: absoluteUrl("/dashboard?canceled=true"),
         });
 
         await recordConversionEvent({
             type: "CHECKOUT_STARTED",
             attributionSessionId,
-            userId: session.user.id,
-            leadId: user?.leadId || null,
+            userId: signedInUser.id,
+            leadId: signedInUser.leadId || null,
             metadata: {
                 source: "StripeCheckoutAPI",
                 plan,

@@ -20,6 +20,8 @@ type JwtWithRole = JWT & {
 
 type AuthorizedUser = {
     id: string;
+    email?: string | null;
+    name?: string | null;
     role?: string;
 };
 
@@ -82,6 +84,8 @@ export const authOptions: NextAuthOptions = {
             if (token && session.user) {
                 session.user.id = typeof token.sub === "string" ? token.sub : "";
                 session.user.role = typeof token.role === "string" ? token.role : undefined;
+                session.user.email = typeof token.email === "string" ? token.email : session.user.email;
+                session.user.name = typeof token.name === "string" ? token.name : session.user.name;
             }
             return session;
         },
@@ -89,6 +93,8 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.sub = user.id;
                 token.role = user.role;
+                token.email = user.email ?? token.email;
+                token.name = user.name ?? token.name;
             }
             return token;
         },
