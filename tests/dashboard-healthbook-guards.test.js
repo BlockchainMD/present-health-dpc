@@ -36,4 +36,8 @@ test("Healthbook feed preserves filterable signal stream behavior", () => {
   assert.match(dataSource, /HEALTHBOOK_CATEGORIES/);
   assert.match(dataSource, /HEALTHBOOK_SOURCE_TYPES/);
   assert.match(dataSource, /formatHealthbookRelativeTimestamp/);
+  assert.match(dataSource, /Promise\.allSettled/);
+  assert.match(dataSource, /peterattiamd\.com\/feed/);
+  assert.match(dataSource, /loadPreprintFeedItems\("medrxiv"/);
+  assert.doesNotMatch(dataSource, /const feedSeeds/);
 });

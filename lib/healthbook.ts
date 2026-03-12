@@ -1,3 +1,7 @@
+import { createHash } from "node:crypto";
+
+import Parser from "rss-parser";
+
 export const HEALTHBOOK_CATEGORIES = [
   "All",
   "Research",
@@ -36,9 +40,40 @@ export type HealthbookFeedItem = {
   signal: HealthbookSignalLevel;
 };
 
-type FeedSeed = Omit<HealthbookFeedItem, "publishedAt"> & {
-  minutesAgo: number;
+type ParsedFeedItem = {
+  title?: string;
+  link?: string;
+  pubDate?: string;
+  isoDate?: string;
+  date?: string;
+  guid?: string;
+  content?: string;
+  contentSnippet?: string;
+  categories?: string[];
+  source?: string;
+  [key: string]: unknown;
 };
+
+type PreprintApiEntry = {
+  title?: string;
+  doi?: string;
+  date?: string;
+  abstract?: string;
+  category?: string;
+};
+
+type PreprintApiResponse = {
+  collection?: PreprintApiEntry[];
+};
+
+const parser = new Parser<Record<string, never>, ParsedFeedItem>();
+
+const HEALTHBOOK_CACHE_TTL_MS = 15 * 60 * 1000;
+const HEALTHBOOK_SOURCE_TIMEOUT_MS = 8_000;
+const HEALTHBOOK_MAX_ITEMS = 24;
+const HEALTHBOOK_MAX_ITEMS_PER_SOURCE = 4;
+const HEALTHBOOK_RECENCY_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+const GOOGLE_NEWS_QUERIES = ["healthspan", "wearable health"] as const;
 
 const absoluteFormatter = new Intl.DateTimeFormat("en-US", {
   month: "short",
@@ -48,284 +83,112 @@ const absoluteFormatter = new Intl.DateTimeFormat("en-US", {
   timeZone: "America/New_York",
 });
 
-function toPublishedAt(minutesAgo: number, now: number) {
-  return new Date(now - minutesAgo * 60 * 1000).toISOString();
-}
-
-const feedSeeds: FeedSeed[] = [
-  {
-    id: "attia-x-apob-threshold",
-    title:
-      "Peter Attia sharpens the case for earlier ApoB action instead of waiting for obvious cardiometabolic drift",
-    source: "Peter Attia",
-    sourceLabel: "@PeterAttiaMD",
-    sourceType: "X",
-    category: "Clinical",
-    minutesAgo: 8,
-    url: "https://x.com/PeterAttiaMD",
-    signal: "Lead",
-    takeaway:
-      "High-interest clinical signal because it condenses a long prevention argument into a sharper intervention threshold.",
-    summary:
-      "The post focuses on why prevention decisions may need to happen earlier than many clinicians are comfortable with, especially when ApoB remains elevated despite otherwise decent-looking surface markers. The useful detail is the threshold framing: who should act sooner, what data matters most, and why waiting for more visible disease often means acting too late.",
-  },
-  {
-    id: "nature-aging-line1-heart",
-    title:
-      "Nature Aging highlights LINE-1-driven inflammation in the aging heart as a potential intervention path",
-    source: "Nature Aging",
-    sourceLabel: "Research highlight",
-    sourceType: "Journals",
-    category: "Research",
-    minutesAgo: 17,
-    url: "https://www.nature.com/nataging/volumes/6/issues/2",
-    signal: "Lead",
-    takeaway:
-      "One of the stronger current journal signals because it ties cardiac aging to a more specific inflammatory mechanism.",
-    summary:
-      "The highlight points to excessive LINE-1 expression in aged cardiac tissue activating cGAS-STING signaling and contributing to dysfunction. What makes it interesting is that it does not just describe decline; it frames a clearer mechanistic route that could be targeted pharmacologically in aging-related cardiac dysfunction.",
-  },
-  {
-    id: "topol-x-proteomic-clocks",
-    title:
-      "Eric Topol is pushing organ-specific proteomic aging clocks as a more useful disease and longevity signal than one global age score",
-    source: "Eric Topol",
-    sourceLabel: "@EricTopol",
-    sourceType: "X",
-    category: "Research",
-    minutesAgo: 26,
-    url: "https://x.com/EricTopol",
-    signal: "Lead",
-    takeaway:
-      "This feels more interesting than generic biological age discourse because it gets closer to organ-level risk and intervention targeting.",
-    summary:
-      "The thread centers on the idea that aging does not advance uniformly across tissues, so a single biological age output can hide the actual risk landscape. Organ-specific proteomic clocks are compelling because they may offer a more actionable map of where disease vulnerability is accumulating first.",
-  },
-  {
-    id: "pubmed-lookahead-geroscience",
-    title:
-      "Look AHEAD is being reframed through geroscience, reinforcing lifestyle intervention as a biological aging strategy",
-    source: "PubMed",
-    sourceLabel: "Diabetes Care paper",
-    sourceType: "Journals",
-    category: "Clinical",
-    minutesAgo: 34,
-    url: "https://pubmed.ncbi.nlm.nih.gov/41575388/",
-    signal: "High",
-    takeaway:
-      "The paper matters because it translates long-running lifestyle trial evidence into an explicit aging framework.",
-    summary:
-      "This retrospective reframing of Look AHEAD argues that the trial should not only be read through diabetes and cardiovascular endpoints, but also through the lens of slowed biological aging. It gives prevention operators a more coherent rationale for pairing lifestyle intensity with healthspan language instead of treating those as separate conversations.",
-  },
-  {
-    id: "foundmyfitness-x-protein-distribution",
-    title:
-      "FoundMyFitness thread on protein distribution argues that timing and meal structure still get underplayed in aging nutrition",
-    source: "FoundMyFitness",
-    sourceLabel: "@foundmyfitness",
-    sourceType: "X",
-    category: "Protocols",
-    minutesAgo: 43,
-    url: "https://x.com/foundmyfitness",
-    signal: "High",
-    takeaway:
-      "Practical and high-yield because it turns protein guidance into something closer to a daily operating system.",
-    summary:
-      "The post focuses on how total daily protein can look adequate on paper while still producing weak muscle-protein-synthesis signaling across the day. The more interesting angle is not the macro target itself, but how protein is distributed, how much leucine is present per meal, and what that means for aging adults trying to preserve function.",
-  },
-  {
-    id: "stat-prevention-benefits",
-    title:
-      "STAT says prevention stacks built around labs, coaching, and wearables are moving closer to employer-benefit packaging",
-    source: "STAT",
-    sourceLabel: "Health tech desk",
-    sourceType: "News",
-    category: "Tech & Biz",
-    minutesAgo: 57,
-    url: "https://www.statnews.com/",
-    signal: "High",
-    takeaway:
-      "Important because distribution and reimbursement logic may shape the category faster than the science alone.",
-    summary:
-      "The reporting suggests that prevention products are becoming easier to sell when they look like risk-management infrastructure rather than premium wellness perks. That changes the commercial picture for longevity services by making continuous monitoring, coaching, and lab interpretation easier to justify inside employer or payer channels.",
-  },
-  {
-    id: "oura-metabolic-readiness",
-    title:
-      "Oura is nudging its product further from tracking toward interpretation with a recovery-linked metabolic readiness score",
-    source: "Oura",
-    sourceLabel: "Product release",
-    sourceType: "Companies",
-    category: "Tech & Biz",
-    minutesAgo: 72,
-    url: "https://ouraring.com/blog/",
-    signal: "Watch",
-    takeaway:
-      "Worth watching because wearable competition is shifting toward recommendations and risk interpretation.",
-    summary:
-      "The feature appears designed to translate passive physiological streams into prompts that feel more like coaching than telemetry review. That matters because the winning health products may be the ones that compress measurement, interpretation, and next action into a single loop.",
-  },
-  {
-    id: "attia-drive-vo2-aerobic",
-    title:
-      "Fresh Peter Attia episode turns aerobic hierarchy into a tighter sequence for Zone 2, VO2 max, and recovery",
-    source: "Peter Attia Drive",
-    sourceLabel: "Episode drop",
-    sourceType: "Podcasts",
-    category: "Podcasts",
-    minutesAgo: 88,
-    url: "https://peterattiamd.com/podcast/",
-    signal: "High",
-    takeaway:
-      "Still one of the better media signals because people actually execute training when the sequencing gets clear.",
-    summary:
-      "The episode sharpens how to organize weekly endurance work when someone wants healthspan outcomes instead of race preparation. The valuable part is the operational detail around spacing intensity, protecting recovery, and deciding which adaptations matter most when time is limited.",
-  },
-  {
-    id: "biorxiv-senolytic-window",
-    title:
-      "New bioRxiv preprint argues senolytic benefit may depend more on timing and tissue state than on compound branding",
-    source: "bioRxiv",
-    sourceLabel: "Preprint",
-    sourceType: "Preprints",
-    category: "Research",
-    minutesAgo: 103,
-    url: "https://www.biorxiv.org/",
-    signal: "Watch",
-    takeaway:
-      "Good research signal because it narrows the claim and pushes against broad anti-aging oversell.",
-    summary:
-      "The paper is interesting precisely because it is more constrained than the usual senolytic storyline. Instead of implying a general longevity effect, it frames the response as dependent on stage, tissue context, and treatment window, which is a much more decision-useful way to think about translational risk.",
-  },
-  {
-    id: "youtube-circadian-timing",
-    title:
-      "A new long-form YouTube discussion on circadian timing is landing because it ties light exposure directly to recovery and glucose control",
-    source: "YouTube",
-    sourceLabel: "Lecture drop",
-    sourceType: "Podcasts",
-    category: "Media",
-    minutesAgo: 118,
-    url: "https://www.youtube.com/",
-    signal: "High",
-    takeaway:
-      "High ROI behavior topic with unusually wide applicability across sleep, energy, and metabolic control.",
-    summary:
-      "The talk stays focused on mechanics: light timing, circadian phase, and what shifts first when schedule and light cues are corrected. It feels more useful than generic sleep content because it shows how one lever affects several downstream outcomes at once.",
-  },
-  {
-    id: "labfront-x-readiness-scores",
-    title:
-      "Labfront thread is pushing back on overconfident wearable readiness scores and getting strong operator engagement",
-    source: "Labfront",
-    sourceLabel: "@labfront",
-    sourceType: "X",
-    category: "Media",
-    minutesAgo: 136,
-    url: "https://x.com/labfront",
-    signal: "High",
-    takeaway:
-      "Interesting because it is a corrective signal in a category that tends to overstate what wearables can really infer.",
-    summary:
-      "The thread breaks down where HRV and readiness outputs are directionally useful and where they start to impersonate clinical truth without enough basis. Its value is in the edge-case reasoning: noisy single-day readings, weak causal interpretation, and the gap between trend analysis and medical-grade decision support.",
-  },
-  {
-    id: "nature-aging-risk-equivalent-age",
-    title:
-      "Risk-equivalent age is catching attention as a cleaner way to talk about biological age in real clinical settings",
-    source: "Nature Aging",
-    sourceLabel: "Comment",
-    sourceType: "Journals",
-    category: "Clinical",
-    minutesAgo: 176,
-    url: "https://www.nature.com/nataging/current-issue",
-    signal: "High",
-    takeaway:
-      "Useful because it reframes biological age as risk communication rather than a pseudo-mystical score.",
-    summary:
-      "The concept treats biological age as an operational expression of clinically meaningful risk instead of a claim to reveal someone's true underlying age. That is a materially better frame for prevention products, because risk-equivalent age is easier to tie to action thresholds and clinical discussion.",
-  },
-  {
-    id: "pubmed-cgm-behavior-change",
-    title:
-      "Intermittent CGM use in non-diabetic adults appears to move behavior faster than it moves durable biomarkers",
-    source: "PubMed",
-    sourceLabel: "Clinical paper",
-    sourceType: "Journals",
-    category: "Clinical",
-    minutesAgo: 198,
-    url: "https://pubmed.ncbi.nlm.nih.gov/",
-    signal: "High",
-    takeaway:
-      "Good clinical signal because it separates engagement effects from hard physiologic change.",
-    summary:
-      "The paper suggests CGMs are currently stronger as awareness and adherence tools than as guaranteed drivers of measurable metabolic improvement in healthy users. That distinction matters if consumer prevention products are going to make stronger claims than the evidence can support.",
-  },
-  {
-    id: "fmf-x-creatine-cognition",
-    title:
-      "Creatine and cognition is moving again on X, but the better posts are finally distinguishing plausible use cases from hype",
-    source: "FoundMyFitness",
-    sourceLabel: "@foundmyfitness",
-    sourceType: "X",
-    category: "Protocols",
-    minutesAgo: 223,
-    url: "https://x.com/foundmyfitness",
-    signal: "Watch",
-    takeaway:
-      "Still useful because protocol users need stronger dose and evidence boundaries than supplement marketing provides.",
-    summary:
-      "The more substantive thread versions are focusing on where creatine may have cognitive relevance, where the human evidence is still sparse, and how expectations should change based on context. That makes it a better fit for this feed than generic performance-supplement enthusiasm.",
-  },
-  {
-    id: "lt-legal-playbook",
-    title:
-      "Longevity gets its own legal playbook as category infrastructure keeps professionalizing around healthspan companies",
-    source: "Longevity.Technology",
-    sourceLabel: "Industry note",
-    sourceType: "News",
-    category: "Tech & Biz",
-    minutesAgo: 251,
-    url: "https://longevity.technology/news/longevity-gets-its-own-legal-playbook-at-arentfox-schiff/",
-    signal: "Watch",
-    takeaway:
-      "Not flashy science, but it is a real signal that the longevity market is becoming institutionally legible.",
-    summary:
-      "This kind of legal and advisory specialization shows up when a category starts to attract enough capital, regulatory complexity, and transaction volume to justify dedicated expertise. It is less about one firm and more about the sector becoming a recognizable business domain.",
-  },
-  {
-    id: "nature-aging-reserve-capacity",
-    title:
-      "Reserve capacity keeps emerging as a better healthspan lens than baseline fitness snapshots alone",
-    source: "Nature Aging",
-    sourceLabel: "Journal release",
-    sourceType: "Journals",
-    category: "Research",
-    minutesAgo: 325,
-    url: "https://www.nature.com/nataging/",
-    signal: "Lead",
-    takeaway:
-      "Important framing shift because resilience and recovery capacity are more decision-useful than vanity metrics.",
-    summary:
-      "The underlying argument is that healthy aging is partly defined by how much stress a system can absorb and recover from, not just by where it sits on a static performance measure. That makes reserve capacity a stronger organizing idea for training, nutrition, and prevention programs.",
-  },
-  {
-    id: "pubmed-overnight-glucose-tre",
-    title:
-      "Meal-timing papers keep converging on the same point: overnight glucose often improves sooner than broader daytime metrics",
-    source: "PubMed",
-    sourceLabel: "Clinical paper",
-    sourceType: "Journals",
-    category: "Clinical",
-    minutesAgo: 621,
-    url: "https://pubmed.ncbi.nlm.nih.gov/",
-    signal: "High",
-    takeaway:
-      "Useful because it clarifies where time-restricted eating tends to show signal first.",
-    summary:
-      "The best-read clinical papers in this zone are converging on a bounded message: meal timing appears to help, but the improvement may concentrate in specific glycemic windows rather than transforming every marker at once. That is more useful than treating fasting as a universal lever.",
-  },
+const RELEVANCE_PATTERNS = [
+  /\baging\b/i,
+  /\blongevity\b/i,
+  /\bhealthspan\b/i,
+  /\bpreventive\b/i,
+  /\bprevention\b/i,
+  /\bmetabolic\b/i,
+  /\bdiabetes\b/i,
+  /\bglucose\b/i,
+  /\binsulin\b/i,
+  /\bcardio/i,
+  /\bheart\b/i,
+  /\bcholesterol\b/i,
+  /\bapob\b/i,
+  /\bhypertension\b/i,
+  /\bblood pressure\b/i,
+  /\bsleep\b/i,
+  /\bcircadian\b/i,
+  /\bexercise\b/i,
+  /\bfitness\b/i,
+  /\btraining\b/i,
+  /\bvo2\b/i,
+  /\bmuscle\b/i,
+  /\bprotein\b/i,
+  /\bcreatine\b/i,
+  /\bsauna\b/i,
+  /\bwearable\b/i,
+  /\bbiosensor\b/i,
+  /\bbiomarker\b/i,
+  /\bsenescence\b/i,
+  /\bsenolytic\b/i,
+  /\binflammation\b/i,
+  /\bprimary care\b/i,
+  /\btelehealth\b/i,
 ];
+
+const CLINICAL_PATTERNS = [
+  /\btrial\b/i,
+  /\bpatients?\b/i,
+  /\btherapy\b/i,
+  /\btreatment\b/i,
+  /\bscreening\b/i,
+  /\bdiabetes\b/i,
+  /\bkidney\b/i,
+  /\bmyocardial\b/i,
+  /\bhypertension\b/i,
+  /\bblood pressure\b/i,
+  /\bcholesterol\b/i,
+  /\bglp-1\b/i,
+  /\bobesity\b/i,
+  /\bcancer\b/i,
+  /\bdepression\b/i,
+  /\bprimary care\b/i,
+];
+
+const PROTOCOL_PATTERNS = [
+  /\bzone 2\b/i,
+  /\bfasting\b/i,
+  /\bnutrition\b/i,
+  /\bdiet\b/i,
+  /\bexercise\b/i,
+  /\btraining\b/i,
+  /\bprotein\b/i,
+  /\bcreatine\b/i,
+  /\bsauna\b/i,
+  /\bsleep hygiene\b/i,
+  /\brecovery\b/i,
+  /\bmeal timing\b/i,
+];
+
+const TECH_AND_BIZ_PATTERNS = [
+  /\bwearable\b/i,
+  /\bbiosensor\b/i,
+  /\bdevice\b/i,
+  /\bcompany\b/i,
+  /\bstartup\b/i,
+  /\bfunding\b/i,
+  /\bbenefit\b/i,
+  /\bemployer\b/i,
+  /\bplatform\b/i,
+  /\bsoftware\b/i,
+  /\blaunches?\b/i,
+  /\binitiative\b/i,
+];
+
+const HIGH_SIGNAL_PATTERNS = [
+  /\btrial\b/i,
+  /\bstudy\b/i,
+  /\bresearch\b/i,
+  /\bhealthspan\b/i,
+  /\blongevity\b/i,
+  /\baging\b/i,
+  /\bmetabolic\b/i,
+  /\bwearable\b/i,
+  /\bbiomarker\b/i,
+];
+
+let healthbookCache: {
+  items: HealthbookFeedItem[];
+  fetchedAt: number;
+  refreshPromise: Promise<HealthbookFeedItem[]> | null;
+} = {
+  items: [],
+  fetchedAt: 0,
+  refreshPromise: null,
+};
 
 export function getHealthbookPublishedDate(publishedAt: string) {
   return new Date(publishedAt);
@@ -364,14 +227,648 @@ export function countHealthbookItemsWithinHours(
   return items.filter((item) => getHealthbookPublishedDate(item.publishedAt).getTime() >= threshold).length;
 }
 
-export function getHealthbookFeedItems(now = Date.now()) {
-  return feedSeeds
-    .map((item) => ({
-      ...item,
-      publishedAt: toPublishedAt(item.minutesAgo, now),
-    }))
-    .sort(
-      (left, right) =>
-        new Date(right.publishedAt).getTime() - new Date(left.publishedAt).getTime(),
-    );
+export function sortHealthbookFeedItems<T extends { publishedAt: string }>(items: T[]) {
+  return [...items].sort(
+    (left, right) =>
+      getHealthbookPublishedDate(right.publishedAt).getTime() -
+      getHealthbookPublishedDate(left.publishedAt).getTime(),
+  );
+}
+
+export function curateHealthbookFeedItems(items: HealthbookFeedItem[], now = Date.now()) {
+  const seenTitles = new Set<string>();
+  const perSourceCounts = new Map<string, number>();
+  const curated: HealthbookFeedItem[] = [];
+  const threshold = now - HEALTHBOOK_RECENCY_WINDOW_MS;
+
+  for (const item of sortHealthbookFeedItems(items)) {
+    const publishedAt = getHealthbookPublishedDate(item.publishedAt).getTime();
+    if (!item.title || !item.url || Number.isNaN(publishedAt) || publishedAt < threshold) {
+      continue;
+    }
+
+    const normalizedTitle = normalizeTitleForDedupe(item.title);
+    if (seenTitles.has(normalizedTitle)) {
+      continue;
+    }
+
+    const sourceCount = perSourceCounts.get(item.sourceLabel) ?? 0;
+    if (sourceCount >= HEALTHBOOK_MAX_ITEMS_PER_SOURCE) {
+      continue;
+    }
+
+    seenTitles.add(normalizedTitle);
+    perSourceCounts.set(item.sourceLabel, sourceCount + 1);
+    curated.push(item);
+
+    if (curated.length >= HEALTHBOOK_MAX_ITEMS) {
+      break;
+    }
+  }
+
+  return curated;
+}
+
+export async function getHealthbookFeedItems(now = Date.now()) {
+  const cacheAgeMs = Date.now() - healthbookCache.fetchedAt;
+  if (healthbookCache.items.length && cacheAgeMs < HEALTHBOOK_CACHE_TTL_MS) {
+    return healthbookCache.items;
+  }
+
+  if (healthbookCache.refreshPromise) {
+    return healthbookCache.refreshPromise;
+  }
+
+  healthbookCache.refreshPromise = refreshHealthbookFeed(now).finally(() => {
+    healthbookCache.refreshPromise = null;
+  });
+
+  return healthbookCache.refreshPromise;
+}
+
+async function refreshHealthbookFeed(now: number) {
+  const sourceResults = await Promise.allSettled([
+    loadPeterAttiaFeedItems(),
+    loadNejmFeedItems(),
+    loadStatFeedItems(),
+    loadLongevityTechnologyFeedItems(),
+    ...GOOGLE_NEWS_QUERIES.map((query) => loadGoogleNewsFeedItems(query)),
+    loadPreprintFeedItems("medrxiv", now),
+    loadPreprintFeedItems("biorxiv", now),
+  ]);
+
+  const liveItems = sourceResults.flatMap((result, index) => {
+    if (result.status === "fulfilled") {
+      return result.value;
+    }
+
+    console.error("[Healthbook] Source failed", {
+      sourceIndex: index,
+      error: result.reason instanceof Error ? result.reason.message : String(result.reason),
+    });
+    return [];
+  });
+
+  const items = curateHealthbookFeedItems(liveItems, now);
+
+  if (items.length) {
+    healthbookCache = {
+      items,
+      fetchedAt: Date.now(),
+      refreshPromise: null,
+    };
+    return items;
+  }
+
+  if (healthbookCache.items.length) {
+    return healthbookCache.items;
+  }
+
+  healthbookCache = {
+    items: [],
+    fetchedAt: Date.now(),
+    refreshPromise: null,
+  };
+
+  return [];
+}
+
+async function loadPeterAttiaFeedItems() {
+  const feed = await parseFeed("https://peterattiamd.com/feed/");
+
+  return buildItemsFromRss(feed.items.slice(0, 6), {
+    source: "Peter Attia",
+    sourceLabel: "Podcast feed",
+    sourceType: "Podcasts",
+    defaultCategory: "Podcasts",
+  });
+}
+
+async function loadNejmFeedItems() {
+  const feed = await parseFeed("https://www.nejm.org/action/showFeed?type=etoc&feed=rss&jc=nejm");
+
+  return buildItemsFromRss(feed.items, {
+    source: "NEJM",
+    sourceLabel: "Current issue",
+    sourceType: "Journals",
+    defaultCategory: "Clinical",
+    requireRelevance: true,
+  });
+}
+
+async function loadStatFeedItems() {
+  const feed = await parseFeed("https://www.statnews.com/feed/");
+
+  return buildItemsFromRss(feed.items, {
+    source: "STAT",
+    sourceLabel: "News feed",
+    sourceType: "News",
+    defaultCategory: "Media",
+    requireRelevance: true,
+  });
+}
+
+async function loadLongevityTechnologyFeedItems() {
+  const feed = await parseFeed("https://longevity.technology/feed/");
+
+  return buildItemsFromRss(feed.items, {
+    source: "Longevity.Technology",
+    sourceLabel: "Longevity news",
+    sourceType: "News",
+    defaultCategory: "Tech & Biz",
+  });
+}
+
+async function loadGoogleNewsFeedItems(query: (typeof GOOGLE_NEWS_QUERIES)[number]) {
+  const encodedQuery = encodeURIComponent(query);
+  const feed = await parseFeed(
+    `https://news.google.com/rss/search?q=${encodedQuery}&hl=en-US&gl=US&ceid=US:en`,
+  );
+
+  return feed.items
+    .map((item) => {
+      const publishedAt = getParsedFeedItemDate(item);
+      const url = normalizeUrl(item.link);
+      const rawTitle = normalizeWhitespace(item.title || "");
+      const { title, source } = splitGoogleNewsTitle(rawTitle);
+
+      if (!title || !source || !publishedAt || !url) {
+        return null;
+      }
+
+      const summaryText = getParsedFeedItemSnippet(item);
+      if (!isHealthbookRelevant(`${title} ${summaryText}`)) {
+        return null;
+      }
+
+      const category = inferHealthbookCategory({
+        title,
+        source,
+        sourceType: "News",
+        summaryText,
+      });
+      const signal = inferHealthbookSignal({
+        title,
+        sourceType: "News",
+        category,
+        publishedAt,
+      });
+
+      return {
+        id: buildHealthbookId(source, title, url),
+        title,
+        source,
+        sourceLabel: `Google News / ${query}`,
+        sourceType: "News" as const,
+        category,
+        publishedAt,
+        url,
+        takeaway: buildHealthbookTakeaway({ source, sourceType: "News", category }),
+        summary: buildHealthbookSummary({
+          source,
+          sourceType: "News",
+          rawSummary: summaryText,
+          title,
+        }),
+        signal,
+      } satisfies HealthbookFeedItem;
+    })
+    .filter((item): item is HealthbookFeedItem => Boolean(item));
+}
+
+async function loadPreprintFeedItems(server: "medrxiv" | "biorxiv", now: number) {
+  const interval = getPreprintInterval(now);
+  const response = await fetchJson<PreprintApiResponse>(
+    `https://api.${server}.org/details/${server}/${interval.startDate}/${interval.endDate}`,
+  );
+
+  const items = Array.isArray(response.collection) ? response.collection : [];
+
+  return items
+    .map((entry) => {
+      const title = normalizeWhitespace(entry.title || "");
+      const publishedAt = toIsoDate(entry.date);
+      const summaryText = normalizeWhitespace(entry.abstract || "");
+
+      if (!title || !publishedAt || !isHealthbookRelevant(`${title} ${summaryText}`)) {
+        return null;
+      }
+
+      const source = server === "medrxiv" ? "medRxiv" : "bioRxiv";
+      const category = inferHealthbookCategory({
+        title,
+        source,
+        sourceType: "Preprints",
+        summaryText,
+      });
+      const signal = inferHealthbookSignal({
+        title,
+        sourceType: "Preprints",
+        category,
+        publishedAt,
+      });
+      const url = normalizeUrl(entry.doi ? `https://doi.org/${entry.doi}` : "");
+
+      if (!url) {
+        return null;
+      }
+
+      return {
+        id: buildHealthbookId(source, title, url),
+        title,
+        source,
+        sourceLabel: normalizeWhitespace(entry.category || `${source} preprint`),
+        sourceType: "Preprints" as const,
+        category,
+        publishedAt,
+        url,
+        takeaway: buildHealthbookTakeaway({ source, sourceType: "Preprints", category }),
+        summary: buildHealthbookSummary({
+          source,
+          sourceType: "Preprints",
+          rawSummary: summaryText,
+          title,
+        }),
+        signal,
+      } satisfies HealthbookFeedItem;
+    })
+    .filter((item): item is HealthbookFeedItem => Boolean(item));
+}
+
+async function parseFeed(url: string) {
+  const xml = await fetchText(url);
+  return parser.parseString(xml);
+}
+
+async function fetchText(url: string) {
+  const response = await fetchSource(url);
+  return response.text();
+}
+
+async function fetchJson<T>(url: string) {
+  const response = await fetchSource(url);
+  return (await response.json()) as T;
+}
+
+async function fetchSource(url: string) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), HEALTHBOOK_SOURCE_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      redirect: "follow",
+      headers: {
+        "user-agent": "PresentHealth Healthbook/1.0 (+https://presenthealthmd.com)",
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`${url} returned ${response.status}`);
+    }
+
+    return response;
+  } catch (error) {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new Error(`${url} timed out after ${HEALTHBOOK_SOURCE_TIMEOUT_MS}ms`);
+    }
+
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+function buildItemsFromRss(
+  items: ParsedFeedItem[],
+  options: {
+    source: string;
+    sourceLabel: string;
+    sourceType: Exclude<HealthbookSourceType, "All Sources" | "X" | "Companies">;
+    defaultCategory: Exclude<HealthbookCategory, "All">;
+    requireRelevance?: boolean;
+  },
+) {
+  return items
+    .map((item) => {
+      const title = normalizeWhitespace(item.title || "");
+      const publishedAt = getParsedFeedItemDate(item);
+      const url = normalizeUrl(item.link);
+
+      if (!title || !publishedAt || !url) {
+        return null;
+      }
+
+      const summaryText = getParsedFeedItemSnippet(item);
+      if (options.requireRelevance && !isHealthbookRelevant(`${title} ${summaryText}`)) {
+        return null;
+      }
+
+      const category = inferHealthbookCategory({
+        title,
+        source: options.source,
+        sourceType: options.sourceType,
+        summaryText,
+        defaultCategory: options.defaultCategory,
+      });
+      const signal = inferHealthbookSignal({
+        title,
+        sourceType: options.sourceType,
+        category,
+        publishedAt,
+      });
+
+      return {
+        id: buildHealthbookId(options.source, title, url),
+        title,
+        source: options.source,
+        sourceLabel: options.sourceLabel,
+        sourceType: options.sourceType,
+        category,
+        publishedAt,
+        url,
+        takeaway: buildHealthbookTakeaway({
+          source: options.source,
+          sourceType: options.sourceType,
+          category,
+        }),
+        summary: buildHealthbookSummary({
+          source: options.source,
+          sourceType: options.sourceType,
+          rawSummary: summaryText,
+          title,
+        }),
+        signal,
+      } satisfies HealthbookFeedItem;
+    })
+    .filter((item): item is HealthbookFeedItem => Boolean(item));
+}
+
+function getParsedFeedItemDate(item: ParsedFeedItem) {
+  return toIsoDate(item.isoDate || item.pubDate || item.date);
+}
+
+function getParsedFeedItemSnippet(item: ParsedFeedItem) {
+  const encodedSnippet =
+    typeof item["content:encodedSnippet"] === "string" ? item["content:encodedSnippet"] : "";
+  const encodedContent = typeof item["content:encoded"] === "string" ? item["content:encoded"] : "";
+
+  return normalizeSummaryText(
+    item.contentSnippet || encodedSnippet || item.content || encodedContent || "",
+    item.title || "",
+  );
+}
+
+function inferHealthbookCategory(params: {
+  title: string;
+  source: string;
+  sourceType: Exclude<HealthbookSourceType, "All Sources">;
+  summaryText: string;
+  defaultCategory?: Exclude<HealthbookCategory, "All">;
+}): Exclude<HealthbookCategory, "All"> {
+  const text = `${params.title} ${params.summaryText} ${params.source}`;
+
+  if (params.sourceType === "Podcasts") {
+    return "Podcasts";
+  }
+
+  if (matchesAny(text, TECH_AND_BIZ_PATTERNS)) {
+    return "Tech & Biz";
+  }
+
+  if (params.sourceType === "Journals" || params.sourceType === "Preprints") {
+    return matchesAny(text, CLINICAL_PATTERNS) ? "Clinical" : "Research";
+  }
+
+  if (matchesAny(text, CLINICAL_PATTERNS)) {
+    return "Clinical";
+  }
+
+  if (matchesAny(text, PROTOCOL_PATTERNS)) {
+    return "Protocols";
+  }
+
+  return params.defaultCategory || "Media";
+}
+
+function inferHealthbookSignal(params: {
+  title: string;
+  sourceType: Exclude<HealthbookSourceType, "All Sources">;
+  category: Exclude<HealthbookCategory, "All">;
+  publishedAt: string;
+}) {
+  let score = 0;
+
+  if (params.sourceType === "Journals") {
+    score += 3;
+  } else if (params.sourceType === "Preprints") {
+    score += 2;
+  } else if (params.sourceType === "Podcasts") {
+    score += 1;
+  }
+
+  if (params.category === "Clinical" || params.category === "Research") {
+    score += 1;
+  }
+
+  if (matchesAny(params.title, HIGH_SIGNAL_PATTERNS)) {
+    score += 1;
+  }
+
+  const ageHours = (Date.now() - getHealthbookPublishedDate(params.publishedAt).getTime()) / (60 * 60 * 1000);
+  if (ageHours <= 72) {
+    score += 1;
+  }
+
+  if (score >= 5) {
+    return "Lead";
+  }
+
+  if (score >= 3) {
+    return "High";
+  }
+
+  return "Watch";
+}
+
+function buildHealthbookTakeaway(params: {
+  source: string;
+  sourceType: Exclude<HealthbookSourceType, "All Sources">;
+  category: Exclude<HealthbookCategory, "All">;
+}) {
+  const categoryLeadIn: Record<Exclude<HealthbookCategory, "All">, string> = {
+    Research: "Research signal",
+    Clinical: "Clinical signal",
+    Protocols: "Protocol signal",
+    Podcasts: "Podcast signal",
+    Media: "Media signal",
+    "Tech & Biz": "Market signal",
+  };
+
+  const sourceFrame: Record<Exclude<HealthbookSourceType, "All Sources">, string> = {
+    Journals: "Peer-reviewed source; review the methods and population before acting on it.",
+    X: "Social signal only; verify the underlying evidence before treating it as durable.",
+    Preprints: "Preprint only; use it directionally until peer review lands.",
+    Podcasts: "Useful for frameworks and context, not as standalone clinical guidance.",
+    News: "Useful for tracking the category and the underlying study or company move.",
+    Companies: "Company source; good for product movement, not independent validation.",
+  };
+
+  return truncateText(
+    `${categoryLeadIn[params.category]} from ${params.source}. ${sourceFrame[params.sourceType]}`,
+    180,
+  );
+}
+
+function buildHealthbookSummary(params: {
+  source: string;
+  sourceType: Exclude<HealthbookSourceType, "All Sources">;
+  rawSummary: string;
+  title: string;
+}) {
+  const cleanedSummary = normalizeSummaryText(params.rawSummary, params.title);
+  if (cleanedSummary) {
+    return truncateText(cleanedSummary, 320);
+  }
+
+  const fallbackBySourceType: Record<Exclude<HealthbookSourceType, "All Sources">, string> = {
+    Journals: "Open the source for the full paper details, study design, and clinical context.",
+    X: "Open the source to review the original thread and any linked evidence.",
+    Preprints: "Open the source to review the abstract, methods, and limitations before using it.",
+    Podcasts: "Open the source for the full episode notes and long-form discussion.",
+    News: "Open the source for the full article and any linked research or product details.",
+    Companies: "Open the source for the original release and product context.",
+  };
+
+  return `${params.source}: ${fallbackBySourceType[params.sourceType]}`;
+}
+
+function getPreprintInterval(now: number) {
+  const endDate = new Date(now);
+  const startDate = new Date(now - 14 * 24 * 60 * 60 * 1000);
+
+  return {
+    startDate: formatDateForApi(startDate),
+    endDate: formatDateForApi(endDate),
+  };
+}
+
+function formatDateForApi(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function buildHealthbookId(source: string, title: string, url: string) {
+  return createHash("sha1").update(`${source}|${title}|${url}`).digest("hex").slice(0, 16);
+}
+
+function isHealthbookRelevant(text: string) {
+  return matchesAny(text, RELEVANCE_PATTERNS);
+}
+
+function normalizeSummaryText(text: string, title = "") {
+  const cleaned = normalizeWhitespace(
+    decodeHtmlEntities(stripHtml(text))
+      .replace(/The post .*? appeared first on .*$/i, "")
+      .replace(/Want to stay on top of .*? inbox\./i, "")
+      .replace(/^\s*New England Journal of Medicine,\s*/i, ""),
+  );
+
+  if (!cleaned) {
+    return "";
+  }
+
+  const normalizedTitle = normalizeWhitespace(title).toLowerCase();
+  if (normalizedTitle && cleaned.toLowerCase() === normalizedTitle) {
+    return "";
+  }
+
+  if (normalizedTitle && cleaned.toLowerCase().startsWith(normalizedTitle.toLowerCase())) {
+    const trimmed = normalizeWhitespace(cleaned.slice(title.length));
+    if (trimmed.length >= 32) {
+      return trimmed;
+    }
+  }
+
+  return cleaned;
+}
+
+function stripHtml(text: string) {
+  return text.replace(/<[^>]+>/g, " ");
+}
+
+function decodeHtmlEntities(text: string) {
+  return text
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#xA0;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">");
+}
+
+function truncateText(text: string, maxLength: number) {
+  if (text.length <= maxLength) {
+    return text;
+  }
+
+  const truncated = text.slice(0, maxLength);
+  const lastSpaceIndex = truncated.lastIndexOf(" ");
+  if (lastSpaceIndex >= Math.floor(maxLength * 0.6)) {
+    return `${truncated.slice(0, lastSpaceIndex).trimEnd()}...`;
+  }
+
+  return `${truncated.trimEnd()}...`;
+}
+
+function normalizeWhitespace(text: string) {
+  return text.replace(/\s+/g, " ").trim();
+}
+
+function normalizeUrl(url?: string) {
+  const trimmed = normalizeWhitespace(url || "");
+  if (!trimmed) {
+    return "";
+  }
+
+  try {
+    return new URL(trimmed).toString();
+  } catch {
+    return "";
+  }
+}
+
+function toIsoDate(value?: string) {
+  if (!value) {
+    return null;
+  }
+
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return null;
+  }
+
+  return date.toISOString();
+}
+
+function normalizeTitleForDedupe(title: string) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function matchesAny(value: string, patterns: RegExp[]) {
+  return patterns.some((pattern) => pattern.test(value));
+}
+
+function splitGoogleNewsTitle(rawTitle: string) {
+  const segments = rawTitle.split(" - ").map((segment) => segment.trim()).filter(Boolean);
+  if (segments.length < 2) {
+    return { title: rawTitle, source: "Google News" };
+  }
+
+  return {
+    title: segments.slice(0, -1).join(" - "),
+    source: segments.at(-1) || "Google News",
+  };
 }

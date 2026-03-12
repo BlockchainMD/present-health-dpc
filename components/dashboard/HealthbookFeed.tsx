@@ -195,6 +195,7 @@ export function HealthbookFeed({ items, initialNow }: HealthbookFeedProps) {
   const [activeSourceType, setActiveSourceType] = useState<HealthbookSourceType>(HEALTHBOOK_SOURCE_TYPES[0]);
   const [expandedId, setExpandedId] = useState("");
   const [now, setNow] = useState(initialNow);
+  const hasLiveItems = items.length > 0;
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -229,7 +230,9 @@ export function HealthbookFeed({ items, initialNow }: HealthbookFeedProps) {
               Latest signal stream
             </h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">
-              Latest item landed {latestLabel} ago.
+              {hasLiveItems
+                ? `Latest item landed ${latestLabel} ago.`
+                : "Live public sources are temporarily unavailable on this instance."}
             </p>
           </div>
 
@@ -334,11 +337,12 @@ export function HealthbookFeed({ items, initialNow }: HealthbookFeedProps) {
         ) : (
           <div className="px-4 py-10">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-              No matches
+              {hasLiveItems ? "No matches" : "Live feed unavailable"}
             </p>
             <p className="mt-2 max-w-xl text-sm leading-6 text-muted-foreground">
-              That filter combination is empty in the current stream. Try widening either the category
-              or source filter.
+              {hasLiveItems
+                ? "That filter combination is empty in the current stream. Try widening either the category or source filter."
+                : "Healthbook now pulls from live feeds and APIs only. If every upstream source fails or returns nothing relevant, the dashboard stays empty instead of filling with fake content."}
             </p>
           </div>
         )}

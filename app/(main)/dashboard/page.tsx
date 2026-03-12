@@ -37,7 +37,7 @@ export default async function DashboardPage() {
   }
 
   const feedGeneratedAt = Date.now();
-  const feedItems = getHealthbookFeedItems(feedGeneratedAt);
+  const feedItems = await getHealthbookFeedItems(feedGeneratedAt);
 
   return (
     <MemberDashboardShell
