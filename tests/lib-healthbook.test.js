@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 require("./helpers/register-ts");
 
 const test = require("node:test");
