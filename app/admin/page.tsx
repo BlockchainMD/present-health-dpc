@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Sparkles, Loader2, ArrowRight, Rocket, Megaphone, AlertTriangle } from 'lucide-react';
+import { Sparkles, Loader2, ArrowRight, Rocket, Megaphone, AlertTriangle, BookOpen } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AdminDashboard() {
@@ -347,6 +347,28 @@ export default function AdminDashboard() {
                         <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-700">
                             <Link href="/admin/campaigns">
                                 Manage Campaigns <Rocket className="ml-2 h-4 w-4" />
+                            </Link>
+                        </Button>
+                    </CardContent>
+                </Card>
+
+                <Card className="bg-gradient-to-br from-emerald-500/5 to-transparent border-emerald-500/20">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <BookOpen className="h-5 w-5 text-emerald-600" />
+                            Healthbook SEO Driver
+                        </CardTitle>
+                        <CardDescription>
+                            Turn live health signals into evergreen article briefs for the content pipeline.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="p-4 bg-background rounded-lg border border-border">
+                            <p className="text-sm">Use external signals as topic discovery, then push the winners into Content Briefs.</p>
+                        </div>
+                        <Button asChild className="w-full bg-emerald-600 hover:bg-emerald-700">
+                            <Link href="/admin/healthbook">
+                                Open Healthbook <ArrowRight className="ml-2 h-4 w-4" />
                             </Link>
                         </Button>
                     </CardContent>

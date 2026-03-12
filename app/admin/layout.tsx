@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LayoutDashboard, FileText, Settings, ExternalLink, BarChart3, Activity, Users, ShieldCheck, MapPinned, BookOpen, Building2, MessageSquare, Braces, ClipboardList, WandSparkles, Share2, Star, Inbox, Megaphone, Handshake, RotateCcw, Mail } from 'lucide-react';
+import { LayoutDashboard, FileText, Settings, ExternalLink, BarChart3, Activity, Users, ShieldCheck, MapPinned, BookOpen, Building2, MessageSquare, Braces, ClipboardList, WandSparkles, Share2, Star, Inbox, Megaphone, Handshake, RotateCcw, Mail, Sparkles } from 'lucide-react';
 import { protectAdminPage } from '@/lib/authz';
 import { Badge } from '@/components/ui/badge';
 import { getCitationNeedsUpdateCount } from '@/lib/citations';
@@ -174,6 +174,13 @@ export default async function AdminLayout({
                     >
                         <WandSparkles className="h-4 w-4" />
                         Content Briefs
+                    </Link>
+                    <Link
+                        href="/admin/healthbook"
+                        className="flex items-center gap-3 px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-lg transition-colors"
+                    >
+                        <Sparkles className="h-4 w-4" />
+                        Healthbook
                     </Link>
                     <Link
                         href="/admin/content-refresh"

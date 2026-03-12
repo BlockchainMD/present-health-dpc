@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { AlertTriangle, Loader2, RefreshCw, WandSparkles } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -215,6 +215,7 @@ function statusBadge(status: ContentBriefStatus) {
 
 export function ContentBriefManager() {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -236,6 +237,12 @@ export function ContentBriefManager() {
     const [outlineJson, setOutlineJson] = useState("[]");
 
     const selected = useMemo(() => briefs.find((b) => b.id === selectedId) || null, [briefs, selectedId]);
+    const focusedBriefId = searchParams.get("brief") || "";
+
+    useEffect(() => {
+        if (!focusedBriefId) return;
+        setSelectedId(focusedBriefId);
+    }, [focusedBriefId]);
 
     useEffect(() => {
         const handle = setTimeout(() => {
