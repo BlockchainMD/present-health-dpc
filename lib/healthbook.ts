@@ -306,17 +306,19 @@ async function refreshHealthbookFeed(now: number) {
     loadPreprintFeedItems("biorxiv", now),
   ]);
 
-  const liveItems = sourceResults.flatMap<HealthbookFeedItem>((result, index) => {
+  const liveItems: HealthbookFeedItem[] = [];
+
+  for (const [index, result] of sourceResults.entries()) {
     if (result.status === "fulfilled") {
-      return result.value;
+      liveItems.push(...result.value.filter((item): item is HealthbookFeedItem => Boolean(item)));
+      continue;
     }
 
     console.error("[Healthbook] Source failed", {
       sourceIndex: index,
       error: result.reason instanceof Error ? result.reason.message : String(result.reason),
     });
-    return [];
-  });
+  }
 
   const items = curateHealthbookFeedItems(liveItems, now);
 
