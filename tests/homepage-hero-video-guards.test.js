@@ -24,6 +24,8 @@ test("hero background media stays poster-first with desktop-only motion", () => 
   assert.match(mediaSource, /doctor-consult-a\.webm/);
   assert.match(mediaSource, /doctor-consult-a-poster\.webp/);
   assert.match(mediaSource, /doctor-consult-a-poster\.jpg/);
+  assert.match(mediaSource, /HERO_POSTER_POSITION/);
+  assert.match(mediaSource, /HERO_VIDEO_POSITION/);
   assert.match(mediaSource, /autoPlay/);
   assert.match(mediaSource, /muted/);
   assert.match(mediaSource, /loop/);
@@ -34,6 +36,7 @@ test("hero background media stays poster-first with desktop-only motion", () => 
   assert.match(mediaSource, /min-width: 768px/);
   assert.match(mediaSource, /document\.readyState === "complete"/);
   assert.match(mediaSource, /requestIdleCallback/);
+  assert.match(mediaSource, /md:hidden/);
   assert.match(mediaSource, /setIsEnhancementReady\(true\)/);
   assert.match(mediaSource, /setIsVideoVisible\(false\)/);
 });
