@@ -7,32 +7,36 @@ function readSource(relativePath) {
   return fs.readFileSync(path.join(__dirname, "..", relativePath), "utf8");
 }
 
-test("/dashboard keeps member-only gating and loads Healthbook feed data", () => {
+test("/dashboard keeps member-only gating without loading Healthbook data", () => {
   const dashboardSource = readSource("app/(main)/dashboard/page.tsx");
 
   assert.match(dashboardSource, /redirect\("\/login"\)/);
   assert.match(dashboardSource, /redirect\("\/admin"\)/);
-  assert.match(dashboardSource, /getHealthbookFeedSnapshot/);
   assert.match(dashboardSource, /MemberDashboardShell/);
+  assert.doesNotMatch(dashboardSource, /getHealthbookFeedSnapshot/);
 });
 
-test("member dashboard shell exposes care overview and Healthbook tabs", () => {
+test("member dashboard shell stays focused on membership and care actions", () => {
   const shellSource = readSource("components/dashboard/MemberDashboardShell.tsx");
 
-  assert.match(shellSource, /TabsTrigger value="overview"/);
-  assert.match(shellSource, /TabsTrigger value="healthbook"/);
   assert.match(shellSource, /Email care team/);
   assert.match(shellSource, /What your membership covers/);
+  assert.match(shellSource, /Your first 72 hours/);
+  assert.doesNotMatch(shellSource, /Healthbook/);
 });
 
-test("Healthbook feed preserves filterable signal stream behavior", () => {
-  const feedSource = readSource("components/dashboard/HealthbookFeed.tsx");
+test("admin Healthbook workflow drives SEO briefs from live signals", () => {
+  const adminPageSource = readSource("app/admin/healthbook/page.tsx");
+  const workspaceSource = readSource("components/admin/HealthbookSeoWorkspace.tsx");
+  const layoutSource = readSource("app/admin/layout.tsx");
   const dataSource = readSource("lib/healthbook.ts");
 
-  assert.match(feedSource, /activeCategory/);
-  assert.match(feedSource, /activeSourceType/);
-  assert.match(feedSource, /Latest signal stream/);
-  assert.match(feedSource, /countHealthbookItemsWithinHours/);
+  assert.match(adminPageSource, /getHealthbookFeedSnapshot/);
+  assert.match(adminPageSource, /HealthbookSeoWorkspace/);
+  assert.match(workspaceSource, /Generate content brief/);
+  assert.match(workspaceSource, /\/api\/admin\/content-briefs/);
+  assert.match(workspaceSource, /evergreen\s+content\s+briefs/i);
+  assert.match(layoutSource, /href="\/admin\/healthbook"/);
   assert.match(dataSource, /HEALTHBOOK_CATEGORIES/);
   assert.match(dataSource, /HEALTHBOOK_SOURCE_TYPES/);
   assert.match(dataSource, /formatHealthbookRelativeTimestamp/);

@@ -3,7 +3,6 @@ import { redirect } from "next/navigation";
 
 import { MemberDashboardShell } from "@/components/dashboard/MemberDashboardShell";
 import { authOptions } from "@/lib/auth";
-import { getHealthbookFeedSnapshot } from "@/lib/healthbook";
 import { prisma } from "@/lib/prisma";
 
 const memberSinceFormatter = new Intl.DateTimeFormat("en-US", {
@@ -36,16 +35,12 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const { items: feedItems, generatedAt: feedGeneratedAt } = await getHealthbookFeedSnapshot();
-
   return (
     <MemberDashboardShell
       userName={user.name ?? null}
       userEmail={user.email}
       subscriptionStatus={user.subscriptionStatus || "inactive"}
       memberSinceLabel={memberSinceFormatter.format(user.createdAt)}
-      feedItems={feedItems}
-      feedGeneratedAt={feedGeneratedAt}
     />
   );
 }

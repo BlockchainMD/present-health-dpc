@@ -8,20 +8,15 @@ import {
   Stethoscope,
 } from "lucide-react";
 
-import { HealthbookFeed } from "@/components/dashboard/HealthbookFeed";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { type HealthbookFeedItem } from "@/lib/healthbook";
 
 type MemberDashboardShellProps = {
   userName: string | null;
   userEmail: string | null;
   subscriptionStatus: string;
   memberSinceLabel: string;
-  feedItems: HealthbookFeedItem[];
-  feedGeneratedAt: number;
 };
 
 function getFirstName(userName: string | null, userEmail: string | null) {
@@ -43,8 +38,6 @@ export function MemberDashboardShell({
   userEmail,
   subscriptionStatus,
   memberSinceLabel,
-  feedItems,
-  feedGeneratedAt,
 }: MemberDashboardShellProps) {
   const firstName = getFirstName(userName, userEmail);
   const status = subscriptionStatus || "inactive";
@@ -65,8 +58,8 @@ export function MemberDashboardShell({
                     Welcome back, {firstName}
                   </CardTitle>
                   <CardDescription className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">
-                    Your Present Health dashboard is now your member home base: care expectations,
-                    next steps, and the Healthbook signal stream all live in one place.
+                    Your Present Health dashboard is your member home base for onboarding,
+                    care expectations, and the fastest next steps.
                   </CardDescription>
                 </div>
               </div>
@@ -87,94 +80,77 @@ export function MemberDashboardShell({
             </CardHeader>
           </Card>
 
-          <Tabs defaultValue="overview" className="space-y-4">
-            <TabsList className="h-auto w-full justify-start rounded-2xl bg-muted/60 p-1">
-              <TabsTrigger value="overview" className="rounded-xl px-4 py-2">
-                Care overview
-              </TabsTrigger>
-              <TabsTrigger value="healthbook" className="rounded-xl px-4 py-2">
-                Healthbook
-              </TabsTrigger>
-            </TabsList>
+          <div className="grid gap-6 lg:grid-cols-2">
+            <Card className="border-border/70">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <CalendarClock className="h-5 w-5 text-primary" />
+                  Your first 72 hours
+                </CardTitle>
+                <CardDescription>
+                  Keep the onboarding path clear and low-friction.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm leading-6 text-muted-foreground">
+                <div className="rounded-2xl border border-border bg-muted/30 p-4">
+                  <p className="font-semibold text-foreground">1. Welcome call</p>
+                  <p className="mt-2">
+                    A care-team member will reach out using the number you provided to complete
+                    intake and confirm how you want ongoing communication handled.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-border bg-muted/30 p-4">
+                  <p className="font-semibold text-foreground">2. Start with message-first care</p>
+                  <p className="mt-2">
+                    Use email for anything urgent before intake. Once onboarding is complete,
+                    your ongoing primary care plan stays anchored to message, phone, and video when clinically appropriate.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-border bg-muted/30 p-4">
+                  <p className="font-semibold text-foreground">3. Expect business-hour response windows</p>
+                  <p className="mt-2">
+                    Response-time commitments apply during Monday through Friday, 8am to 8pm ET.
+                    Emergency care still goes through 911 or your nearest emergency department.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
 
-            <TabsContent value="overview" className="mt-0">
-              <div className="grid gap-6 lg:grid-cols-2">
-                <Card className="border-border/70">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <CalendarClock className="h-5 w-5 text-primary" />
-                      Your first 72 hours
-                    </CardTitle>
-                    <CardDescription>
-                      Keep the onboarding path clear and low-friction.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 text-sm leading-6 text-muted-foreground">
-                    <div className="rounded-2xl border border-border bg-muted/30 p-4">
-                      <p className="font-semibold text-foreground">1. Welcome call</p>
-                      <p className="mt-2">
-                        A care-team member will reach out using the number you provided to complete
-                        intake and confirm how you want ongoing communication handled.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-muted/30 p-4">
-                      <p className="font-semibold text-foreground">2. Start with message-first care</p>
-                      <p className="mt-2">
-                        Use email for anything urgent before intake. Once onboarding is complete,
-                        your ongoing primary care plan stays anchored to message, phone, and video when clinically appropriate.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-muted/30 p-4">
-                      <p className="font-semibold text-foreground">3. Expect business-hour response windows</p>
-                      <p className="mt-2">
-                        Response-time commitments apply during Monday through Friday, 8am to 8pm ET.
-                        Emergency care still goes through 911 or your nearest emergency department.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-border/70">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-xl">
-                      <Stethoscope className="h-5 w-5 text-primary" />
-                      What your membership covers
-                    </CardTitle>
-                    <CardDescription>
-                      Keep expectations sharp so the service stays useful.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="space-y-4 text-sm leading-6 text-muted-foreground">
-                    <div className="rounded-2xl border border-border bg-background p-4">
-                      <p className="font-semibold text-foreground">Included</p>
-                      <p className="mt-2">
-                        Messaging-first primary care, ongoing follow-up, medication review,
-                        prevention planning, and video or phone visits when clinically appropriate.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-background p-4">
-                      <p className="font-semibold text-foreground">Separate charges</p>
-                      <p className="mt-2">
-                        Labs, imaging, hospital care, specialists, and emergency services remain
-                        outside the membership and are billed by third parties.
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-border bg-background p-4">
-                      <p className="font-semibold text-foreground">Best use of the dashboard</p>
-                      <p className="mt-2">
-                        Treat this as your orientation and insight hub: member policies,
-                        next actions, and a curated stream of high-signal prevention research.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
-
-            <TabsContent value="healthbook" className="mt-0">
-              <HealthbookFeed items={feedItems} initialNow={feedGeneratedAt} />
-            </TabsContent>
-          </Tabs>
+            <Card className="border-border/70">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-xl">
+                  <Stethoscope className="h-5 w-5 text-primary" />
+                  What your membership covers
+                </CardTitle>
+                <CardDescription>
+                  Keep expectations sharp so the service stays useful.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4 text-sm leading-6 text-muted-foreground">
+                <div className="rounded-2xl border border-border bg-background p-4">
+                  <p className="font-semibold text-foreground">Included</p>
+                  <p className="mt-2">
+                    Messaging-first primary care, ongoing follow-up, medication review,
+                    prevention planning, and video or phone visits when clinically appropriate.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-border bg-background p-4">
+                  <p className="font-semibold text-foreground">Separate charges</p>
+                  <p className="mt-2">
+                    Labs, imaging, hospital care, specialists, and emergency services remain
+                    outside the membership and are billed by third parties.
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-border bg-background p-4">
+                  <p className="font-semibold text-foreground">Best use of the dashboard</p>
+                  <p className="mt-2">
+                    Treat this as your orientation and action hub: member policies, next steps,
+                    and the fastest way to reach the care team.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         <div className="space-y-6">

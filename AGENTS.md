@@ -16,3 +16,4 @@
 - `next/font/google` can fail builds on network fetches -> use local CSS font variables in the root layout when build determinism matters.
 - Turbopack can panic during production build in this repo -> rerun with `next build --webpack` if the default build path flakes.
 - Dashboard features can look production-ready while still shipping seeded mock data -> replace mock feeds with live sources or an explicit unavailable state before exposing them to members.
+- Internal signal tooling can bleed into member UX -> keep trend discovery and SEO workflows in admin, not the membership dashboard.
