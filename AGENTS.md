@@ -17,3 +17,4 @@
 - Turbopack can panic during production build in this repo -> rerun with `next build --webpack` if the default build path flakes.
 - Dashboard features can look production-ready while still shipping seeded mock data -> replace mock feeds with live sources or an explicit unavailable state before exposing them to members.
 - Internal signal tooling can bleed into member UX -> keep trend discovery and SEO workflows in admin, not the membership dashboard.
+- X bearer tokens can still fail on v2 search -> mint a fresh app-only token from API key/secret and confirm the app is attached to a Project with the required API access level.
