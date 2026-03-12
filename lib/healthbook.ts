@@ -310,7 +310,7 @@ async function refreshHealthbookFeed(now: number) {
 
   for (const [index, result] of sourceResults.entries()) {
     if (result.status === "fulfilled") {
-      liveItems.push(...result.value.filter((item): item is HealthbookFeedItem => Boolean(item)));
+      liveItems.push(...result.value.filter(isHealthbookFeedItem));
       continue;
     }
 
@@ -446,7 +446,7 @@ async function loadGoogleNewsFeedItems(
         signal,
       } satisfies HealthbookFeedItem;
     })
-    .filter((item): item is HealthbookFeedItem => Boolean(item));
+    .filter(isHealthbookFeedItem);
 }
 
 async function loadPreprintFeedItems(
@@ -508,7 +508,7 @@ async function loadPreprintFeedItems(
         signal,
       } satisfies HealthbookFeedItem;
     })
-    .filter((item): item is HealthbookFeedItem => Boolean(item));
+    .filter(isHealthbookFeedItem);
 }
 
 async function parseFeed(url: string) {
@@ -618,7 +618,7 @@ function buildItemsFromRss(
         signal,
       } satisfies HealthbookFeedItem;
     })
-    .filter((item): item is HealthbookFeedItem => Boolean(item));
+    .filter(isHealthbookFeedItem);
 }
 
 function getParsedFeedItemDate(item: ParsedFeedItem) {
@@ -887,4 +887,8 @@ function splitGoogleNewsTitle(rawTitle: string) {
     title: segments.slice(0, -1).join(" - "),
     source: segments.at(-1) || "Google News",
   };
+}
+
+function isHealthbookFeedItem(item: HealthbookFeedItem | null): item is HealthbookFeedItem {
+  return item !== null;
 }
