@@ -15,6 +15,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { HeroBackgroundMedia } from "@/components/home/HeroBackgroundMedia";
 import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
 import { buildHomepageSchemas } from "@/lib/schema";
 
@@ -82,7 +83,7 @@ const STATES = [
     "Wisconsin",
 ];
 
-function ChannelIcons() {
+function ChannelIcons({ inverted = false }: { inverted?: boolean }) {
     const channels = [
         { label: "Text", icon: MessageSquareText, isPrimary: true },
         { label: "Photo", icon: ImageIcon, isPrimary: true },
@@ -95,14 +96,23 @@ function ChannelIcons() {
             {channels.map((channel) => {
                 const Icon = channel.icon;
                 return (
-                    <div key={channel.label} className="flex items-center gap-2 rounded-full border border-border px-4 py-2">
+                    <div
+                        key={channel.label}
+                        className={`flex items-center gap-2 rounded-full px-4 py-2 ${inverted ? "border border-white/15 bg-white/8 backdrop-blur-sm" : "border border-border"}`}
+                    >
                         <span
-                            className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${channel.isPrimary ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
+                            className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${channel.isPrimary
+                                ? inverted
+                                    ? "bg-emerald-400/18 text-emerald-100"
+                                    : "bg-primary/15 text-primary"
+                                : inverted
+                                    ? "bg-white/12 text-slate-100"
+                                    : "bg-muted text-muted-foreground"
                                 }`}
                         >
                             <Icon className="h-4 w-4" />
                         </span>
-                        <span className="text-sm font-medium text-foreground">{channel.label}</span>
+                        <span className={`text-sm font-medium ${inverted ? "text-white" : "text-foreground"}`}>{channel.label}</span>
                     </div>
                 );
             })}
@@ -112,28 +122,45 @@ function ChannelIcons() {
 
 function HeroSection() {
     return (
-        <section className="relative overflow-hidden bg-background pt-24 pb-16 md:pt-28 md:pb-20">
-            <div className="absolute inset-x-0 top-0 h-56 bg-gradient-to-b from-primary/10 to-transparent" />
-            <div className="container relative mx-auto px-4 md:px-6">
-                <div className="mx-auto max-w-4xl text-center">
-                    <Badge className="mb-5 bg-emerald-600 text-white hover:bg-emerald-600">Accepting New Members</Badge>
-                    <h1 className="text-4xl font-bold tracking-tight text-foreground md:text-6xl">
+        <section className="relative isolate overflow-hidden bg-slate-950 pt-24 pb-18 text-white md:pt-28 md:pb-24">
+            <HeroBackgroundMedia />
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#f6f2ea]" />
+            <div className="container relative z-10 mx-auto px-4 md:px-6">
+                <div className="max-w-3xl py-10 md:py-14 lg:max-w-2xl">
+                    <Badge className="mb-5 border border-white/12 bg-white/10 text-white hover:bg-white/10">
+                        Accepting New Members
+                    </Badge>
+                    <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-white md:text-6xl">
                         Text your care team. Get a real answer.
                     </h1>
-                    <p className="mx-auto mt-5 max-w-3xl text-lg text-muted-foreground md:text-xl">
-                        Full-service primary care, starting with a message. Sick visits, chronic care, prescriptions, labs,
-                        and more — $99/month. Everything included.
+                    <p className="mt-5 max-w-2xl text-lg text-slate-200 md:text-xl">
+                        Primary care that starts with a message and stays close when life gets complicated. Sick visits,
+                        chronic care, prescriptions, labs, and follow-up for $99/month.
                     </p>
-                    <div className="mt-8">
-                        <Button asChild size="lg" className="h-12 px-8 text-base">
-                            <Link href="/join">Start Membership — $99/mo</Link>
+                    <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+                        <Button asChild size="lg" className="h-12 bg-white px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
+                            <Link href="/join">Start Membership - $99/mo</Link>
                         </Button>
+                        <div className="rounded-full border border-white/14 bg-white/8 px-4 py-2 text-sm text-slate-100 backdrop-blur-sm">
+                            No insurance needed. No per-visit fees. Cancel anytime.
+                        </div>
                     </div>
-                    <p className="mt-4 text-sm text-muted-foreground">
-                        No insurance needed · No per-visit fees · Cancel anytime · Adults 18+
-                    </p>
-                    <div className="mt-8 flex justify-center">
-                        <ChannelIcons />
+                    <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-slate-100">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-2 backdrop-blur-sm">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                            Board-certified physician-led care
+                        </div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-2 backdrop-blur-sm">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                            Licensed across {STATES.length} states
+                        </div>
+                        <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-3 py-2 backdrop-blur-sm">
+                            <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                            Adults 18+ with fast digital access
+                        </div>
+                    </div>
+                    <div className="mt-8">
+                        <ChannelIcons inverted />
                     </div>
                 </div>
             </div>
