@@ -6,9 +6,11 @@ const assert = require("node:assert/strict");
 const {
   HEALTHBOOK_CATEGORIES,
   HEALTHBOOK_SOURCE_TYPES,
+  buildHealthbookXSearchConfigs,
   countHealthbookItemsWithinHours,
   curateHealthbookFeedItems,
   formatHealthbookRelativeTimestamp,
+  mapHealthbookXSearchResponse,
   sortHealthbookFeedItems,
 } = require("../lib/healthbook");
 
@@ -98,4 +100,61 @@ test("healthbook helper functions respect generated timestamps", () => {
   assert.equal(formatHealthbookRelativeTimestamp(items[0].publishedAt, now), "8m");
   assert.equal(countHealthbookItemsWithinHours(items, 2, now), 2);
   assert.equal(itemsWithinSixHours, 3);
+});
+
+test("healthbook X query builder supports curated usernames and default topic filters", () => {
+  const configs = buildHealthbookXSearchConfigs({
+    HEALTHBOOK_X_USERNAMES: "PeterAttiaMD, statnews",
+    HEALTHBOOK_X_TOPIC_QUERY: "(longevity OR wearable)",
+  });
+
+  assert.equal(configs.length, 1);
+  assert.equal(configs[0].label, "X / @peterattiamd, @statnews");
+  assert.match(configs[0].query, /\(from:peterattiamd OR from:statnews\)/);
+  assert.match(configs[0].query, /\(longevity OR wearable\)/);
+  assert.match(configs[0].query, /lang:en -is:retweet -is:reply/);
+});
+
+test("healthbook maps X recent-search responses into feed items", () => {
+  const items = mapHealthbookXSearchResponse({
+    data: [
+      {
+        id: "12345",
+        author_id: "u1",
+        created_at: "2026-03-12T12:00:00Z",
+        text: "New wearable biomarker study suggests better glucose detection for preventive care. https://t.co/demo",
+        public_metrics: {
+          like_count: 120,
+          retweet_count: 30,
+          reply_count: 8,
+          quote_count: 5,
+        },
+        entities: {
+          urls: [
+            {
+              expanded_url: "https://example.com/wearable-study",
+            },
+          ],
+        },
+      },
+    ],
+    includes: {
+      users: [
+        {
+          id: "u1",
+          name: "Peter Attia",
+          username: "PeterAttiaMD",
+        },
+      ],
+    },
+  });
+
+  assert.equal(items.length, 1);
+  assert.equal(items[0].sourceType, "X");
+  assert.equal(items[0].sourceLabel, "X / @PeterAttiaMD");
+  assert.equal(items[0].url, "https://example.com/wearable-study");
+  assert.match(items[0].source, /@PeterAttiaMD/i);
+  assert.match(items[0].title, /wearable biomarker study/i);
+  assert.ok(["Clinical", "Research", "Tech & Biz"].includes(items[0].category));
+  assert.ok(["Lead", "High"].includes(items[0].signal));
 });

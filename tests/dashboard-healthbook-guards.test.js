@@ -41,6 +41,8 @@ test("admin Healthbook workflow drives SEO briefs from live signals", () => {
   assert.match(dataSource, /HEALTHBOOK_SOURCE_TYPES/);
   assert.match(dataSource, /formatHealthbookRelativeTimestamp/);
   assert.match(dataSource, /Promise\.allSettled/);
+  assert.match(dataSource, /api\.x\.com\/2\/tweets\/search\/recent/);
+  assert.match(dataSource, /buildHealthbookXSearchConfigs/);
   assert.match(dataSource, /peterattiamd\.com\/feed/);
   assert.match(dataSource, /loadPreprintFeedItems\("medrxiv"/);
   assert.doesNotMatch(dataSource, /const feedSeeds/);
