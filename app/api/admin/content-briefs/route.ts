@@ -51,6 +51,7 @@ export async function POST(request: NextRequest) {
             typeof payload.searchIntent === "string" ? payload.searchIntent : ""
         );
         const targetAudience = typeof payload.targetAudience === "string" ? payload.targetAudience : "";
+        const notes = typeof payload.notes === "string" ? payload.notes : "";
 
         if (!searchIntent) {
             return NextResponse.json(
@@ -66,6 +67,7 @@ export async function POST(request: NextRequest) {
             targetKeyword,
             searchIntent,
             targetAudience,
+            notes,
         });
 
         return NextResponse.json({ success: true, brief });

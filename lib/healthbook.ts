@@ -40,6 +40,20 @@ export type HealthbookFeedItem = {
   signal: HealthbookSignalLevel;
 };
 
+export type HealthbookBriefIntent =
+  | "INFORMATIONAL"
+  | "TRANSACTIONAL"
+  | "COMMERCIAL"
+  | "NAVIGATIONAL";
+
+export type HealthbookBriefSeed = {
+  targetKeyword: string;
+  searchIntent: HealthbookBriefIntent;
+  targetAudience: string;
+  evergreenAngle: string;
+  notes: string;
+};
+
 type ParsedFeedItem = {
   title?: string;
   link?: string;
@@ -267,6 +281,32 @@ export function curateHealthbookFeedItems(items: HealthbookFeedItem[], now = Dat
   }
 
   return curated;
+}
+
+export function buildHealthbookBriefSeed(item: HealthbookFeedItem): HealthbookBriefSeed {
+  const targetKeyword = deriveHealthbookTargetKeyword(item);
+  const searchIntent: HealthbookBriefIntent =
+    item.category === "Tech & Biz" ? "COMMERCIAL" : "INFORMATIONAL";
+  const evergreenAngle = buildHealthbookEvergreenAngle(item);
+
+  return {
+    targetKeyword,
+    searchIntent,
+    targetAudience: buildHealthbookTargetAudience(item),
+    evergreenAngle,
+    notes: [
+      `Healthbook signal source: ${item.source} (${item.sourceType})`,
+      `Signal strength: ${item.signal}`,
+      `Category: ${item.category}`,
+      `Published at: ${item.publishedAt}`,
+      `Original title: ${item.title}`,
+      `Takeaway: ${item.takeaway}`,
+      `Summary: ${item.summary}`,
+      `Evergreen framing: ${evergreenAngle}`,
+      `Source URL: ${item.url}`,
+      "Use this signal as discovery context only. Turn it into an evergreen patient-search article instead of a news recap.",
+    ].join("\n\n"),
+  };
 }
 
 export async function getHealthbookFeedItems(now = Date.now()) {
@@ -878,6 +918,55 @@ function normalizeTitleForDedupe(title: string) {
 
 function matchesAny(value: string, patterns: RegExp[]) {
   return patterns.some((pattern) => pattern.test(value));
+}
+
+function deriveHealthbookTargetKeyword(item: HealthbookFeedItem) {
+  const text = `${item.title} ${item.summary}`;
+
+  if (/\bwearable\b/i.test(text)) return "wearable health trackers";
+  if (/\bhealthspan\b/i.test(text)) return "healthspan";
+  if (/\bglp-1\b/i.test(text)) return "glp-1 benefits and risks";
+  if (/\bsleep\b/i.test(text)) return "how sleep affects long-term health";
+  if (/\bblood pressure\b/i.test(text)) return "how to improve blood pressure";
+  if (/\bprotein\b/i.test(text)) return "protein intake for healthy aging";
+  if (/\bexercise\b|\btraining\b|\bzone 2\b|\bvo2\b/i.test(text)) return "exercise for longevity";
+  if (/\bmetabolic\b|\bglucose\b|\binsulin\b|\bdiabetes\b/i.test(text)) return "metabolic health";
+
+  const cleanedTitle = normalizeWhitespace(
+    item.title
+      .replace(/[^\w\s-]/g, " ")
+      .replace(/\b(latest|fresh|new|study|trial|guidance|release|releases|issue)\b/gi, " "),
+  );
+
+  return truncateText(cleanedTitle.toLowerCase(), 72);
+}
+
+function buildHealthbookTargetAudience(item: HealthbookFeedItem) {
+  if (item.category === "Tech & Biz") {
+    return "Adults comparing preventive health tools, wearables, and new health products who want evidence-based context before buying or trying them.";
+  }
+
+  if (item.category === "Protocols" || item.category === "Podcasts") {
+    return "Adults looking for practical, evidence-aware prevention and healthspan guidance they can discuss with a physician.";
+  }
+
+  return "Adults researching evidence-based prevention, longevity, and primary care topics who want plain-English explanations and practical next steps.";
+}
+
+function buildHealthbookEvergreenAngle(item: HealthbookFeedItem) {
+  if (item.category === "Tech & Biz") {
+    return "Use the signal to build an evergreen comparison or explainer that helps readers decide whether the tool or trend is actually useful, overhyped, or too early.";
+  }
+
+  if (item.category === "Protocols" || item.category === "Podcasts") {
+    return "Turn the signal into a practical habit guide with guardrails, not a recap of the source episode or discussion.";
+  }
+
+  if (item.category === "Research" || item.category === "Clinical") {
+    return "Translate the signal into what patients should know, who it may matter for, and what questions are reasonable to bring to a physician.";
+  }
+
+  return "Use the signal as a topic hook, then write for the evergreen patient search intent behind it rather than the momentary news cycle.";
 }
 
 function splitGoogleNewsTitle(rawTitle: string) {

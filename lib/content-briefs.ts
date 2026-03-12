@@ -41,6 +41,7 @@ export type BriefGenerationInput = {
     targetKeyword: string;
     searchIntent: ContentBriefIntent;
     targetAudience: string;
+    notes?: string | null;
 };
 
 export type InternalLinkCandidate = {
@@ -507,6 +508,7 @@ function buildGenerationPrompt(input: BriefGenerationInput, candidates: Internal
     const candidateLines = candidates
         .map((c, index) => `${index + 1}. ${c.label} (${c.type}) -> ${c.url}`)
         .join("\n");
+    const contextualNotes = compactWhitespace(String(input.notes || ""));
 
     return [
         "You are creating a publish-ready SEO content brief for Present Health, a telehealth-first Direct Primary Care clinic.",
@@ -515,6 +517,14 @@ function buildGenerationPrompt(input: BriefGenerationInput, candidates: Internal
         `Target keyword: ${input.targetKeyword}`,
         `Search intent: ${INTENT_LABELS[input.searchIntent]}`,
         `Target audience: ${input.targetAudience}`,
+        ...(contextualNotes
+            ? [
+                "",
+                "Additional topic context:",
+                contextualNotes,
+                "Use that context to understand why the topic matters right now, but turn it into evergreen patient/search intent instead of writing a news recap.",
+            ]
+            : []),
         "",
         "Output requirements:",
         "- h1Options: exactly 3 options",
@@ -644,6 +654,8 @@ function normalizeGeneratedBrief(
 }
 
 function buildSafetyPrompt(input: BriefGenerationInput, brief: GeneratedBriefPayload) {
+    const contextualNotes = compactWhitespace(String(input.notes || ""));
+
     return [
         "You are a medical-content safety reviewer for a marketing content brief.",
         "Return valid JSON only. Do not wrap in markdown.",
@@ -657,6 +669,12 @@ function buildSafetyPrompt(input: BriefGenerationInput, brief: GeneratedBriefPay
         `Target keyword: ${input.targetKeyword}`,
         `Intent: ${INTENT_LABELS[input.searchIntent]}`,
         `Audience: ${input.targetAudience}`,
+        ...(contextualNotes
+            ? [
+                "Additional topic context:",
+                contextualNotes,
+            ]
+            : []),
         "",
         "Brief JSON:",
         JSON.stringify(brief, null, 2),
@@ -883,6 +901,7 @@ export async function listContentBriefs(options: {
 export async function generateAndCreateContentBrief(input: BriefGenerationInput) {
     const targetKeyword = compactWhitespace(input.targetKeyword);
     const targetAudience = compactWhitespace(input.targetAudience);
+    const notes = typeof input.notes === "string" ? input.notes.trim() : "";
 
     if (!targetKeyword) throw new Error("Target keyword is required");
     if (!targetAudience) throw new Error("Target audience is required");
@@ -898,6 +917,7 @@ export async function generateAndCreateContentBrief(input: BriefGenerationInput)
             targetKeyword,
             targetAudience,
             searchIntent: input.searchIntent,
+            notes,
         },
         candidates
     );
@@ -941,6 +961,7 @@ export async function generateAndCreateContentBrief(input: BriefGenerationInput)
             generationResponse: generation.responseText,
             safetyPrompt,
             safetyResponse: safety?.responseText || "",
+            notes: notes || null,
         },
     });
 
