@@ -67,7 +67,7 @@ export function HeroBackgroundMedia() {
         let cancelled = false;
 
         const startEnhancement = () => {
-            if ("requestIdleCallback" in window) {
+            if (typeof window.requestIdleCallback === "function") {
                 idleId = window.requestIdleCallback(() => {
                     if (!cancelled) {
                         setIsVideoVisible(false);
@@ -77,7 +77,7 @@ export function HeroBackgroundMedia() {
                 return;
             }
 
-            timeoutId = window.setTimeout(() => {
+            timeoutId = setTimeout(() => {
                 if (!cancelled) {
                     setIsVideoVisible(false);
                     setIsEnhancementReady(true);
@@ -95,12 +95,12 @@ export function HeroBackgroundMedia() {
             cancelled = true;
             window.removeEventListener("load", startEnhancement);
 
-            if (typeof idleId === "number" && "cancelIdleCallback" in window) {
+            if (typeof idleId === "number" && typeof window.cancelIdleCallback === "function") {
                 window.cancelIdleCallback(idleId);
             }
 
             if (timeoutId) {
-                window.clearTimeout(timeoutId);
+                clearTimeout(timeoutId);
             }
         };
     }, [isEnhancementReady, shouldUseVideo]);
