@@ -10,6 +10,9 @@ const HERO_VIDEO = {
     posterWebp: "/media/hero/doctor-consult-a-poster.webp",
 } as const;
 
+const HERO_POSTER_POSITION = "object-[82%_center] sm:object-[78%_center] md:object-[64%_center] xl:object-[60%_center] 2xl:object-[57%_center]";
+const HERO_VIDEO_POSITION = "object-[74%_center] md:object-[64%_center] xl:object-[60%_center] 2xl:object-[57%_center]";
+
 const DESKTOP_QUERY = "(min-width: 768px)";
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
@@ -134,14 +137,14 @@ export function HeroBackgroundMedia() {
                 fill
                 priority
                 sizes="100vw"
-                className="object-cover object-[70%_center] md:object-[60%_center] xl:object-[55%_center]"
+                className={`object-cover ${HERO_POSTER_POSITION}`}
             />
             {shouldRenderVideo ? (
                 <video
                     ref={videoRef}
                     aria-hidden="true"
                     autoPlay
-                    className={`absolute inset-0 h-full w-full object-cover object-[70%_center] transition-opacity duration-700 ease-out md:object-[60%_center] xl:object-[55%_center] ${isVideoVisible ? "opacity-100" : "opacity-0"}`}
+                    className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${HERO_VIDEO_POSITION} ${isVideoVisible ? "opacity-100" : "opacity-0"}`}
                     loop
                     muted
                     onLoadStart={() => setIsVideoVisible(false)}
@@ -157,6 +160,7 @@ export function HeroBackgroundMedia() {
                 </video>
             ) : null}
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_22%,rgba(55,120,96,0.34),transparent_38%)]" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/76 via-slate-950/58 to-slate-950/88 md:hidden" />
             <div className="absolute inset-0 bg-gradient-to-r from-slate-950/88 via-slate-950/72 to-slate-950/38" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950/82 via-slate-950/10 to-slate-950/52" />
             <div className="absolute inset-0 bg-noise opacity-20" />
