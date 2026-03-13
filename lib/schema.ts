@@ -548,6 +548,49 @@ export function buildLearnHubSchemas(): SchemaBlock[] {
     return blocks;
 }
 
+export function buildCitySchemas(params: {
+    cityName: string;
+    citySlug: string;
+    stateName: string;
+    stateSlug: string;
+    faqs: FaqItem[];
+}): SchemaBlock[] {
+    const { cityName, citySlug, stateName, stateSlug, faqs } = params;
+    const path = `/states/${stateSlug}/${citySlug}`;
+
+    const blocks: SchemaBlock[] = [
+        {
+            "@context": "https://schema.org",
+            "@type": "MedicalClinic",
+            name: "Present Health",
+            url: absoluteUrl(path),
+            description: `Telehealth-first Direct Primary Care in ${cityName}, ${stateName}. $99/month, no insurance required.`,
+            medicalSpecialty: "GeneralPractice",
+            areaServed: {
+                "@type": "City",
+                name: cityName,
+                containedInPlace: {
+                    "@type": "State",
+                    name: stateName,
+                },
+            },
+            availableService: AVAILABLE_SERVICES,
+        },
+    ];
+
+    const faq = faqSchema(faqs);
+    if (faq) blocks.push(faq);
+
+    const breadcrumb = buildBreadcrumbSchema(path, {
+        "/states": "States",
+        [`/states/${stateSlug}`]: stateName,
+        [path]: cityName,
+    });
+    if (breadcrumb) blocks.push(breadcrumb);
+
+    return blocks;
+}
+
 export function validateSchemaBlockBasics(blocks: SchemaBlock[]): string[] {
     const issues: string[] = [];
     if (!blocks.length) {
