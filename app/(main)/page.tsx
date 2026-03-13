@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import {
     MessageSquare,
-    MessageSquareText,
-    Image as ImageIcon,
-    Mic,
     Video,
     ShieldCheck,
     Paperclip,
@@ -83,43 +80,6 @@ const STATES = [
     "Wisconsin",
 ];
 
-function ChannelIcons({ inverted = false }: { inverted?: boolean }) {
-    const channels = [
-        { label: "Text", icon: MessageSquareText, isPrimary: true },
-        { label: "Photo", icon: ImageIcon, isPrimary: true },
-        { label: "Voice", icon: Mic, isPrimary: true },
-        { label: "Video", icon: Video, isPrimary: false },
-    ] as const;
-
-    return (
-        <div className="flex flex-wrap items-center gap-4">
-            {channels.map((channel) => {
-                const Icon = channel.icon;
-                return (
-                    <div
-                        key={channel.label}
-                        className={`flex items-center gap-2 rounded-full px-4 py-2 ${inverted ? "border border-white/15 bg-white/10 backdrop-blur-sm" : "border border-border"}`}
-                    >
-                        <span
-                            className={`inline-flex h-8 w-8 items-center justify-center rounded-full ${channel.isPrimary
-                                ? inverted
-                                    ? "bg-emerald-400/20 text-emerald-100"
-                                    : "bg-primary/15 text-primary"
-                                : inverted
-                                    ? "bg-white/12 text-slate-100"
-                                    : "bg-muted text-muted-foreground"
-                                }`}
-                        >
-                            <Icon className="h-4 w-4" />
-                        </span>
-                        <span className={`text-sm font-medium ${inverted ? "text-white" : "text-foreground"}`}>{channel.label}</span>
-                    </div>
-                );
-            })}
-        </div>
-    );
-}
-
 function HeroSection() {
     return (
         <section className="relative isolate overflow-hidden bg-slate-950 pt-24 pb-20 text-white md:pt-28 md:pb-24">
@@ -157,9 +117,6 @@ function HeroSection() {
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
                             Adults 18+ with fast digital access
                         </div>
-                    </div>
-                    <div className="mt-8">
-                        <ChannelIcons inverted />
                     </div>
                 </div>
             </div>
