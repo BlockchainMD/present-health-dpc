@@ -13,6 +13,33 @@ export type SchemaBlock = Record<string, unknown>;
 
 export type FaqItem = { question: string; answer: string };
 
+export const LICENSED_STATES = [
+    { name: "Arizona", slug: "arizona" },
+    { name: "Florida", slug: "florida" },
+    { name: "Indiana", slug: "indiana" },
+    { name: "Kentucky", slug: "kentucky" },
+    { name: "Michigan", slug: "michigan" },
+    { name: "Minnesota", slug: "minnesota" },
+    { name: "North Carolina", slug: "north-carolina" },
+    { name: "Nebraska", slug: "nebraska" },
+    { name: "New Hampshire", slug: "new-hampshire" },
+    { name: "Ohio", slug: "ohio" },
+    { name: "Rhode Island", slug: "rhode-island" },
+    { name: "Texas", slug: "texas" },
+    { name: "Utah", slug: "utah" },
+    { name: "Washington", slug: "washington" },
+    { name: "Wisconsin", slug: "wisconsin" },
+] as const;
+
+const AVAILABLE_SERVICES = [
+    { "@type": "MedicalTherapy", name: "Sick Visit" },
+    { "@type": "MedicalTherapy", name: "Chronic Condition Management" },
+    { "@type": "MedicalTherapy", name: "Prescription Refills" },
+    { "@type": "MedicalTherapy", name: "Lab Ordering and Interpretation" },
+    { "@type": "MedicalTherapy", name: "Preventive Care and Wellness" },
+    { "@type": "MedicalTherapy", name: "Mental Health Screening and Medication" },
+];
+
 export function coerceFaqs(value: unknown): FaqItem[] {
     if (!Array.isArray(value)) return [];
     return value
@@ -127,8 +154,15 @@ export function buildHomepageSchemas(): SchemaBlock[] {
             "@type": "MedicalBusiness",
             name: "Present Health",
             url: absoluteUrl("/"),
-            description: "Telehealth-first Direct Primary Care membership with direct physician access and transparent pricing.",
-            areaServed: "United States",
+            description: "Telehealth-first Direct Primary Care membership with direct physician access and transparent pricing. $99/month, no insurance required.",
+            medicalSpecialty: "GeneralPractice",
+            priceRange: "$99/month",
+            logo: { "@type": "ImageObject", url: absoluteUrl("/logo.png") },
+            areaServed: LICENSED_STATES.map((s) => ({
+                "@type": "AdministrativeArea",
+                name: s.name,
+            })),
+            availableService: AVAILABLE_SERVICES,
         },
     ];
 }
@@ -209,10 +243,12 @@ export function buildStateSchemas(state: Pick<State, "name" | "slug" | "faqs" | 
             description:
                 markdownToPlainText(state.telehealthRegulationsSummary || "").slice(0, 220) ||
                 `Telehealth Direct Primary Care in ${state.name}.`,
+            medicalSpecialty: "GeneralPractice",
             areaServed: {
                 "@type": "AdministrativeArea",
                 name: state.name,
             },
+            availableService: AVAILABLE_SERVICES,
         },
     ];
 
@@ -444,10 +480,15 @@ export function buildForEmployersSchemas(faqs: FaqItem[]): SchemaBlock[] {
     const blocks: SchemaBlock[] = [
         {
             "@context": "https://schema.org",
-            "@type": "ContactPage",
-            name: "For Employers",
+            "@type": "Service",
+            name: "Present Health Employer Membership",
             description: "Employer and group membership options for Present Health telehealth-first Direct Primary Care.",
             url: absoluteUrl("/for-employers"),
+            provider: {
+                "@type": "MedicalBusiness",
+                name: "Present Health",
+                url: absoluteUrl("/"),
+            },
         },
     ];
 
