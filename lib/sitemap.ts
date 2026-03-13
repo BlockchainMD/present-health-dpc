@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl } from "@/lib/site-url";
+import { getAllStateCityParams } from "@/lib/state-cities";
 
 export type SitemapChangefreq =
     | "always"
@@ -16,7 +17,7 @@ export type SitemapEntry = {
     lastmod: Date;
     changefreq: SitemapChangefreq;
     priority: number;
-    type: "static" | "state" | "article" | "physician";
+    type: "static" | "state" | "city" | "article" | "physician";
 };
 
 export const STATIC_PUBLIC_PATHS = [
@@ -247,7 +248,16 @@ export async function buildSitemapEntries() {
             } satisfies SitemapEntry;
         });
 
-    return dedupeEntries([...staticEntries, ...stateEntries, ...physicianEntries, ...articleEntries]).map((entry) => ({
+    const cityEntries: SitemapEntry[] = getAllStateCityParams().map(({ stateSlug, citySlug }) => ({
+        path: `/states/${stateSlug}/${citySlug}`,
+        loc: absoluteUrl(`/states/${stateSlug}/${citySlug}`),
+        lastmod: latestState?.updatedAt || siteLastmod,
+        changefreq: "monthly",
+        priority: 0.8,
+        type: "city",
+    }));
+
+    return dedupeEntries([...staticEntries, ...stateEntries, ...cityEntries, ...physicianEntries, ...articleEntries]).map((entry) => ({
         ...entry,
         priority: normalizePriority(entry.priority),
     }));
