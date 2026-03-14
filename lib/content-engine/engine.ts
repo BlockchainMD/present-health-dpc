@@ -4,14 +4,15 @@ import { fetchTopicSignals } from './sources';
 import { generateBrief } from './brief';
 import { generateDraft } from './draft';
 import { qaDraft, isFallbackContent, extractFaqs } from './qa';
-import { classifyCluster, classifyClusters, slugify } from './taxonomy';
-import { getClusterWeights } from './feedback';
+import { classifyCluster, classifyClusters, pickAngle, pickIntent, slugify } from './taxonomy';
+import { getClusterWeights, getAngleWeights, getIntentWeights } from './feedback';
 import { Brief, Draft, EngineOptions, EngineResult, InternalLinkSuggestion, TopicSignal } from './types';
 import { getSeoHealthSnapshot } from '../seo-health/service';
 import { DEFAULT_DISCLAIMER } from './disclaimer';
 import { lintMarkdown } from './lint';
 import { getNextPublishSlots } from './publish-slots';
 import { generateFeaturedImage } from './image';
+import { BRIEF_PROMPT_HASH, DRAFT_PROMPT_HASH } from './prompt-hashes';
 
 const MAX_PER_RUN = 10;
 const DEFAULT_MAX_AUTO_PUBLISH_PER_DAY = 20;
@@ -133,7 +134,9 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
         return { created: 0, published: 0, articles: [] };
     }
     const clusterWeights = options.useFeedback ? await getClusterWeights() : {};
-    const pool = rankSignals(signals, options.mode || 'BALANCED', clusterWeights);
+    const angleWeights = options.useFeedback ? await getAngleWeights() : {};
+    const intentWeights = options.useFeedback ? await getIntentWeights() : {};
+    const pool = rankSignals(signals, options.mode || 'BALANCED', clusterWeights, angleWeights, intentWeights);
     // Pre-allocate publish slots for the whole run so articles spread naturally.
     const publishSlots = autoPublishEnabled ? getNextPublishSlots(count) : [];
     let slotIndex = 0;
@@ -312,7 +315,17 @@ export async function runContentEngine(options: EngineOptions = {}): Promise<Eng
                         ...brief,
                         internalLinks,
                         disclaimer: DEFAULT_DISCLAIMER,
-                        qaFlags: qa.qaFlags || []
+                        qaFlags: qa.qaFlags || [],
+                        _meta: {
+                            modelId: process.env.GEMINI_QUALITY_MODEL ?? 'gemini-3-flash-preview',
+                            temperature: 0.5,
+                            promptHashBrief: BRIEF_PROMPT_HASH,
+                            promptHashDraft: DRAFT_PROMPT_HASH,
+                            wordCountTarget: brief.wordCountTarget,
+                            signalKind: signal.kind,
+                            signalSource: signal.source,
+                            engineMode: options.mode || 'BALANCED',
+                        }
                     } as any,
                     evidenceJson: {
                         sources: [
@@ -525,10 +538,20 @@ function resolveSources(mode: EngineOptions['mode'], sources: EngineOptions['sou
     return sources;
 }
 
-function rankSignals(signals: TopicSignal[], mode: EngineOptions['mode'], weights: Record<string, number>) {
+function rankSignals(
+    signals: TopicSignal[],
+    mode: EngineOptions['mode'],
+    clusterWeights: Record<string, number>,
+    angleWeights: Record<string, number> = {},
+    intentWeights: Record<string, number> = {}
+) {
     const scored = signals.map(signal => {
         const cluster = classifyCluster(signal.title);
-        const weight = weights[cluster] || 1;
+        const angle = pickAngle(signal.title);
+        const intent = pickIntent(signal.title);
+        const cw = clusterWeights[cluster] ?? 1.0;
+        const aw = angleWeights[angle] ?? 1.0;
+        const iw = intentWeights[intent] ?? 1.0;
         const recency = signal.publishedAt ? recencyScore(signal.publishedAt) : 0.1;
         const kindScore = signal.kind === 'trend' || signal.kind === 'news' ? 0.3 : signal.kind === 'research' ? 0.2 : 0.1;
         const base = mode === 'TREND'
@@ -536,7 +559,7 @@ function rankSignals(signals: TopicSignal[], mode: EngineOptions['mode'], weight
             : mode === 'RESEARCH'
                 ? (signal.kind === 'research' ? 0.4 : 0.1) + recency
                 : 0.2 + recency;
-        const score = base * weight;
+        const score = base * cw * aw * iw;
         return { signal, score, recency };
     });
 

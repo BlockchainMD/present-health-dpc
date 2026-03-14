@@ -830,6 +830,19 @@ model ContentStrategy {
   createdAt DateTime @default(now())
 }
 
+model ContentStrategySnapshot {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  source           String   // "REFRESH_STRATEGY_JOB" | "MANUAL"
+  windowDays       Int
+  avgCtr           Float?
+  totalClicks      Int?
+  totalImpressions Int?
+  clusterWeights   Json
+  angleWeights     Json
+  intentWeights    Json
+}
+
 model SeoHealthCheck {
   id            String   @id @default(uuid())
   checkDate     DateTime @default(now()) @map("check_date")
