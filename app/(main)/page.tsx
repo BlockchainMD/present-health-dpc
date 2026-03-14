@@ -91,18 +91,18 @@ function HeroSection() {
                         Accepting New Members
                     </Badge>
                     <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-white md:text-6xl">
-                        Skip the 3-week wait. Text a clinician now.
+                        Primary care without the long wait.
                     </h1>
                     <p className="mt-5 max-w-2xl text-lg text-slate-200 md:text-xl">
-                        Full-service primary care — sick visits, chronic care, prescriptions, labs — for $99/month. No appointments. No hold music.
+                        Full-service primary care — sick visits, chronic care, prescriptions, labs, and follow-up — for $99/month. Start by text, and switch to phone or video when needed.
                     </p>
-                    <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-                        <Button asChild size="lg" className="h-12 bg-white px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
-                            <Link href="/join">Start Membership - $99/mo</Link>
+                    <div className="mt-8 flex flex-col gap-3">
+                        <Button asChild size="lg" className="h-12 w-fit bg-white px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
+                            <Link href="/join">Start Membership — $99/mo</Link>
                         </Button>
-                        <div className="rounded-full border border-white/14 bg-white/10 px-4 py-2 text-sm text-slate-100 backdrop-blur-sm">
-                            No insurance needed. No per-visit fees. Cancel anytime.
-                        </div>
+                        <p className="text-sm text-slate-300">
+                            No insurance required&ensp;&bull;&ensp;No per-visit fees&ensp;&bull;&ensp;Cancel anytime
+                        </p>
                     </div>
                     <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-slate-100">
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
@@ -111,11 +111,11 @@ function HeroSection() {
                         </div>
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                            Licensed across {STATES.length} states
+                            Text-first, with phone/video when needed
                         </div>
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                            Adults 18+ with fast digital access
+                            Adults 18+
                         </div>
                     </div>
                 </div>
