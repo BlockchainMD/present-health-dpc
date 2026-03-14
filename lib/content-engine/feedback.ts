@@ -43,6 +43,9 @@ export async function refreshStrategy(windowDays = 30) {
     const angleWeights = calculateWeights(totals.angle, avgCtr);
     const intentWeights = calculateWeights(totals.intent, avgCtr);
 
+    // Phase 3: Snapshot current weights before overwriting
+    await snapshotCurrentWeights(windowDays, avgCtr, totalClicks, totalImpressions);
+
     await upsertStrategy(STRATEGY_KEY_CLUSTER, clusterWeights);
     await upsertStrategy(STRATEGY_KEY_ANGLE, angleWeights);
     await upsertStrategy(STRATEGY_KEY_INTENT, intentWeights);
@@ -55,6 +58,46 @@ export async function getClusterWeights(): Promise<Record<string, number>> {
         where: { key: STRATEGY_KEY_CLUSTER }
     });
     return (strategy?.value as Record<string, number>) || {};
+}
+
+export async function getAngleWeights(): Promise<Record<string, number>> {
+    const strategy = await prisma.contentStrategy.findUnique({
+        where: { key: STRATEGY_KEY_ANGLE }
+    });
+    return (strategy?.value as Record<string, number>) || {};
+}
+
+export async function getIntentWeights(): Promise<Record<string, number>> {
+    const strategy = await prisma.contentStrategy.findUnique({
+        where: { key: STRATEGY_KEY_INTENT }
+    });
+    return (strategy?.value as Record<string, number>) || {};
+}
+
+async function snapshotCurrentWeights(
+    windowDays: number,
+    avgCtr: number,
+    totalClicks: number,
+    totalImpressions: number
+) {
+    const [clusterStrategy, angleStrategy, intentStrategy] = await Promise.all([
+        prisma.contentStrategy.findUnique({ where: { key: STRATEGY_KEY_CLUSTER } }),
+        prisma.contentStrategy.findUnique({ where: { key: STRATEGY_KEY_ANGLE } }),
+        prisma.contentStrategy.findUnique({ where: { key: STRATEGY_KEY_INTENT } }),
+    ]);
+
+    await prisma.contentStrategySnapshot.create({
+        data: {
+            source: 'REFRESH_STRATEGY_JOB',
+            windowDays,
+            avgCtr,
+            totalClicks,
+            totalImpressions,
+            clusterWeights: (clusterStrategy?.value as Record<string, number>) ?? {},
+            angleWeights: (angleStrategy?.value as Record<string, number>) ?? {},
+            intentWeights: (intentStrategy?.value as Record<string, number>) ?? {},
+        }
+    });
 }
 
 async function upsertStrategy(key: string, value: Record<string, number>) {
