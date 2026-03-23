@@ -13,7 +13,7 @@ import { buildStatesHubSchemas } from "@/lib/schema";
 
 export const metadata: Metadata = {
     title: "States We Serve | Present Health",
-    description: "Present Health is available in select states. Browse state pages for telehealth workflow, prescriptions, labs, and FAQs.",
+    description: "Present Health is currently accepting patients in Michigan, with plans to expand to additional states. Virtual primary care with insurance accepted.",
     alternates: {
         canonical: absoluteUrl("/states"),
     },
@@ -44,11 +44,10 @@ export default async function StatesHubPage({ searchParams }: { searchParams: Se
 
             <header className="max-w-3xl">
                 <div className="inline-flex items-center gap-2">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Present Health Serves Patients in 15 States</h1>
+                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight">Where We Serve</h1>
                 </div>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Present Health is a telehealth-first Direct Primary Care (DPC) membership. Availability depends on where you are located
-                    at the time of your visit and where your physician is licensed.
+                    Present Health is currently accepting patients in Michigan, with plans to expand to additional states.
                 </p>
 
                 {states.length !== 15 ? (
@@ -74,7 +73,7 @@ export default async function StatesHubPage({ searchParams }: { searchParams: Se
                                         {state.name}
                                     </CardTitle>
                                     <p className="mt-1 text-sm text-muted-foreground">
-                                        Telehealth workflow, prescriptions, labs, and FAQs.
+                                        Virtual primary care — insurance accepted.
                                     </p>
                                 </div>
                                 <div className="shrink-0 rounded-xl border border-border bg-muted/30 px-3 py-2 text-sm font-semibold tracking-wide">

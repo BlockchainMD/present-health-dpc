@@ -5,29 +5,29 @@ import { GA4Script } from "@/components/analytics/GA4Script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://presenthealthmd.com"),
-  title: "Present Health | Messaging-First Primary Care",
+  title: "Present Health | Virtual Primary Care — We Accept Insurance",
   description:
-    "Full-service primary care by message, phone, or video. One plan: $99/month. Everything included. Adults 18+.",
+    "Board-certified physicians managing your chronic conditions through convenient video visits. We accept most major insurance plans. No insurance? Visits start at $29.",
   openGraph: {
     siteName: "Present Health",
     type: "website",
-    title: "Present Health | Messaging-First Primary Care",
+    title: "Present Health | Virtual Primary Care — We Accept Insurance",
     description:
-      "Full-service primary care by message, phone, or video. One plan: $99/month. Everything included. Adults 18+.",
+      "Board-certified physicians managing your chronic conditions through convenient video visits. We accept most major insurance plans. No insurance? Visits start at $29.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Present Health — Messaging-First Primary Care",
+        alt: "Present Health — Virtual Primary Care with Insurance",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Present Health | Messaging-First Primary Care",
+    title: "Present Health | Virtual Primary Care — We Accept Insurance",
     description:
-      "Full-service primary care by message, phone, or video. One plan: $99/month. Everything included. Adults 18+.",
+      "Virtual primary care that works with your insurance. Convenient video visits, chronic condition management. We accept most major plans.",
     images: ["/og-image.png"],
   },
 };

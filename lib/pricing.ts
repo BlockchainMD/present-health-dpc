@@ -6,6 +6,7 @@ export const MEMBERSHIP_ANNUAL_DOLLARS = 990;
 export const MEMBERSHIP_ANNUAL_SAVINGS_DOLLARS = 98;
 export const SINGLE_VISIT_DOLLARS = 99;
 export const EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS = 29;
+export const SELF_PAY_VISIT_DOLLARS = 29;
 
 export const MEMBERSHIP_TIERS: Record<
     CoverageType,

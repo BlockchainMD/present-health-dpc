@@ -10,7 +10,7 @@ export default function TermsOfService() {
         <section className="py-20 bg-background">
             <div className="container mx-auto px-4 md:px-6 max-w-3xl">
                 <h1 className="text-3xl font-bold mb-6">Terms of Service</h1>
-                <p className="text-muted-foreground mb-4">Last updated: December 13, 2025</p>
+                <p className="text-muted-foreground mb-4">Last updated: March 20, 2026</p>
                 <div className="space-y-4 text-muted-foreground">
                     <p>
                         Please read these Terms of Service carefully before using the Present Health website and services.
@@ -21,11 +21,11 @@ export default function TermsOfService() {
                     </p>
                     <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">2. Description of Service</h2>
                     <p>
-                        Present Health provides Direct Primary Care services. We are not an insurance company. Our services are limited to primary care as defined in your membership agreement.
+                        Present Health provides virtual primary care services delivered through video visits with board-certified physicians. We accept most major commercial insurance plans. For patients without insurance, we offer self-pay visits at a transparent, flat rate of $29 per visit. Additional costs (such as lab work and imaging) are billed separately at transparent rates.
                     </p>
-                    <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">3. Membership</h2>
+                    <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">3. Services</h2>
                     <p>
-                        Membership fees are billed on a recurring basis. You may cancel your membership at any time in accordance with our cancellation policy.
+                        Our services include video visits with physicians, prescription management, lab ordering, and care coordination for primary care conditions. Services are available on a per-visit basis. Patients with insurance pay their normal copay at the time of visit; we bill your insurance for the service. Patients without insurance pay the self-pay rate of $29 per visit.
                     </p>
                     <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">4. Website Content &amp; No Physician-Patient Relationship</h2>
                     <p>

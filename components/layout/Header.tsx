@@ -19,11 +19,10 @@ import { cn } from "@/lib/utils";
 
 const navigation = [
     { name: "How It Works", href: "/how-it-works" },
+    { name: "Conditions", href: "/conditions" },
     { name: "Pricing", href: "/pricing" },
-    { name: "Physician", href: "/physician" },
+    { name: "Our Physicians", href: "/our-physicians" },
     { name: "States", href: "/states" },
-    { name: "Learn", href: "/learn" },
-    { name: "For Employers", href: "/for-employers" },
     { name: "About", href: "/about" },
 ];
 
@@ -88,7 +87,7 @@ export function Header() {
                         </Link>
                     ))}
                     <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        <Link href="/join">Join - $99/mo</Link>
+                        <Link href="/book">Book a Visit</Link>
                     </Button>
                 </nav>
 
@@ -123,7 +122,7 @@ export function Header() {
                                 ))}
                                 <SheetClose asChild>
                                     <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                                        <Link href="/join">Join - $99/mo</Link>
+                                        <Link href="/book">Book a Visit</Link>
                                     </Button>
                                 </SheetClose>
                             </div>

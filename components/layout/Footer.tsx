@@ -21,7 +21,7 @@ export function Footer() {
                             </span>
                         </Link>
                         <p className="mt-4 text-sm text-muted-foreground">
-                            Primary care that fits in your pocket. $99/month.
+                            Virtual primary care that works with your insurance.
                         </p>
                     </div>
 
@@ -29,12 +29,11 @@ export function Footer() {
                         <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-foreground">Explore</h3>
                         <ul className="space-y-3 text-sm text-muted-foreground">
                             <li><Link href="/how-it-works" className="hover:text-primary transition-colors">How It Works</Link></li>
+                            <li><Link href="/conditions" className="hover:text-primary transition-colors">Conditions</Link></li>
                             <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
-                            <li><Link href="/join" className="hover:text-primary transition-colors">Join</Link></li>
                             <li><Link href="/our-physicians" className="hover:text-primary transition-colors">Our Physicians</Link></li>
                             <li><Link href="/states" className="hover:text-primary transition-colors">States</Link></li>
-                            <li><Link href="/learn" className="hover:text-primary transition-colors">Learn</Link></li>
-                            <li><Link href="/for-employers" className="hover:text-primary transition-colors">For Employers</Link></li>
+                            <li><Link href="/book" className="hover:text-primary transition-colors">Book a Visit</Link></li>
                             <li><Link href="/about" className="hover:text-primary transition-colors">About</Link></li>
                         </ul>
                     </div>
@@ -60,17 +59,13 @@ export function Footer() {
                         &copy; {new Date().getFullYear()} Present Health. All rights reserved.
                     </p>
                     <div className="text-xs text-muted-foreground max-w-2xl text-center md:text-right space-y-1">
-                        <p>Present Health is a Direct Primary Care practice, not insurance. We do not bill insurance.</p>
-                        <p>
-                            This service does not replace emergency care - call 911 for emergencies. Members must be 18 or older.
-                        </p>
+                        <p>Present Health accepts most major insurance plans. No insurance? Visits start at $29. Not a substitute for emergency care — call 911 for emergencies.</p>
                         <p>
                             Services provided by licensed clinicians. All clinical decisions are made or supervised by a board-certified physician.
                         </p>
                         <p>
                             Response times apply during business hours (M-F 8am-8pm ET). Availability varies by state. Lab and imaging costs billed separately at transparent prices.
                         </p>
-                        <p className="italic">HSA eligibility subject to IRS rules. Consult a tax professional.</p>
                     </div>
                 </div>
             </div>
