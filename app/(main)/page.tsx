@@ -121,7 +121,7 @@ function HeroSection() {
                         <Button asChild size="lg" className="h-12 px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
                             <Link href="/book">Book a Visit</Link>
                         </Button>
-                        <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base font-semibold text-white border-white hover:bg-white/10">
+                        <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base font-semibold text-slate-950 border-white hover:bg-white/10">
                             <Link href="/conditions">See What We Treat</Link>
                         </Button>
                     </div>
