@@ -22,3 +22,4 @@
 - Hero media effects can trip React lint with synchronous resets -> derive video rendering from capability state and only flip readiness from async callbacks.
 - Cloud Run deploys from Apple Silicon can fail with `exec format error` -> use GitHub Actions or Cloud Build for linux/amd64 images instead of local arm64 Docker pushes.
 - Local review screenshots can leak into autosync commits -> ignore `/.tmp/` and untrack temporary captures before using browser screenshot tools.
+- Broad `__pycache__` cleanup can delete tracked bundled SDK files -> restore tracked files first, then remove only untracked cache files shown by `git status`.
