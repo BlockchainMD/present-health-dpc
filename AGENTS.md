@@ -25,3 +25,4 @@
 - Local review screenshots can leak into autosync commits -> ignore `/.tmp/` and untrack temporary captures before using browser screenshot tools.
 - Broad `__pycache__` cleanup can delete tracked bundled SDK files -> restore tracked files first, then remove only untracked cache files shown by `git status`.
 - Autosync can keep watching the retired DPC folder after a strategy shift -> reinstall `com.presenthealth.autosync` with `--repo /Users/jonathanrouwhorst/presenthealthmd --branch master`.
+- Repointing autosync can commit local Codex config -> ignore `/.codex/` and untrack any `.codex` files before leaving autosync running.
