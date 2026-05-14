@@ -18,17 +18,17 @@
 
 Key representative errors:
 ```
-/Users/jonathanrouwhorst/presenthealthdpc/app/(lp)/lp/[slug]/page.tsx
+/Users/jonathanrouwhorst/presenthealthmd/app/(lp)/lp/[slug]/page.tsx
    26:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 ```
 
 ```
-/Users/jonathanrouwhorst/presenthealthdpc/scripts/test-meta-ads.js
+/Users/jonathanrouwhorst/presenthealthmd/scripts/test-meta-ads.js
   1:16  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
 ```
 
 ```
-/Users/jonathanrouwhorst/presenthealthdpc/tests/markdown-render.test.js
+/Users/jonathanrouwhorst/presenthealthmd/tests/markdown-render.test.js
   1:14  error  A `require()` style import is forbidden  @typescript-eslint/no-require-imports
 ```
 
