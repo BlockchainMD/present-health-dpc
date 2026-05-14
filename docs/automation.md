@@ -5,7 +5,7 @@ This repo now supports:
 1. Local autosync (`launchd`) to automatically `git add`, `commit`, and `push` after a debounce window.
 2. GitHub Actions CI/CD to build and deploy to Cloud Run on pushes to `master`.
 
-The active workspace is `/Users/jonathanrouwhorst/presenthealthmd`. The older `/Users/jonathanrouwhorst/presenthealthdpc` folder is retained as the legacy DPC version and should not run the active autosync job.
+The active workspace is `/Users/jonathanrouwhorst/presenthealthmd`. The older `/Users/jonathanrouwhorst/presenthealthdpcbackup` folder is retained as the legacy DPC version and should not run the active autosync job.
 
 ## 1) Local -> GitHub Autosync (macOS launchd)
 
