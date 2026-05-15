@@ -2,7 +2,7 @@
 
 - Local -> GitHub is automatic for this repo. Keep the `launchd` agent `com.presenthealth.autosync` installed and running. It autosyncs `/Users/jonathanrouwhorst/presenthealthmd` to `origin/master` via `scripts/autosync/git-autosync-daemon.sh`.
 - `/Users/jonathanrouwhorst/presenthealthdpcbackup` is the legacy DPC workspace. Do not treat it as the active source of truth unless explicitly asked to work on the old DPC version.
-- GitHub -> Cloud is automatic. Every push triggers `.github/workflows/deploy-cloud-run.yml`, which builds and deploys Cloud Run service `present-health-dpc` in project `present-health-dpc-2025`, region `us-central1`. The Cloud Run/GitHub resource names still contain `dpc` for historical continuity, but the active product strategy is Present Health MD / insurance-first virtual primary care.
+- GitHub -> Cloud is automatic. Every push triggers `.github/workflows/deploy-cloud-run.yml`, which builds and deploys Cloud Run service `present-health-dpc` in project `present-health-dpc-2025`, region `us-central1`. The Cloud Run/GitHub resource names still contain `dpc` for historical continuity, but the active strategy is Present Health MD: COI-gated advisory-first in 2026, with patient care staged for later validation.
 - Use `gcloud` whenever cloud state matters: verify Cloud Run, Artifact Registry, service accounts, deploy status, and runtime config directly instead of guessing.
 - After fixing any mistake, append one concise `symptom -> fix` note to `Mistake Memory` in this file.
 
@@ -26,3 +26,4 @@
 - Broad `__pycache__` cleanup can delete tracked bundled SDK files -> restore tracked files first, then remove only untracked cache files shown by `git status`.
 - Autosync can keep watching the retired DPC folder after a strategy shift -> reinstall `com.presenthealth.autosync` with `--repo /Users/jonathanrouwhorst/presenthealthmd --branch master`.
 - Repointing autosync can commit local Codex config -> ignore `/.codex/` and untrack any `.codex` files before leaving autosync running.
+- Strategy memos can over-scope launches while COI and founder capacity are unresolved -> make written COI and advisory-first revenue the 2026 gates before patient operations.
