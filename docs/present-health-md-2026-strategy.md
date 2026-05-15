@@ -4,33 +4,50 @@ Date: May 15, 2026
 
 ## Executive Thesis
 
-The highest-leverage version of Present Health MD is not another low-price urgent telehealth site and not an insurance-billed virtual clinic on day one.
+The highest-probability version of Present Health MD in 2026 is not an immediate patient-facing virtual primary care launch.
 
-Build an AI-native, physician-led, relationship-based direct primary care service for adults in your licensed states, focused on cardiometabolic health, medication/lab continuity, and high-friction primary care navigation. Sell it first as a direct membership and employer PEPM benefit, with single visits only as an acquisition/triage path. Keep insurance billing as a later optional capability, not the initial business model.
+The right plan is constraint-aware:
 
-This preserves the advantage you actually have:
+- First gate: written CenterWell conflict-of-interest clearance.
+- First business, if cleared: fractional medical director / clinical advisory work.
+- Patient-facing practice: preserve as an option, validate quietly, and launch only after COI, EHR, malpractice, HIPAA, and state operations are real.
+- Employer PEPM and multi-state expansion: defer unless one warm anchor employer appears as a controlled beta.
 
-- You are a board-certified family physician with multi-state licensure.
-- You have telehealth and medical director experience.
-- You can build, automate, and iterate without a large engineering team.
-- You can credibly offer continuity, judgment, and operational trust in a market full of commodity visit vendors.
+This is less aggressive than the earlier plan, but it is more likely to work. It converts the capability you already have into cash fastest, avoids avoidable career and compliance risk, and preserves the larger practice/software opportunity for when you have capital and breathing room.
 
-The brand should be Present Health MD. The model can use DPC-compatible mechanics without leading with the old DPC identity. In public copy, call it "direct primary care membership" or "direct virtual primary care" and be clear that it is not insurance.
+The brand remains Present Health MD. The legacy `presenthealthdpc` identity should stay historical. The 2026 operating identity should be physician-led clinical advisory first, with direct virtual primary care as a staged option.
+
+## The Launch Question
+
+The key question is not "Can this be a good business?" It can.
+
+The key question is "Should you launch the patient practice right now?" The answer is no, not publicly, while these constraints are active:
+
+- Full-time CenterWell Medical Director role.
+- Pending conflict-of-interest review.
+- Federal IRS installment agreement and need for near-term cash discipline.
+- Significant personal load this year.
+- Multiple competing ventures and attention demands.
+- No finalized clinical operations stack for patient care.
+
+A 25-member beta, employer pilots, advisory work, compliance buildout, content engine, and codebase cleanup together equal a full-time founder load. The strategy must budget founder bandwidth as the scarcest asset.
 
 ## Market Reality
 
 Commodity virtual urgent care is already owned by scale players:
 
-- Amazon One Medical offers pay-per-visit telehealth for 30+ common conditions at $29 for message visits and $49 for video visits, plus Prime-discounted One Medical membership.
-- One Medical sells a $199/year membership while billing insurance for scheduled visits.
-- PlushCare advertises $19.99/month membership plus insurance copay or $129 self-pay visits.
-- Circle Medical offers no-membership primary care, many PPO plans, and self-pay visits around $149-$179 first visit and $120 follow-up.
-- Sesame is a cash-pay marketplace with upfront prices as low as the mid-$30s and explicitly does not bill insurance.
-- Galileo and Firefly compete more in employer/health plan virtual primary care, claiming longitudinal care and cost reduction.
+- Amazon One Medical offers pay-per-visit telehealth for common conditions at low published prices, plus Prime-discounted One Medical membership.
+- One Medical sells a low annual membership while billing insurance for scheduled visits.
+- PlushCare combines monthly membership with insurance copays or self-pay visits.
+- Circle Medical offers no-membership primary care with insurance and published self-pay pricing.
+- Sesame is a cash-pay marketplace with upfront prices and no insurance billing.
+- Galileo and Firefly compete more in employer and health-plan virtual primary care.
 
-Present Health cannot win by being "cheaper Amazon" or "smaller One Medical." The winning wedge is:
+Present Health should not compete as "cheaper Amazon" or "smaller One Medical." The credible wedge is:
 
-Physician continuity + multi-state access + chronic/metabolic primary care + direct messaging + fast clinical judgment + pragmatic coordination.
+Physician judgment + telehealth operating expertise + clinical governance + chronic primary care experience + software fluency.
+
+In 2026, that wedge is more monetizable through advisory work than through a solo patient panel.
 
 ## Policy And Economic Tailwinds
 
@@ -38,133 +55,187 @@ Physician continuity + multi-state access + chronic/metabolic primary care + dir
 
 2. Telehealth acceptance: Medicare telehealth flexibilities have been extended through December 31, 2027 for many services, including home as originating site and no geographic restrictions for non-behavioral/mental telehealth.
 
-3. Controlled substance bridge, not foundation: DEA/HHS extended telemedicine controlled-substance prescribing flexibilities through December 31, 2026, but this remains temporary and should not be a core growth dependency.
+3. Employer pain: KFF reported 2025 family employer premiums near $27,000, and Mercer projected a 6.5% employer health benefit cost increase in 2026, the highest since 2010. Employers are still looking for credible, low-bureaucracy primary care and chronic disease support.
 
-4. Employer pain: KFF reported 2025 family employer premiums near $27,000, and Mercer projected a 6.5% employer health benefit cost increase in 2026, the highest since 2010. Employers are looking for credible, low-bureaucracy primary care and chronic disease support.
+4. Physician shortage: AAMC projects ongoing physician shortages through 2036, with access pressure especially visible in primary care.
 
-5. Physician shortage: AAMC projects ongoing physician shortages through 2036, with access pressure especially visible in primary care. A multi-state virtual practice can turn licensure and software into access leverage.
+These tailwinds support the long-term opportunity. They do not remove the near-term COI and capacity gates.
 
 ## Policy And Market Headwinds
 
-1. State licensure remains patient-location based. Telemedicine care must respect the state where the patient is located at the time of care.
+1. COI risk is structural, not procedural. You oversee APPs delivering senior primary care for a major MA payer-provider. Adult virtual primary care, chronic disease navigation, and telehealth advisory work can sit on the same vector as your day job. Do not treat "pending review" as permission.
 
-2. Insurance billing is operationally heavy: credentialing, payer contracting, claims, denials, RCM, prior auth, audits, and delayed cash. It also makes the business less nimble.
+2. State licensure remains patient-location based. Telemedicine care must respect the state where the patient is located at the time of care.
 
-3. GLP-1s are high-demand but politically, legally, and commercially volatile. FDA has flagged concerns around unapproved compounded GLP-1 products, and major retailers/telehealth brands are crowding the space.
+3. Insurance billing is operationally heavy: credentialing, payer contracting, claims, denials, RCM, prior authorization, audits, and delayed cash.
 
-4. AI in clinical workflows is a trust and compliance opportunity, but not a marketing gimmick. Use AI for intake, summarization, education drafts, triage support, and internal QA with physician accountability.
+4. Controlled-substance telemedicine flexibility through December 31, 2026 is a bridge, not a foundation.
 
-5. Public clinical claims and PHI collection need tightening before launch. Current code has both direct-care membership language and insurance-accepted language.
+5. GLP-1s are high-demand but politically, legally, and commercially volatile. Do not build the brand around compounded GLP-1 access.
 
-## Recommended Payment Model
+6. AI in clinical workflows is useful for internal operations, but patient-facing claims require trust, compliance, and physician accountability.
 
-### Primary Model: Direct Membership
+## Business Identity Decision
 
-Offer adult virtual primary care membership:
+Do not hedge between two companies.
 
-- Individual: $99/month
-- Annual: $990/year
-- Two-adult household: $179/month
-- Family/children: defer until pediatric workflows, consent, and coverage are ready
+There are two possible businesses:
 
-Keep the individual price below the 2026 $150 DPC/HSA ceiling. Keep multi-person arrangements below $300. Do not include services that would break DPCSA eligibility without tax/compliance review.
+1. A solo physician-led virtual primary care practice.
+   - Ceiling: likely lifestyle-grade, potentially strong but bounded.
+   - Defensibility: personal relationship, trust, and quality.
+   - Operational need: EHR, malpractice, state SOPs, scheduling, labs, escalation, patient support.
 
-Membership includes:
+2. A scalable virtual primary care / clinical infrastructure company.
+   - Ceiling: larger.
+   - Requirements: multiple clinicians, payer or employer contracts, capital, security reviews, protocolized operations, and diluted dependence on your personal brand.
 
-- Secure asynchronous messaging
-- Video visits when clinically appropriate
-- Medication refills and medication optimization
-- Lab ordering and interpretation
-- Chronic disease follow-up for hypertension, diabetes/prediabetes, obesity, lipids, thyroid, asthma, migraine, and common primary care needs
-- Care navigation and referrals
-- Preventive planning and screening reminders
+The 2026 choice should be neither full patient scale nor startup scale. It should be advisory-first:
 
-Membership excludes:
+Present Health MD becomes a clinical strategy, telehealth operations, and AI clinical safety advisory platform. The patient practice remains a validated option for 2027, not the primary 2026 workload.
 
-- Emergency care
-- Hospital care
-- Procedures requiring in-person care
-- Specialist care
-- Prescription drug cost, except vaccines if intentionally included and compliant
-- Lab costs unless separately arranged and compliant
+## 2026 Payment Model
 
-### Secondary Model: Single Visit
+### Primary 2026 Model: Advisory / Fractional Medical Director
 
-Use single visits as a front door, not the core business.
+If written COI clearance allows it, sell one high-trust advisory offer:
 
-Recommended price: $79-$99, not $29.
+- Fractional telehealth medical director.
+- Clinical protocol review.
+- APP supervision model design.
+- AI clinical safety review.
+- Telehealth operations design.
+- State-practice and escalation workflow review.
+- Clinical quality, documentation, and utilization review.
 
-The current $29 self-pay positioning competes directly with Amazon and attracts low-continuity urgent care demand. A physician-led single visit should be priced as a qualified doctor visit and used to convert appropriate patients into membership.
+Target pricing:
 
-Offer:
+- Starter advisory: $5,000/month.
+- Standard fractional medical director: $7,500-$10,000/month.
+- Higher-complexity operator or AI clinical safety client: $12,000-$15,000/month.
 
-- "One-time virtual doctor visit: $99"
-- Credit $50 toward first month if they become a member within 7 days
+The 2026 goal is not a portfolio of small products. It is one good advisory client, then a second only if the first is stable and COI boundaries remain clean.
 
-### Best Growth Model: Employer PEPM
+Use this revenue for:
 
-Target small and mid-size employers in licensed states, especially groups with HDHP/HSA pain and no strong primary care access.
+- IRS exposure reduction.
+- EHR/vendor setup if the patient practice later proceeds.
+- Malpractice and compliance readiness.
+- Website hosting and operational basics.
+- Runway and attention preservation.
 
-Offer:
+### Secondary Future Model: Direct Membership
 
-- Access-only employer plan: $12-$19 PEPM, low utilization assumptions, triage and navigation
-- Direct care employer plan: $29 PEPM, includes membership-level primary care access for eligible employees
-- Setup fee: $750-$2,500 depending on group size
-- Minimum: 10 enrolled employees or $500/month floor
-- Contract: 12 months
+Direct membership remains the best patient-facing model if the practice launches later.
 
-Employer pitch:
+Potential pricing:
 
-"Your employees already have insurance. They still cannot get fast, relationship-based primary care. Present Health MD gives them direct physician-led access, chronic condition support, and care navigation for less than the cost of one avoidable urgent care visit per employee per year."
+- Individual: $99/month.
+- Annual: $990/year.
+- Two-adult household: $179/month.
+- Children/family: defer until pediatric workflows, consent, and coverage are ready.
 
-### High-Cashflow Bridge: Advisory / Medical Director Work
+This threads the 2026 DPC/HSA ceiling and avoids premature insurance operations. But it should not be publicly sold until COI, clinical infrastructure, malpractice, and operating capacity are ready.
 
-If conflict-of-interest review allows it, create a separate advisory offer:
+### Single Visit Pricing
 
-- Fractional telehealth medical director
-- Clinical protocol review
-- AI clinical safety review
-- Telehealth operations and state-practice compliance support
-- Pricing: $5,000-$15,000/month retainer
+Do not use a $99 single visit with a $50 first-month credit. It anchors the visit at an effective $49 for someone who churns immediately.
 
-This can fund the patient business without forcing premature patient-volume growth. Keep it separate from patient care branding if needed.
+Better options:
 
-### Later Model: Insurance
+- $149 one-time physician visit with the full $149 credited across the first 3 paid membership months.
+- $99 one-time physician visit with no credit.
+- Free or low-cost fit interview only if it is explicitly non-clinical and does not collect PHI.
+
+The recommended option is $149 with credit spread over 3 paid months. It filters for seriousness and reduces cherry-picking.
+
+### Employer PEPM
+
+Do not make employer PEPM a year-one sales motion.
+
+B2B benefits sales cycles commonly require broker relationships, security reviews, utilization assumptions, references, contract review, and a working product. That does not fit the 2026 bandwidth constraint.
+
+The only exception: one warm anchor employer from your network that agrees to be a beta partner after patient operations are real. Treat it as learning, not a growth channel.
+
+### Insurance
 
 Do not lead with insurance billing. Revisit after:
 
-- 100+ paying members
-- 3+ employer pilots
-- Clean HIPAA/compliance stack
-- Clear in-state payer opportunity
-- RCM partner identified
+- COI is clear.
+- Patient model is validated.
+- EHR and RCM partners are chosen.
+- State focus is narrow.
+- You have enough operational support to handle credentialing, denials, audits, and payer rules.
 
-If added, insurance should support specific markets and services, not define the business.
+## Clinical Stack Requirements
+
+Do not build the clinical record in Prisma or the custom marketing app.
+
+The marketing site can remain custom. The chart must live in a real EHR such as Hint, Elation, Cerbo, or another fit-for-purpose clinical system with appropriate contracts and workflows.
+
+Before any patient-facing clinical launch:
+
+- Dedicated EHR selected and configured.
+- BAAs executed for every vendor touching PHI.
+- Multi-state malpractice coverage quoted and bound for the actual launch states. Planning estimate: $8,000-$15,000/year minimum, potentially more depending on states, scope, controlled substances, and carrier terms.
+- Identity verification workflow.
+- State/location attestation at every visit.
+- Telehealth consent.
+- Controlled substance prescribing policy.
+- GLP-1 and compounded medication policy.
+- Lab workflow with Quest, Labcorp, or direct-pay vendor.
+- External record request workflow.
+- Emergency escalation pathway for chest pain, neurologic symptoms, suicidality, severe dyspnea, hypertensive emergency, and other red flags.
+- In-person referral rules.
+- After-hours boundary and response-time policy.
+- Documentation, retention, and access-control policy.
+
+## State Strategy
+
+The 15-state licensure footprint is an asset, not an obligation.
+
+Do not launch in all 15 states. Pick one launch state if patient care proceeds in 2026. Michigan is the default unless COI, network, malpractice, or operational factors point elsewhere.
+
+If a second and third state are later justified, likely candidates are Florida plus one of Texas, Arizona, or North Carolina based on network, demand, malpractice terms, and operational simplicity.
+
+For non-launch states, evaluate renewal cost, CME burden, controlled-substance registration burden, and inactive status options. Preserve optionality where cheap, but stop letting the license map dictate the business roadmap.
 
 ## Product Positioning
 
-The best positioning:
+For advisory:
 
-"A real family physician in your pocket for the primary care problems that keep falling through the cracks."
+"Physician-led clinical governance for telehealth, AI-enabled care, and distributed primary care operations."
 
-Core audience:
+Core buyers:
 
-- Adults 30-65
-- High-deductible, self-employed, contractor, small business, or under-served by existing PCP
-- Multiple chronic or semi-chronic needs
-- Wants relationship and medication/lab continuity, not a random urgent care queue
+- Telehealth startups.
+- AI health companies.
+- MSOs and digital clinics.
+- Primary care groups using APP-heavy models.
+- Early-stage founders who need clinical safety, supervision, protocols, or credibility.
+
+For the later patient practice:
+
+"A real family physician for the primary care problems that keep falling through the cracks."
+
+Core patient audience:
+
+- Adults 30-65.
+- High-deductible, self-employed, contractor, small business, or poorly served by existing PCP access.
+- People with cardiometabolic and medication-continuity needs.
+- People who value continuity over one-off urgent care.
 
 Initial clinical wedge:
 
-- Blood pressure
-- Prediabetes/type 2 diabetes
-- Weight and GLP-1 navigation
-- Lipids/cardiovascular risk
-- Thyroid
-- Medication refills and cleanup
-- Primary care navigation
+- Blood pressure.
+- Prediabetes/type 2 diabetes.
+- Weight and GLP-1 navigation.
+- Lipids/cardiovascular risk.
+- Thyroid.
+- Medication refills and cleanup.
+- Primary care navigation.
 
-Do not brand as a GLP-1 clinic. Offer medically responsible weight management as one part of broader cardiometabolic primary care.
+Do not brand as a GLP-1 clinic.
 
 ## Codebase Findings
 
@@ -177,159 +248,131 @@ Existing assets:
 - Stripe, auth, Prisma, email, analytics, attribution, GA4, ad tooling.
 - Served-state list for 15 states.
 
-Strategic conflicts to fix:
+Strategic conflicts:
 
 - `app/(main)/page.tsx` and `app/(main)/pricing/page.tsx` say insurance accepted and $29 self-pay.
 - `lib/pricing.ts`, `components/pricing/MembershipTiers.tsx`, `lib/ads/brand-context.ts`, `lib/schema.ts`, and tests still encode $99/month direct membership/DPC.
 - `lib/trust-hub.ts`, `lib/pr.ts`, and ad tooling still contain DPC language.
-- `/book` currently functions as a client-side confirmation flow and does not submit to `app/api/visit-requests/route.ts`.
-- The current site collects sensitive fields in some flows. Do not connect clinical intake to the homegrown app until HIPAA infrastructure, BAAs, consent, retention, access controls, and clinical record workflows are locked.
+- `/book` functions as a client-side confirmation flow and does not submit to `app/api/visit-requests/route.ts`.
+- The app contains patient acquisition and admin tooling that could make the business appear more launched than it should while COI is pending.
 
-## Immediate Product Decision
+Codebase decision:
 
-Choose the direct membership model now.
+Freeze new feature development until the business gate is resolved. Only make changes that reduce confusion or risk:
 
-Reason:
+- Make the site private, staging-only, or clearly prelaunch.
+- Remove active patient-care availability claims unless legally cleared.
+- Avoid PHI capture in homegrown flows.
+- Keep advisory copy separate from patient-care copy if advisory is cleared.
+- Do not build clinical chart functionality.
 
-- HSA/DPC policy has become more favorable in 2026.
-- It avoids premature insurance operations.
-- It creates recurring revenue.
-- It fits a solo physician better than high-volume episodic care.
-- It gives employer buyers a clean, understandable benefit.
-- It gives the codebase a coherent story.
+## 90-Day Roadmap
 
-The insurance-accepted model can come later, but it should not be the brand promise until payer contracting and billing operations are real.
+### Week 1: COI Gate
 
-## Execution Roadmap
+1. Resolve CenterWell COI in writing.
+2. Get explicit clarity on:
+   - Patient-facing virtual primary care.
+   - Advisory for telehealth operators.
+   - Advisory for AI health companies.
+   - Medical director or protocol review roles.
+   - Public website and LinkedIn positioning.
+3. Until written clearance exists, keep the public clinical business inactive.
 
-### Phase 0: While COI Review Is Pending
+### Weeks 2-4: Advisory Revenue If Cleared
 
-Do not publicly launch patient operations.
+If advisory is cleared:
 
-Do:
+1. Create one advisory offer page or private PDF.
+2. Identify 20 warm prospects from existing network.
+3. Run 10 direct conversations.
+4. Close one $5,000-$10,000/month retainer.
+5. Keep scope narrow and COI boundaries documented.
 
-- Keep local and GitHub source of truth clean.
-- Restore hosting only as staging or private preview.
-- Write legal/compliance checklist.
-- Choose EHR/clinical record system.
-- Define clinical scope, state-specific SOPs, emergency escalation, and in-person referral rules.
-- Remove or gate any public copy that implies active clinical availability if that creates COI risk.
+If advisory is not cleared:
 
-### Phase 1: Strategy Alignment Sprint
+1. Do not route around it with public patient care.
+2. Keep Present Health MD as a dormant asset.
+3. Use the codebase only for private planning and future optionality.
 
-Files to align:
+### Weeks 2-8: Patient Practice Validation
 
-- `app/(main)/page.tsx`
-- `app/layout.tsx`
-- `app/(main)/pricing/page.tsx`
-- `components/pricing/MembershipTiers.tsx`
-- `lib/pricing.ts`
-- `lib/schema.ts`
-- `lib/trust-hub.ts`
-- `lib/ads/brand-context.ts`
-- `lib/ads/compliance.ts`
-- tests covering pricing and copy
+Run 10 prelaunch fit interviews from your personal network.
 
-Decisions:
+Rules:
 
-- Replace "we accept insurance" with "direct virtual primary care membership."
-- Replace "$29 visit" with "$99 one-time visit" or "fit call / join waitlist" during prelaunch.
-- Preserve `presenthealthmd.com` brand and domain.
-- Keep cloud resource names as historical for now.
+- Non-clinical.
+- No diagnosis, treatment, or PHI collection.
+- Ask whether they would pay $99/month for direct virtual primary care with a real family physician.
+- Ask what problem they would actually pay to solve.
+- Ask what they currently use instead.
+- Ask what would make them cancel after month one.
 
-### Phase 2: Clinical Infrastructure
+If fewer than 10 credible people in or near your network say they would pay, the demand thesis is not yet validated.
 
-Before collecting patient medical details:
+### Weeks 4-12: Infrastructure Choice
 
-- Execute BAA-covered hosting/EHR/vendor stack.
-- Decide whether the clinical chart lives in a dedicated EHR rather than Prisma.
-- Add informed consent for telehealth.
-- Add state/location attestation at every visit.
-- Add emergency/escalation language.
-- Add prescribing policy, including controlled substances and GLP-1 policy.
-- Add patient identity verification.
-- Add lab workflow and external record workflow.
+If patient practice still looks worth preserving:
 
-### Phase 3: Beta Launch
+1. Pick one EHR.
+2. Pick one launch state.
+3. Quote malpractice for that exact scope.
+4. Draft clinical SOPs.
+5. Decide lab vendor workflow.
+6. Define emergency escalation.
+7. Replace public patient copy with a prelaunch waitlist or keep it hidden.
 
-Target:
-
-- 25 beta members
-- 5 single-visit conversions
-- 2 employer discovery calls per week
-- 1 small employer pilot
-
-Acquisition:
-
-- Personal founder story
-- LinkedIn and local professional network
-- State landing pages
-- Employer outreach from existing CRM tooling
-- Reviews/testimonials only from appropriate non-PHI, compliant workflows
-- SEO around "virtual primary care in [state]", "online doctor for blood pressure", "GLP-1 primary care monitoring", "direct primary care HSA 2026"
-
-### Phase 4: Employer Pilot
-
-Offer a narrow pilot:
-
-- 90 days
-- 25-100 eligible employees
-- $19-$29 PEPM
-- Includes intake, direct message access, medication/lab navigation, and monthly aggregate non-PHI report
-- Success metrics: activation, response time, resolved issues, avoided urgent care estimate, patient satisfaction
-
-### Phase 5: Scale With Constraints
-
-Do not scale beyond clinical capacity.
-
-Capacity assumptions:
-
-- Solo panel: 150-300 members depending on utilization and scope.
-- Add contractor physician/APP only after protocols, QA, and member experience are stable.
-- Keep physician-led identity by making you the clinical architect, not the bottleneck for every low-acuity message.
+No employer sales, no multi-state launch, and no second clinician in this 90-day window.
 
 ## 12-Month Targets
 
-Conservative target:
+### Base Case
 
-- 100 members at $99/month = $9,900 MRR
-- 2 employer pilots totaling 100 lives at $19 PEPM = $1,900 MRR
-- 1 advisory client at $5,000/month = $5,000 MRR
-- Total: about $16,800 MRR
+- Written COI outcome known.
+- One advisory client at $5,000-$10,000/month if cleared.
+- IRS exposure materially reduced with advisory income.
+- Patient practice not publicly launched.
+- EHR, malpractice, and one-state launch plan selected only if demand validation supports it.
+- 10 prelaunch fit interviews completed.
+- No employer PEPM sales motion.
 
-Strong target:
+### Upside Case
 
-- 250 members at $99/month = $24,750 MRR
-- 5 employer clients totaling 500 lives at $19 PEPM = $9,500 MRR
-- 2 advisory clients at $7,500/month = $15,000 MRR
-- Total: about $49,250 MRR
+- Two advisory clients totaling $12,500-$20,000/month.
+- One-state patient beta prepared but not rushed.
+- 10-25 patient beta members only if COI, EHR, malpractice, HIPAA, and operating bandwidth are all real.
+- One warm employer beta conversation only if it emerges naturally from the network.
 
-Long-term leverage target:
+### Deferred To 2027
 
-- Patient care business proves the model.
-- Employer pilots produce data.
-- Software workflows become proprietary operating infrastructure.
-- Advisory work becomes productized into templates, protocols, and eventually software.
+- Employer PEPM growth.
+- Multi-state patient expansion.
+- Second clinician.
+- Insurance billing.
+- Scalable software product.
 
 ## What Not To Do
 
+- Do not publicly launch patient operations before written COI clearance.
+- Do not treat pending COI review as permission.
+- Do not build or store the clinical chart in the custom app.
+- Do not collect full clinical intake into a non-finalized HIPAA stack.
 - Do not compete with Amazon on $29 urgent care.
 - Do not launch "insurance accepted" unless credentialing and billing are operationally true.
 - Do not build around controlled substances.
 - Do not become a GLP-1 compounding storefront.
-- Do not collect full clinical intake into a non-finalized HIPAA stack.
-- Do not pursue all 15 states equally at first. Pick 3-5 highest-probability states for launch focus.
+- Do not pursue all 15 states equally.
+- Do not make employer PEPM a 2026 sales target unless one warm anchor beta appears.
+- Do not add product features until the business identity is resolved.
 
 ## Best Next Actions
 
-1. Decide that Present Health MD is direct membership first, not insurance billing first.
-2. Convert the site copy and schema to a coherent membership model.
-3. Turn `/book` into either a prelaunch interest form or a real visit request that posts to the API.
-4. Remove `$29` from primary pricing.
-5. Build a HIPAA/clinical operations checklist before patient data capture.
-6. Prepare a 25-member beta.
-7. Build the employer pilot page and CRM workflow around PEPM access.
-8. Keep advisory/medical director work as the cashflow bridge if COI permits.
+1. Resolve CenterWell COI in writing this week.
+2. If advisory clears, sell one $5,000-$10,000/month advisory client and use the cash for IRS, compliance, and runway.
+3. Freeze new feature development on the codebase.
+4. Pick one EHR and one launch state for future patient care planning.
+5. Recruit 10 personal-network prelaunch fit interviews to validate the $99/month patient offer.
+6. Defer employer pilots, multi-state expansion, insurance billing, and second clinician decisions to 2027.
 
 ## Sources
 
