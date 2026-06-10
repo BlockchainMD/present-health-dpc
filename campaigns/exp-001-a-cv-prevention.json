@@ -1,7 +1,7 @@
 {
   "slug": "exp-001-a-cv-prevention",
   "persona": "Michigan adults 35-64 who just got a concerning heart number (calcium score, cholesterol panel, blood pressure reading) or have a family history of early heart disease",
-  "intent": "I know my heart numbers are bad and nobody is helping me actually fix them",
+  "intent": "I know my heart numbers are bad and nobody is actively managing them down",
   "landingSlug": "heart-risk-membership-mi",
   "seedKeywords": [
     "high calcium score what to do",
