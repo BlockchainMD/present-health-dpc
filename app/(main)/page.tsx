@@ -425,11 +425,11 @@ function FinalCTASection() {
             <div className="container px-4 md:px-6 mx-auto max-w-4xl text-center">
                 <h2 className="text-3xl font-bold tracking-tight md:text-5xl mb-6 text-white">Ready to get started?</h2>
                 <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-                    Book a visit this week and experience primary care that works with your insurance.
+                    Founding memberships are open in Michigan. Know your numbers — then watch them improve.
                 </p>
                 <Button size="lg" className="h-14 px-8 text-lg bg-white text-slate-950 hover:bg-slate-100 font-semibold" asChild>
-                    <Link href="/book">
-                        Book a Visit <ArrowRight className="ml-2 h-4 w-4" />
+                    <Link href="/join">
+                        Reserve your founding spot <ArrowRight className="ml-2 h-4 w-4" />
                     </Link>
                 </Button>
             </div>
