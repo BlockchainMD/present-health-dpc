@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeroBackgroundMedia } from "@/components/home/HeroBackgroundMedia";
+import { US_STATES as STATES } from "@/lib/us-states";
 import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
 import { buildHomepageSchemas } from "@/lib/schema";
 
@@ -119,7 +120,7 @@ function HeroSection() {
                     </p>
                     <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                         <Button asChild size="lg" className="h-12 px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
-                            <Link href="/join">Reserve your founding spot</Link>
+                            <Link href="/join">Start Membership</Link>
                         </Button>
                         <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base font-semibold text-slate-950 border-white hover:bg-white/10">
                             <Link href="/how-it-works">How it works</Link>
@@ -128,7 +129,7 @@ function HeroSection() {
                     <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-slate-100">
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                            Board-certified physician-led
+                            Board-certified physician-led care
                         </div>
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
@@ -136,7 +137,7 @@ function HeroSection() {
                         </div>
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                            Insurance accepted
+                            Licensed across {STATES.length} states
                         </div>
                     </div>
                 </div>
