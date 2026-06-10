@@ -9,7 +9,7 @@ import { CheckCircle2 } from "lucide-react";
 export const metadata: Metadata = {
     title: "Pricing | Present Health",
     description:
-        "Your copay with insurance. $29 without. We accept most major commercial insurance plans.",
+        "One flat price: $99/month individual, $179/month household. No insurance needed, no copays, HSA-eligible.",
 };
 
 export default function PricingPage() {
@@ -24,18 +24,18 @@ export default function PricingPage() {
     const insuranceBillingSteps = [
         {
             step: "1",
-            title: "Verify your insurance",
-            description: "During booking, we'll check your coverage and confirm your copay amount.",
+            title: "Join online",
+            description: "Choose individual ($99/mo) or household ($179/mo). Pay by card — HSA cards work for qualifying memberships.",
         },
         {
             step: "2",
-            title: "Pay your copay",
-            description: "You pay your normal copay at the time of visit (same as any doctor visit).",
+            title: "One flat monthly charge",
+            description: "No claims, no copays, no surprise bills. Cancel anytime.",
         },
         {
             step: "3",
-            title: "We bill your insurance",
-            description: "We handle all billing to your insurance company for the visit.",
+            title: "Labs at transparent cash rates",
+            description: "When we order labs or imaging, we route you to the best local cash prices — often less than insurance rates.",
         },
     ];
 
@@ -48,56 +48,56 @@ export default function PricingPage() {
                         Simple, transparent pricing
                     </h1>
                     <p className="text-xl text-muted-foreground">
-                        Your copay with insurance. $29 without.
+                        One flat monthly price. No insurance needed, no copays, HSA-eligible.
                     </p>
                 </div>
 
                 {/* Pricing Cards */}
                 <div className="grid md:grid-cols-2 gap-8 mb-16 max-w-3xl mx-auto">
-                    {/* Insurance Card */}
+                    {/* Individual Card */}
                     <Card className="flex flex-col h-full border-border/70">
                         <CardHeader>
-                            <CardTitle className="text-2xl">With Insurance</CardTitle>
-                            <CardDescription>Most major commercial plans accepted</CardDescription>
+                            <CardTitle className="text-2xl">Individual</CardTitle>
+                            <CardDescription>Physician-led heart-health membership</CardDescription>
                         </CardHeader>
                         <CardContent className="flex-grow space-y-4">
                             <div>
-                                <div className="text-3xl font-bold">Your Copay</div>
+                                <div className="text-3xl font-bold">$99/month</div>
                                 <p className="text-muted-foreground text-sm mt-1">
-                                    Typically $20-50 per visit, depending on your plan
+                                    Visits, messaging, your prevention plan, and ongoing management — all included
                                 </p>
                             </div>
                             <div className="bg-slate-50 rounded p-4">
                                 <p className="text-sm text-muted-foreground">
-                                    We accept most major commercial insurance plans. We'll verify your coverage during booking so there are no surprises.
+                                    HSA-eligible under the 2026 rules for direct primary care memberships. Cancel anytime.
                                 </p>
                             </div>
                             <Button asChild size="lg" className="w-full">
-                                <Link href="/book">Book a Visit</Link>
+                                <Link href="/join">Become a founding member</Link>
                             </Button>
                         </CardContent>
                     </Card>
 
-                    {/* Self-Pay Card */}
+                    {/* Household Card */}
                     <Card className="flex flex-col h-full border-border/70">
                         <CardHeader>
-                            <CardTitle className="text-2xl">Without Insurance</CardTitle>
-                            <CardDescription>Self-pay option</CardDescription>
+                            <CardTitle className="text-2xl">Household</CardTitle>
+                            <CardDescription>Two adults, one membership</CardDescription>
                         </CardHeader>
                         <CardContent className="flex-grow space-y-4">
                             <div>
-                                <div className="text-3xl font-bold">$29 per visit</div>
+                                <div className="text-3xl font-bold">$179/month</div>
                                 <p className="text-muted-foreground text-sm mt-1">
-                                    No hidden fees, no subscription required
+                                    Both members get full physician access and their own prevention plans
                                 </p>
                             </div>
                             <div className="bg-slate-50 rounded p-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Full access to all services. Simple, transparent pricing with no surprises.
+                                    Under the $300/month family HSA limit for direct primary care. Cancel anytime.
                                 </p>
                             </div>
                             <Button asChild size="lg" className="w-full" variant="outline">
-                                <Link href="/book">Book a Visit</Link>
+                                <Link href="/join">Join as a household</Link>
                             </Button>
                         </CardContent>
                     </Card>
