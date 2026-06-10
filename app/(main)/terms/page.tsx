@@ -25,7 +25,7 @@ export default function TermsOfService() {
                     </p>
                     <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">3. Services</h2>
                     <p>
-                        Our services include video visits with physicians, prescription management, lab ordering, and care coordination for primary care conditions. Services are available on a per-visit basis. Patients with insurance pay their normal copay at the time of visit; we bill your insurance for the service. Patients without insurance pay the self-pay rate of $29 per visit.
+                        Our services include video visits with physicians, prescription management, lab ordering, and care coordination for primary care conditions, with a focus on cardiovascular prevention. Services are provided through a monthly membership ($99 per individual, $179 per household). We do not bill insurance, and membership fees are the sole compensation for covered primary care services. Lab work and imaging are paid separately at transparent cash rates.
                     </p>
                     <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">4. Website Content &amp; No Physician-Patient Relationship</h2>
                     <p>
