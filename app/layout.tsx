@@ -5,29 +5,29 @@ import { GA4Script } from "@/components/analytics/GA4Script";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://presenthealthmd.com"),
-  title: "Present Health | Virtual Primary Care — We Accept Insurance",
+  title: "Present Health | Virtual Primary Care for Heart Health — $99/mo, HSA-Eligible",
   description:
-    "Board-certified physicians managing your chronic conditions through convenient video visits. We accept most major insurance plans. No insurance? Visits start at $29.",
+    "Michigan's cardiovascular-prevention membership. A board-certified physician tracks your ApoB, blood pressure, and calcium score — and helps you lower them. $99/month. No insurance needed. HSA-eligible.",
   openGraph: {
     siteName: "Present Health",
     type: "website",
-    title: "Present Health | Virtual Primary Care — We Accept Insurance",
+    title: "Present Health | Virtual Primary Care for Heart Health — $99/mo, HSA-Eligible",
     description:
-      "Board-certified physicians managing your chronic conditions through convenient video visits. We accept most major insurance plans. No insurance? Visits start at $29.",
+      "Michigan's cardiovascular-prevention membership. A board-certified physician tracks your ApoB, blood pressure, and calcium score — and helps you lower them. $99/month. No insurance needed. HSA-eligible.",
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Present Health — Virtual Primary Care with Insurance",
+        alt: "Present Health — Cardiovascular Prevention Membership",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Present Health | Virtual Primary Care — We Accept Insurance",
+    title: "Present Health | Virtual Primary Care for Heart Health — $99/mo, HSA-Eligible",
     description:
-      "Virtual primary care that works with your insurance. Convenient video visits, chronic condition management. We accept most major plans.",
+      "Know your heart numbers — then actually lower them. Physician-led cardiovascular prevention, $99/month, no insurance needed.",
     images: ["/og-image.png"],
   },
 };

@@ -17,13 +17,13 @@ import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
 import { buildHomepageSchemas } from "@/lib/schema";
 
 export const metadata: Metadata = {
-    title: "Virtual Primary Care — We Accept Insurance | Present Health",
+    title: "Heart-Health Prevention Membership — $99/mo | Present Health",
     description:
-        "Board-certified physicians managing your chronic conditions through convenient video visits. We accept most major insurance plans. No insurance? Visits start at $29.",
+        "Know your heart risk — then actually lower it. A board-certified physician tracks your ApoB, blood pressure, and coronary calcium score and manages them down. $99/month, no insurance needed, HSA-eligible.",
     openGraph: {
-        title: "Virtual Primary Care — We Accept Insurance | Present Health",
+        title: "Heart-Health Prevention Membership — $99/mo | Present Health",
         description:
-            "Board-certified physicians managing your chronic conditions through convenient video visits. We accept most major insurance plans. No insurance? Visits start at $29.",
+            "Know your heart risk — then actually lower it. A board-certified physician tracks your ApoB, blood pressure, and coronary calcium score and manages them down. $99/month, no insurance needed, HSA-eligible.",
         url: "https://presenthealthmd.com",
         siteName: "Present Health",
         images: [
@@ -31,15 +31,15 @@ export const metadata: Metadata = {
                 url: "https://presenthealthmd.com/og-image.png",
                 width: 1200,
                 height: 630,
-                alt: "Present Health — Virtual Primary Care with Insurance",
+                alt: "Present Health — Cardiovascular Prevention Membership",
             },
         ],
         type: "website",
     },
     twitter: {
         card: "summary_large_image",
-        title: "Virtual Primary Care — We Accept Insurance | Present Health",
-        description: "Virtual primary care that works with your insurance. We accept most major plans. No insurance? Visits start at $29.",
+        title: "Heart-Health Prevention Membership — $99/mo | Present Health",
+        description: "Physician-led cardiovascular prevention. $99/month, no insurance needed, HSA-eligible.",
         images: ["https://presenthealthmd.com/og-image.png"],
     },
 };
@@ -109,20 +109,20 @@ function HeroSection() {
             <div className="container relative z-10 mx-auto px-4 md:px-6">
                 <div className="max-w-3xl py-10 md:py-14 lg:max-w-2xl">
                     <Badge className="mb-5 border border-white/12 bg-white/10 text-white hover:bg-white/10">
-                        Now accepting new patients
+                        Founding memberships — Michigan
                     </Badge>
                     <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-white md:text-6xl">
-                        Primary care that actually fits your life.
+                        Know your heart risk. Then actually lower it.
                     </h1>
                     <p className="mt-5 max-w-2xl text-lg text-slate-200 md:text-xl">
-                        Board-certified physicians managing your health through convenient video visits. We accept most major insurance plans. No insurance? Visits start at $29.
+                        A board-certified physician tracks your ApoB, blood pressure, and coronary calcium score — and works with you to bring them down. $99/month. No insurance needed. HSA-eligible.
                     </p>
                     <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                         <Button asChild size="lg" className="h-12 px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
-                            <Link href="/book">Book a Visit</Link>
+                            <Link href="/join">Reserve your founding spot</Link>
                         </Button>
                         <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base font-semibold text-slate-950 border-white hover:bg-white/10">
-                            <Link href="/conditions">See What We Treat</Link>
+                            <Link href="/how-it-works">How it works</Link>
                         </Button>
                     </div>
                     <div className="mt-7 flex flex-wrap items-center gap-3 text-sm text-slate-100">
@@ -195,23 +195,23 @@ function HowItWorksSection() {
     const steps = [
         {
             number: "1",
-            title: "Book online",
-            description: "Schedule your visit in minutes. Same-week appointments available.",
+            title: "Join in minutes",
+            description: "$99/month, cancel anytime. No insurance, no surprise bills, HSA-eligible.",
         },
         {
             number: "2",
-            title: "Enter your insurance",
-            description: "We accept most major plans. We'll verify your coverage during scheduling.",
+            title: "Baseline your numbers",
+            description: "ApoB, lipids, and blood pressure — plus guidance on getting a coronary calcium scan locally (often around $120, cash).",
         },
         {
             number: "3",
-            title: "Video visit with doctor",
-            description: "Connect with a board-certified physician for your appointment.",
+            title: "Build your plan with your physician",
+            description: "A video visit with a board-certified physician turns your numbers into a concrete risk-reduction plan.",
         },
         {
             number: "4",
-            title: "Ongoing care",
-            description: "Prescriptions, lab orders, and follow-up messaging included.",
+            title: "Manage them down",
+            description: "Ongoing messaging, prescriptions when appropriate, re-tests on a schedule — so you can watch your numbers trend the right way.",
         },
     ];
 
