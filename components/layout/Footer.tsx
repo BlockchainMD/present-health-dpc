@@ -21,7 +21,7 @@ export function Footer() {
                             </span>
                         </Link>
                         <p className="mt-4 text-sm text-muted-foreground">
-                            Virtual primary care that works with your insurance.
+                            Physician-led heart-health membership. $99/month, no insurance needed.
                         </p>
                     </div>
 
