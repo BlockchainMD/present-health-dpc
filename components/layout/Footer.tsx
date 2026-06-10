@@ -59,7 +59,7 @@ export function Footer() {
                         &copy; {new Date().getFullYear()} Present Health. All rights reserved.
                     </p>
                     <div className="text-xs text-muted-foreground max-w-2xl text-center md:text-right space-y-1">
-                        <p>Present Health accepts most major insurance plans. No insurance? Visits start at $29. Not a substitute for emergency care — call 911 for emergencies.</p>
+                        <p>Present Health is a flat-fee membership ($99/month individual, $179/month household) and does not bill insurance. Not a substitute for emergency care — call 911 for emergencies.</p>
                         <p>
                             Services provided by licensed clinicians. All clinical decisions are made or supervised by a board-certified physician.
                         </p>
