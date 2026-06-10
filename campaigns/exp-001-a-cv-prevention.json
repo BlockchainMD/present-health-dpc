@@ -1,0 +1,37 @@
+{
+  "slug": "exp-001-a-cv-prevention",
+  "persona": "Michigan adults 35-64 who just got a concerning heart number (calcium score, cholesterol panel, blood pressure reading) or have a family history of early heart disease",
+  "intent": "I know my heart numbers are bad and nobody is helping me actually fix them",
+  "landingSlug": "heart-risk-membership-mi",
+  "seedKeywords": [
+    "high calcium score what to do",
+    "coronary calcium score follow up doctor",
+    "apob high what to do",
+    "preventive cardiology near me",
+    "lower cholesterol doctor online",
+    "heart disease prevention program",
+    "high cholesterol family history doctor",
+    "direct primary care heart health michigan"
+  ],
+  "benefits": [
+    "A board-certified physician builds your personal risk-reduction plan from your actual numbers",
+    "Track ApoB, blood pressure, and calcium score until they move the right way",
+    "Flat $99/month - no insurance needed, no copays, no surprise bills",
+    "HSA-eligible under the 2026 rules for direct primary care"
+  ],
+  "proofPoints": [
+    "Board-certified family medicine physician",
+    "Evidence-based: we treat what randomized trials support, not supplement fads",
+    "Cash-price lab guidance - coronary calcium scans often around $120 locally",
+    "Cancel anytime"
+  ],
+  "disclaimers": [
+    "Not insurance",
+    "Membership does not include lab or imaging fees, which are paid separately at transparent cash rates",
+    "HSA eligibility depends on your plan; consult your tax advisor"
+  ],
+  "geo": "US-MI",
+  "tone": "Empathetic & Professional",
+  "strategy": "CONVERSION",
+  "layoutType": "CONVERSION"
+}

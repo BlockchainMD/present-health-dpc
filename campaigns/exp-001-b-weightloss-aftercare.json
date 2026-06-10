@@ -1,0 +1,37 @@
+{
+  "slug": "exp-001-b-weightloss-aftercare",
+  "persona": "Michigan adults 30-64 whose weight-loss program or coverage recently ended and who want a physician to protect the health gains they made (blood pressure, cholesterol, blood sugar)",
+  "intent": "My weight-loss program ended and I am afraid of losing the progress - who manages my health now",
+  "landingSlug": "after-weight-loss-program-mi",
+  "seedKeywords": [
+    "doctor after weight loss program ended",
+    "keep weight off after stopping program",
+    "weight loss program ended what now",
+    "blood pressure went up after stopping weight loss",
+    "cholesterol after weight loss",
+    "maintain weight loss doctor online",
+    "weight loss coverage ended michigan",
+    "physician supervised weight maintenance"
+  ],
+  "benefits": [
+    "A board-certified physician takes over where your program left off",
+    "We track the numbers that quietly slip back - blood pressure, cholesterol, blood sugar",
+    "A concrete maintenance plan, not another app subscription",
+    "Flat $99/month - less than most program fees, with far more physician contact"
+  ],
+  "proofPoints": [
+    "Board-certified family medicine physician",
+    "Published research shows heart-health gains can reverse within 1-2 years of stopping - we watch for it",
+    "Direct messaging with your physician between visits",
+    "HSA-eligible under the 2026 rules for direct primary care"
+  ],
+  "disclaimers": [
+    "Not insurance",
+    "Not affiliated with any weight-loss program or manufacturer",
+    "Lab fees paid separately at transparent cash rates"
+  ],
+  "geo": "US-MI",
+  "tone": "Empathetic & Professional",
+  "strategy": "CONVERSION",
+  "layoutType": "CONVERSION"
+}
