@@ -382,8 +382,8 @@ function FAQSection() {
                 <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
                 <Accordion type="single" collapsible className="w-full rounded-xl border border-border bg-background px-4 md:px-6">
                     <FaqItem
-                        question="Do you accept insurance?"
-                        body="Yes. We accept most major commercial insurance plans. Your cost is your normal copay. If you don't have insurance, visits start at $29."
+                        question="Do you take insurance?"
+                        body="No — and that's by design. Present Health is a flat $99/month membership, so there are no copays, no claims, and no surprise bills. Qualifying memberships are HSA-eligible, and we help you get cash-rate pricing on labs and imaging."
                     />
                     <FaqItem
                         question="How does booking work?"

@@ -105,7 +105,7 @@ export default function PricingPage() {
 
                 {/* What's Included */}
                 <section className="mb-16 max-w-3xl mx-auto">
-                    <h2 className="text-2xl font-bold mb-6">What's included in every visit</h2>
+                    <h2 className="text-2xl font-bold mb-6">What's included in your membership</h2>
                     <div className="grid gap-3">
                         {whatsIncluded.map((item) => (
                             <div key={item} className="flex gap-3 items-start">
@@ -118,7 +118,7 @@ export default function PricingPage() {
 
                 {/* Insurance Billing Explanation */}
                 <section className="mb-16 max-w-3xl mx-auto">
-                    <h2 className="text-2xl font-bold mb-6">How insurance billing works</h2>
+                    <h2 className="text-2xl font-bold mb-6">How billing works</h2>
                     <div className="grid md:grid-cols-3 gap-6">
                         {insuranceBillingSteps.map((item) => (
                             <div key={item.step}>
@@ -140,7 +140,7 @@ export default function PricingPage() {
                             <span className="font-medium text-foreground">Lab and imaging costs:</span> If we order labs or imaging, costs are billed separately at transparent, market rates.
                         </p>
                         <p>
-                            <span className="font-medium text-foreground">Medications:</span> Prescriptions are filled at your pharmacy, subject to your insurance coverage or self-pay pricing.
+                            <span className="font-medium text-foreground">Medications:</span> Prescriptions are filled at your pharmacy. We favor low-cost generics and transparent cash pricing wherever possible.
                         </p>
                         <p>
                             <span className="font-medium text-foreground">In-person care:</span> If we refer you for in-person evaluation or procedures, those are handled by the local provider.

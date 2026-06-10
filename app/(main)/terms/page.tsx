@@ -21,7 +21,7 @@ export default function TermsOfService() {
                     </p>
                     <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">2. Description of Service</h2>
                     <p>
-                        Present Health provides virtual primary care services delivered through video visits with board-certified physicians. We accept most major commercial insurance plans. For patients without insurance, we offer self-pay visits at a transparent, flat rate of $29 per visit. Additional costs (such as lab work and imaging) are billed separately at transparent rates.
+                        Present Health provides virtual primary care services delivered through video visits and secure messaging with board-certified physicians. Membership is billed at a flat monthly rate of $99 per individual ($179 per household). We do not bill insurance. Additional costs (such as lab work and imaging) are paid separately at transparent cash rates.
                     </p>
                     <h2 className="text-xl font-semibold text-foreground mt-8 mb-4">3. Services</h2>
                     <p>

@@ -131,7 +131,7 @@ export default function BookPage() {
                                 <CardHeader>
                                     <CardTitle>Do you have insurance?</CardTitle>
                                     <CardDescription>
-                                        We accept most major commercial plans. No insurance? Visits start at $29.
+                                        Membership is a flat $99/month — we never bill insurance. We only ask so we can route your labs and prescriptions to the lowest-cost option.
                                     </CardDescription>
                                 </CardHeader>
                                 <CardContent className="space-y-4">

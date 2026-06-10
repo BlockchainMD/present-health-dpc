@@ -7,7 +7,7 @@ import { CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
     title: "How It Works | Present Health",
-    description: "How Present Health works: convenient video visits with board-certified physicians. We accept most major insurance plans.",
+    description: "How Present Health works: a flat $99/month physician-led heart-health membership — baseline your numbers, build a plan, manage them down.",
 };
 
 export default function HowItWorksPage() {
@@ -21,13 +21,13 @@ export default function HowItWorksPage() {
     const steps = [
         {
             number: "1",
-            title: "Book online",
-            description: "Schedule your visit in minutes. Same-week appointments are typically available.",
+            title: "Join online",
+            description: "$99/month, cancel anytime. No insurance needed, no copays, HSA-eligible.",
         },
         {
             number: "2",
-            title: "Enter your insurance",
-            description: "We accept most major commercial insurance plans. We'll verify your coverage so there are no surprises. No insurance? Visits start at $29.",
+            title: "Baseline your numbers",
+            description: "ApoB, lipids, and blood pressure — plus guidance on getting a coronary calcium scan locally at transparent cash prices.",
         },
         {
             number: "3",
@@ -55,8 +55,8 @@ export default function HowItWorksPage() {
             description: "See the same physician who knows your history and health goals.",
         },
         {
-            title: "Access to Insurance Coverage",
-            description: "We work with your insurance plan, so your copay applies just like in-person visits.",
+            title: "Transparent Cost",
+            description: "One flat monthly fee. No copays, no claims, no surprise bills — and cash-rate labs we help you find.",
         },
     ];
 
@@ -67,7 +67,7 @@ export default function HowItWorksPage() {
             <header className="max-w-3xl mb-12">
                 <h1 className="text-4xl md:text-5xl font-bold tracking-tight">How Present Health Works</h1>
                 <p className="mt-4 text-lg text-muted-foreground">
-                    Convenient video visits with board-certified physicians. We accept most major insurance plans.
+                    Physician-led cardiovascular prevention through video visits and messaging — one flat monthly price.
                 </p>
             </header>
 

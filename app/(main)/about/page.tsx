@@ -8,7 +8,7 @@ import { buildAboutSchemas } from "@/lib/schema";
 export const metadata: Metadata = {
     title: "About | Present Health",
     description:
-        "Present Health is virtual primary care that works with your insurance. We accept most major commercial plans.",
+        "Present Health is a physician-led cardiovascular-prevention membership. $99/month, no insurance needed, HSA-eligible.",
 };
 
 export const dynamic = "force-dynamic";
@@ -16,10 +16,10 @@ export const runtime = "nodejs";
 
 export default async function AboutPage() {
     const missionStatement =
-        "Present Health makes quality primary care accessible and convenient. We offer video visits with board-certified physicians who manage your chronic conditions and provide full-spectrum primary care. We accept most major insurance plans, and for those without insurance, visits start at $29. Our focus is on continuity of care, evidence-based management, and treating patients as whole people — not just transactions.";
+        "Present Health makes serious preventive care accessible and convenient. We offer video visits and ongoing messaging with a board-certified physician focused on cardiovascular risk — ApoB, blood pressure, and coronary calcium — for one flat monthly price. Our focus is on continuity of care, evidence-based prevention, and treating patients as whole people — not just transactions.";
 
     const whyWeBuilt =
-        "Healthcare access is broken. Too many people with chronic conditions fall through the cracks — appointments are months away, co-pays are unpredictable, and continuity of care is rare. Virtual primary care can solve this. A board-certified physician can manage blood pressure, diabetes, thyroid, cholesterol, and more through video visits. No office overhead, no unnecessary in-person visits, lower costs, and better outcomes for chronic disease management. We built Present Health to prove that model works while still accepting insurance.";
+        "Healthcare access is broken. Too many people with chronic conditions fall through the cracks — appointments are months away, co-pays are unpredictable, and continuity of care is rare. Virtual primary care can solve this. A board-certified physician can manage blood pressure, diabetes, thyroid, cholesterol, and more through video visits. No office overhead, no unnecessary in-person visits, lower costs, and better outcomes for chronic disease management. We built Present Health to prove that model works — with one flat monthly price instead of insurance billing.";
 
     const schemaBlocks = buildAboutSchemas(missionStatement);
 
@@ -31,7 +31,7 @@ export default async function AboutPage() {
                 <header className="max-w-3xl mb-12">
                     <h1 className="text-4xl md:text-5xl font-bold tracking-tight">About Present Health</h1>
                     <p className="mt-4 text-lg text-muted-foreground">
-                        Virtual primary care that works with your insurance.
+                        Physician-led heart-health membership. One flat monthly price.
                     </p>
                 </header>
 
@@ -55,7 +55,7 @@ export default async function AboutPage() {
                         <CardContent className="space-y-4 text-muted-foreground">
                             <p>{whyWeBuilt}</p>
                             <p className="text-sm">
-                                We accept most major commercial insurance plans. No insurance? Visits start at $29. Either way, you get access to board-certified physician care.
+                                Membership is a flat $99/month ($179/month for households). No insurance needed, HSA-eligible. You get direct, ongoing access to board-certified physician care.
                             </p>
                         </CardContent>
                     </Card>
