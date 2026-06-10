@@ -146,7 +146,7 @@ export default function BookPage() {
                                             }`}
                                         >
                                             <div className="font-semibold">Yes, I have insurance</div>
-                                            <div className="text-sm text-muted-foreground">We'll verify your coverage</div>
+                                            <div className="text-sm text-muted-foreground">Helps us route labs and pharmacy efficiently</div>
                                         </button>
                                         <button
                                             type="button"
@@ -158,7 +158,7 @@ export default function BookPage() {
                                             }`}
                                         >
                                             <div className="font-semibold">No insurance</div>
-                                            <div className="text-sm text-muted-foreground">$29 per visit</div>
+                                            <div className="text-sm text-muted-foreground">No problem — membership covers your care</div>
                                         </button>
                                     </div>
 
