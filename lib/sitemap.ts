@@ -24,6 +24,7 @@ export const STATIC_PUBLIC_PATHS = [
     "/",
     "/how-it-works",
     "/pricing",
+    "/hsa",
     "/our-physicians",
     "/states",
     "/learn",
