@@ -25,6 +25,8 @@ export const STATIC_PUBLIC_PATHS = [
     "/how-it-works",
     "/pricing",
     "/hsa",
+    "/calcium-score",
+    "/after-weight-loss",
     "/our-physicians",
     "/states",
     "/learn",
