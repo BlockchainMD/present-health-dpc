@@ -5,7 +5,7 @@
  * on Meta platforms (Facebook and Instagram) via the Marketing API.
  */
 
-import bizSdk from 'facebook-nodejs-business-sdk';
+import * as bizSdk from 'facebook-nodejs-business-sdk';
 import { prisma } from '@/lib/prisma';
 import { updateCampaignRunSnapshot } from './metrics';
 

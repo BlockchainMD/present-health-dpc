@@ -1,0 +1,44 @@
+{
+  "name": "message-test-002-family-history-headlines",
+  "question": "How likely would you be to actually sign up and pay for this? Answer honestly as yourself, including any hesitations.",
+  "concepts": [
+    {
+      "id": "H1-runs-in-family",
+      "headline": "Heart disease runs in your family. It doesn't have to run in you.",
+      "pitch": "A board-certified physician baselines your ApoB, blood pressure, and coronary calcium score — then manages them down with you, by video and direct messaging. No insurance needed.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "H2-fathers-future",
+      "headline": "Your father's heart attack doesn't have to be your future.",
+      "pitch": "A board-certified physician baselines your ApoB, blood pressure, and coronary calcium score — then manages them down with you, by video and direct messaging. No insurance needed.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "H3-different-story",
+      "headline": "Family history of heart disease? Your numbers can tell a different story.",
+      "pitch": "A board-certified physician baselines your ApoB, blood pressure, and coronary calcium score — then manages them down with you, by video and direct messaging. No insurance needed.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "H4-inherited-risk",
+      "headline": "You inherited the risk. You can out-manage it.",
+      "pitch": "A board-certified physician baselines your ApoB, blood pressure, and coronary calcium score — then manages them down with you, by video and direct messaging. No insurance needed.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "H5-your-kids",
+      "headline": "You watched a parent go through it. Your kids don't have to.",
+      "pitch": "A board-certified physician baselines your ApoB, blood pressure, and coronary calcium score — then manages them down with you, by video and direct messaging. No insurance needed.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    }
+  ],
+  "personas": [
+    { "id": "scan-shock-m52", "description": "52-year-old male engineering manager in Troy, Michigan. Household income $145k, employer PPO with high deductible. Just got a coronary calcium score of 280 from a $75 hospital screening; his PCP said 'we'll keep an eye on it.' Analytical, reads studies, frustrated by 12-minute appointments. Has an HSA with $9k in it." },
+    { "id": "family-history-f44", "description": "44-year-old female elementary school teacher in Grand Rapids, Michigan. Household income $98k, insured through the district. Her father died of a heart attack at 58 and her older brother just got a stent at 49. Scared but busy, skeptical of wellness fads, watches spending carefully." },
+    { "id": "glp1-orphan-f38", "description": "38-year-old female HR coordinator in Warren, Michigan. Income $72k. Lost 48 pounds on compounded semaglutide; her telehealth provider just sent a transition notice and branded versions cost $349/month. Worried about regain and blood pressure creeping back. Was paying ~$200/month." },
+    { "id": "uninsured-contractor-m41", "description": "41-year-old male self-employed flooring contractor in Lansing, Michigan. Income varies $60-90k, no insurance, hasn't seen a doctor in 6 years. Knows his blood pressure ran high at a pharmacy machine. Price-sensitive, distrusts the system, wife pushing him to get checked." },
+    { "id": "optimizer-m35", "description": "35-year-old male software developer in Ann Arbor, Michigan. Income $165k, excellent insurance, longevity-podcast listener, pays $365/year for Function Health, wears a Whoop. Wants ApoB optimization and qualified interpretation; allergic to dumbed-down messaging." },
+    { "id": "budget-skeptic-f58", "description": "58-year-old female retail worker in Flint, Michigan. Household income $52k, Marketplace bronze plan with $7k deductible. On lisinopril from an urgent-care visit, no regular doctor. $99/month feels like a lot; needs convincing it replaces existing costs." }
+  ]
+}
