@@ -5,6 +5,7 @@ import { stripe } from "@/lib/stripe";
 import Stripe from "stripe";
 import { recordConversionEvent } from "@/lib/conversion";
 import { sendMemberActivationEmail } from "@/lib/member-activation";
+import { stopFoundingMemberNurtureSequenceForEmail } from "@/lib/auto-response";
 import { MEMBERSHIP_TIERS, normalizeCoverageType } from "@/lib/pricing";
 import {
     upsertUnifiedLeadFromCampaignLead,
@@ -62,6 +63,10 @@ export async function POST(req: Request) {
         const plan = normalizeCoverageType(session.metadata?.plan);
         const billing = session.metadata?.billing === "annual" ? "annual" : "monthly";
         const normalizedEmail = String(session.customer_details?.email || session.customer_email || "").trim().toLowerCase();
+
+        if (normalizedEmail) {
+            await stopFoundingMemberNurtureSequenceForEmail(normalizedEmail, "registered_member");
+        }
 
         if (!session?.metadata?.userId) {
             if (session.metadata?.checkoutMode === "guest") {
