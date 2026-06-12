@@ -160,7 +160,7 @@ export default function HowItWorksPage() {
 
             <div className="flex flex-col sm:flex-row gap-3">
                 <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                    <Link href="/book">Book a Visit</Link>
+                    <Link href="/book">Get started</Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
                     <Link href="/pricing">See Pricing</Link>

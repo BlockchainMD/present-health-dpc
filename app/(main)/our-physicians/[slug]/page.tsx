@@ -83,7 +83,7 @@ export default async function PhysicianProfilePage({ params }: { params: SlugPar
                         </div>
                         <div className="flex flex-col sm:flex-row gap-3 pt-2">
                             <Button asChild>
-                                <Link href="/book">Book a Visit</Link>
+                                <Link href="/book">Get started</Link>
                             </Button>
                             <Button asChild variant="outline">
                                 <Link href="/pricing">See pricing</Link>

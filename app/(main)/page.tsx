@@ -222,7 +222,7 @@ function HowItWorksSection() {
                 <div className="mx-auto mb-16 max-w-3xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl">How it works</h2>
                     <p className="text-lg text-muted-foreground mt-4">
-                        Simple, straightforward process from booking to ongoing care.
+                        Simple, straightforward process from joining to ongoing care.
                     </p>
                 </div>
                 <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-4">
@@ -246,12 +246,12 @@ function HowItWorksSection() {
 function DifferentiatorSection() {
     const points = [
         {
-            title: "We accept your insurance",
-            description: "We work with most major commercial insurance plans. Your cost is your normal copay.",
+            title: "Flat-fee membership",
+            description: "One monthly price, no claims, no copays, and no surprise primary-care bills.",
         },
         {
             title: "Same-week appointments",
-            description: "Book and be seen within the same week. No long waits for healthcare.",
+            description: "Start and be seen within the same week. No long waits for primary care.",
         },
         {
             title: "One doctor who knows you",
@@ -325,7 +325,7 @@ function ScenarioExamplesSection() {
                         title="Managing blood pressure follow-up"
                         patientMessage="Just checked my BP at home - 148/92. Higher than last week."
                         patientAttachmentLabel="Photo of reading attached"
-                        clinicianResponse="Good catch. Let's review your current meds and home log. Based on the trend, we may need to adjust. I'm sending you a requisition for labs. Book a quick follow-up video call with me in a few days after we have the results."
+                        clinicianResponse="Good catch. Let's review your current meds and home log. Based on the trend, we may need to adjust. I'm sending you a requisition for labs. Schedule a quick follow-up video call with me in a few days after we have the results."
                     />
                     <ScenarioCard
                         title="Weight management support"
@@ -387,8 +387,8 @@ function FAQSection() {
                         body="No — and that's by design. Present Health is a flat $99/month membership, so there are no copays, no claims, and no surprise bills. Qualifying memberships are HSA-eligible, and we help you get cash-rate pricing on labs and imaging."
                     />
                     <FaqItem
-                        question="How does booking work?"
-                        body="You can book online through our website. We offer same-week appointments. During scheduling, we'll verify your insurance coverage so there are no surprises."
+                        question="How does starting work?"
+                        body="Start online by choosing membership or a single-visit request. We confirm fit and state availability before care begins."
                     />
                     <FaqItem
                         question="What conditions do you treat?"
@@ -396,7 +396,7 @@ function FAQSection() {
                     />
                     <FaqItem
                         question="How quickly can I be seen?"
-                        body="Most patients can book and be seen within the same week. During your visit, we can address urgent issues, prescribe medications, order labs, and arrange follow-up care."
+                        body="Most members can be seen within the same week. During your visit, we can address urgent issues, prescribe medications, order labs, and arrange follow-up care."
                     />
                     <FaqItem
                         question="Is this a substitute for emergency care?"

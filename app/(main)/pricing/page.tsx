@@ -151,7 +151,7 @@ export default function PricingPage() {
                 {/* CTA */}
                 <div className="text-center mb-8">
                     <Button asChild size="lg" className="px-8 h-12">
-                        <Link href="/book">Book Your First Visit</Link>
+                        <Link href="/book">Get started</Link>
                     </Button>
                 </div>
             </div>

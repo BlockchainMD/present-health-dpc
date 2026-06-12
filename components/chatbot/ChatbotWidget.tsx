@@ -249,7 +249,7 @@ export function ChatbotWidget({ pathname, stateOptions, welcomeMessage }: Props)
             setShowLeadForm(false);
             appendMessage(
                 "assistant",
-                "Thanks! You're all set. If you'd like, you can book a consultation now or continue chatting about membership options."
+                "Thanks! You're all set. If you'd like, you can choose a care path now or continue chatting about membership options."
             );
         } catch (e: any) {
             setError(e?.message || "Failed to save lead.");

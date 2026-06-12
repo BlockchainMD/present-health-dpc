@@ -20,7 +20,7 @@ export default function DiabetesPage() {
     ];
 
     const howItWorks = [
-        "Book a video visit at your convenience",
+        "Choose membership or a single visit to start",
         "Discuss your blood sugar readings and goals",
         "Order A1C and glucose labs as needed",
         "Receive or adjust medications",
@@ -111,7 +111,7 @@ export default function DiabetesPage() {
                 {/* CTA */}
                 <div className="text-center">
                     <Button asChild size="lg" className="px-8 h-12">
-                        <Link href="/book">Book Your Visit Now</Link>
+                        <Link href="/book">Get started</Link>
                     </Button>
                 </div>
             </div>

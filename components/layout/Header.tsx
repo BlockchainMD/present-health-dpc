@@ -87,7 +87,7 @@ export function Header() {
                         </Link>
                     ))}
                     <Button asChild size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
-                        <Link href="/book">Book a Visit</Link>
+                        <Link href="/book">Get started</Link>
                     </Button>
                 </nav>
 
@@ -122,7 +122,7 @@ export function Header() {
                                 ))}
                                 <SheetClose asChild>
                                     <Button asChild className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
-                                        <Link href="/book">Book a Visit</Link>
+                                        <Link href="/book">Get started</Link>
                                     </Button>
                                 </SheetClose>
                             </div>

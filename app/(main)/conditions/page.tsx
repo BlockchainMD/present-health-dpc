@@ -78,7 +78,7 @@ export default function ConditionsPage() {
                         Don't see your condition? We provide comprehensive primary care for a wide range of acute and chronic conditions.
                     </p>
                     <Button asChild size="lg">
-                        <Link href="/book">Book a Visit to Discuss Your Condition</Link>
+                        <Link href="/book">Get started</Link>
                     </Button>
                 </div>
             </div>

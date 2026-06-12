@@ -64,11 +64,11 @@ export default async function AboutPage() {
                 <section className="rounded-2xl border border-border bg-muted/20 px-6 py-8 md:px-8 md:py-10">
                     <h2 className="text-2xl md:text-3xl font-bold tracking-tight">Ready to get started?</h2>
                     <p className="mt-3 text-muted-foreground">
-                        Book a video visit this week with a board-certified physician.
+                        Choose membership or request help with one focused concern.
                     </p>
                     <div className="mt-6">
                         <Button asChild size="lg" className="h-12 px-8 text-base">
-                            <Link href="/book">Book a Visit</Link>
+                            <Link href="/book">Get started</Link>
                         </Button>
                     </div>
                 </section>

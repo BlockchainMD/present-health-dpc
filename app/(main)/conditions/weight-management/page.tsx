@@ -20,7 +20,7 @@ export default function WeightManagementPage() {
     ];
 
     const howItWorks = [
-        "Book a video visit at your convenience",
+        "Choose membership or a single visit to start",
         "Discuss your weight management goals",
         "Start or adjust medications if appropriate",
         "Receive nutrition and lifestyle guidance",
@@ -105,7 +105,7 @@ export default function WeightManagementPage() {
 
                 <div className="text-center">
                     <Button asChild size="lg" className="px-8 h-12">
-                        <Link href="/book">Book Your Visit Now</Link>
+                        <Link href="/book">Get started</Link>
                     </Button>
                 </div>
             </div>

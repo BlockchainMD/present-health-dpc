@@ -20,7 +20,7 @@ export default function BloodPressurePage() {
     ];
 
     const howItWorks = [
-        "Book a video visit at your convenience",
+        "Choose membership or a single visit to start",
         "Discuss your BP readings and health goals",
         "Receive medication adjustments if needed",
         "Get labs ordered and scheduled",
@@ -111,7 +111,7 @@ export default function BloodPressurePage() {
                 {/* CTA */}
                 <div className="text-center">
                     <Button asChild size="lg" className="px-8 h-12">
-                        <Link href="/book">Book Your Visit Now</Link>
+                        <Link href="/book">Get started</Link>
                     </Button>
                 </div>
             </div>

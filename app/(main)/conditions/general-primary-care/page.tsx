@@ -20,7 +20,7 @@ export default function GeneralPrimaryCarePage() {
     ];
 
     const howItWorks = [
-        "Book a video visit at your convenience",
+        "Choose membership or a single visit to start",
         "Discuss your symptoms or health concerns",
         "Receive diagnosis and treatment plan",
         "Get prescriptions or lab orders as needed",
@@ -105,7 +105,7 @@ export default function GeneralPrimaryCarePage() {
 
                 <div className="text-center">
                     <Button asChild size="lg" className="px-8 h-12">
-                        <Link href="/book">Book Your Visit Now</Link>
+                        <Link href="/book">Get started</Link>
                     </Button>
                 </div>
             </div>
