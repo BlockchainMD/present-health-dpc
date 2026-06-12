@@ -84,20 +84,20 @@ export default function CholesterolPage() {
                     <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
                         <Card className="border-border/70">
                             <CardHeader>
-                                <CardTitle className="text-lg">With Insurance</CardTitle>
+                                <CardTitle className="text-lg">Membership</CardTitle>
                             </CardHeader>
                             <CardContent className="text-muted-foreground">
-                                <p className="font-semibold text-foreground mb-2">Your Copay</p>
-                                <p className="text-sm">Typically $20-50 per visit depending on your insurance plan.</p>
+                                <p className="font-semibold text-foreground mb-2">$99/month individual</p>
+                                <p className="text-sm">Ongoing primary care access, messaging, visits when clinically appropriate, and follow-up.</p>
                             </CardContent>
                         </Card>
                         <Card className="border-border/70">
                             <CardHeader>
-                                <CardTitle className="text-lg">Without Insurance</CardTitle>
+                                <CardTitle className="text-lg">Single visit</CardTitle>
                             </CardHeader>
                             <CardContent className="text-muted-foreground">
-                                <p className="font-semibold text-foreground mb-2">$29 per visit</p>
-                                <p className="text-sm">No hidden fees or subscriptions required.</p>
+                                <p className="font-semibold text-foreground mb-2">$99/visit request</p>
+                                <p className="text-sm">One focused concern when membership is not the right next step yet.</p>
                             </CardContent>
                         </Card>
                     </div>
