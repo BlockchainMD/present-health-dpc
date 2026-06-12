@@ -5,7 +5,7 @@ import { EmployerTestimonialEditor } from "@/components/admin/EmployerTestimonia
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 async function getTestimonial(id: string) {
     try {
@@ -36,4 +36,3 @@ export default async function EditEmployerTestimonialPage({ params }: { params: 
         />
     );
 }
-
