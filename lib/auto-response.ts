@@ -1348,6 +1348,81 @@ export async function processDueAutoResponses(limit = 25) {
     };
 }
 
+export async function enqueueFoundingMemberNurtureSequence(input: AutoResponseQueueInput) {
+    const email = cleanEmail(input.email);
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        return { ok: false as const, skipped: true as const, reason: "Invalid email" };
+    }
+
+    const source = input.source;
+    const firstName = deriveFirstName(email, input.firstName || "");
+    const data = normalizeTemplateData({
+        firstName,
+        email,
+        state: input.state || "",
+        companyName: input.companyName || "",
+        sourcePage: input.sourcePage || "",
+    });
+
+    if (await isUnsubscribed(email, source)) {
+        return { ok: false as const, skipped: true as const, reason: "Recipient unsubscribed" };
+    }
+
+    if (await hasActiveMembership(email)) {
+        await stopFoundingMemberNurtureSequenceForEmail(email, "registered_member");
+        return { ok: false as const, skipped: true as const, reason: "Recipient is already a member" };
+    }
+
+    const existing = await prisma.autoResponseNurtureSequence.findUnique({ where: { email } });
+    if (existing?.status === AutoResponseSequenceStatusEnum.ACTIVE) {
+        await prisma.autoResponseNurtureSequence.update({
+            where: { id: existing.id },
+            data: {
+                source,
+                leadRefType: clip(input.leadRefType, 60),
+                leadRefId: clip(input.leadRefId, 80),
+                recipientFirstName: firstName,
+                state: data.state,
+                sourcePage: data.sourcePage,
+            },
+        });
+        return { ok: true as const, skipped: true as const, reason: "Sequence already active", id: existing.id };
+    }
+
+    if (existing?.status === AutoResponseSequenceStatusEnum.COMPLETED) {
+        return { ok: true as const, skipped: true as const, reason: "Sequence already completed", id: existing.id };
+    }
+
+    if (existing?.status === AutoResponseSequenceStatusEnum.STOPPED) {
+        return { ok: true as const, skipped: true as const, reason: "Sequence stopped", id: existing.id };
+    }
+
+    const scheduledAt = new Date();
+    const sequence = await prisma.autoResponseNurtureSequence.create({
+        data: {
+            email,
+            status: AutoResponseSequenceStatusEnum.ACTIVE,
+            step: 1,
+            scheduledAt,
+            source,
+            leadRefType: clip(input.leadRefType, 60),
+            leadRefId: clip(input.leadRefId, 80),
+            recipientFirstName: firstName,
+            state: data.state,
+            sourcePage: data.sourcePage,
+        },
+    });
+
+    await processFoundingMemberNurtureSequence(sequence.id);
+
+    return {
+        ok: true as const,
+        skipped: false as const,
+        id: sequence.id,
+        scheduledFor: scheduledAt,
+    };
+}
+
 export async function enqueueAutoResponse(input: AutoResponseQueueInput) {
     const email = cleanEmail(input.email);
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
