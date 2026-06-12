@@ -1507,7 +1507,7 @@ export async function queueAutoResponseFromEmployerInquiry(inquiry: EmployerInqu
 
 export async function queueAutoResponseFromWaitlistSignup(signup: WaitlistSignup) {
     const firstName = deriveFirstName(signup.email, "");
-    return enqueueAutoResponse({
+    return enqueueFoundingMemberNurtureSequence({
         source: AutoResponseSourceEnum.STATE_WAITLIST,
         leadRefType: "WaitlistSignup",
         leadRefId: signup.id,
@@ -1530,7 +1530,7 @@ export async function queueAutoResponseFromCampaignLead(
         return { ok: false as const, skipped: true as const, reason: "Lead email missing" };
     }
 
-    return enqueueAutoResponse({
+    return enqueueFoundingMemberNurtureSequence({
         source: AutoResponseSourceEnum.GENERAL_CONTACT,
         leadRefType: "Lead",
         leadRefId: lead.id,
@@ -1547,7 +1547,7 @@ export async function queueAutoResponseFromChatbotLead(input: {
     email: string;
     state?: string | null;
 }) {
-    return enqueueAutoResponse({
+    return enqueueFoundingMemberNurtureSequence({
         source: AutoResponseSourceEnum.CHATBOT_LEAD,
         leadRefType: "ChatbotLead",
         leadRefId: input.id,
