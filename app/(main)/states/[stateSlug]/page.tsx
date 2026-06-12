@@ -17,7 +17,7 @@ import { buildStateSchemas, coerceFaqs } from "@/lib/schema";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type StateSlugParams = { stateSlug: string } | Promise<{ stateSlug: string }>;
+type StateSlugParams = Promise<{ stateSlug: string }>;
 
 export async function generateMetadata({ params }: { params: StateSlugParams }): Promise<Metadata> {
     const { stateSlug } = await params;
