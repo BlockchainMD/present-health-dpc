@@ -71,7 +71,7 @@ async function findArticle(topicSlug: string | undefined) {
     }
 }
 
-type TopicParams = { topicSlug: string } | Promise<{ topicSlug: string }>;
+type TopicParams = Promise<{ topicSlug: string }>;
 
 export async function generateMetadata({ params }: { params: TopicParams }): Promise<Metadata> {
     const { topicSlug } = await params;

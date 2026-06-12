@@ -16,7 +16,7 @@ import { LICENSED_STATES } from "@/lib/schema";
 export const runtime = "nodejs";
 export const revalidate = 3600;
 
-type CityPageParams = { stateSlug: string; citySlug: string } | Promise<{ stateSlug: string; citySlug: string }>;
+type CityPageParams = Promise<{ stateSlug: string; citySlug: string }>;
 
 export async function generateStaticParams() {
     return getAllStateCityParams();
