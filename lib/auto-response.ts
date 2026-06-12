@@ -768,6 +768,54 @@ function parseTemplateData(value: unknown): TemplateData {
     });
 }
 
+function getFoundingMemberNurtureStep(step: number) {
+    return FOUNDING_MEMBER_NURTURE_STEPS.find((item) => item.step === step) || null;
+}
+
+export function getFoundingMemberNurtureTransition(input: {
+    currentStep: number;
+    startedAt: Date;
+    sentAt: Date;
+}) {
+    const currentStep = getFoundingMemberNurtureStep(input.currentStep);
+    if (!currentStep) {
+        return {
+            status: AutoResponseSequenceStatusEnum.STOPPED,
+            step: input.currentStep,
+            scheduledAt: null,
+        };
+    }
+
+    const nextStep = getFoundingMemberNurtureStep(input.currentStep + 1);
+    if (!nextStep) {
+        return {
+            status: AutoResponseSequenceStatusEnum.COMPLETED,
+            step: input.currentStep,
+            scheduledAt: null,
+        };
+    }
+
+    return {
+        status: AutoResponseSequenceStatusEnum.ACTIVE,
+        step: nextStep.step,
+        scheduledAt: new Date(input.startedAt.getTime() + nextStep.delayDays * 24 * 60 * 60 * 1000),
+    };
+}
+
+function nurtureSequenceTemplateData(sequence: AutoResponseNurtureSequence): TemplateData {
+    return normalizeTemplateData({
+        firstName: sequence.recipientFirstName || "",
+        email: sequence.email,
+        state: sequence.state || "",
+        companyName: "",
+        sourcePage: sequence.sourcePage || "",
+    });
+}
+
+function sequenceStopStatus(reason: string): AutoResponseStatus {
+    return reason === "unsubscribed" ? AutoResponseStatusEnum.UNSUBSCRIBED : AutoResponseStatusEnum.SKIPPED;
+}
+
 async function isUnsubscribed(email: string, source: AutoResponseSource) {
     const normalizedEmail = cleanEmail(email);
     if (!normalizedEmail) return false;
