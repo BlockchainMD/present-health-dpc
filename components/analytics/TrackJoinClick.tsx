@@ -7,6 +7,7 @@ export function TrackJoinClick() {
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       const anchor = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href="/join"]');
+      if (anchor?.dataset.bookChoiceLink === 'true') return;
       if (anchor) {
         trackEvent({
           eventType: AnalyticsEvents.JOIN_CLICK,

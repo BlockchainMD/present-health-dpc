@@ -5,6 +5,7 @@ export const AnalyticsEvents = {
   ASSESSMENT_START: 'ASSESSMENT_START',
   ASSESSMENT_COMPLETE: 'ASSESSMENT_COMPLETE',
   JOIN_CLICK: 'JOIN_CLICK',
+  VISIT_PATH_CLICK: 'VISIT_PATH_CLICK',
   REGISTER: 'REGISTER',
 } as const;
 
@@ -13,6 +14,7 @@ const GA4_EVENT_MAP: Record<string, string> = {
   ASSESSMENT_START: 'assessment_start',
   ASSESSMENT_COMPLETE: 'assessment_complete',
   JOIN_CLICK: 'join_click',
+  VISIT_PATH_CLICK: 'select_content',
   REGISTER: 'sign_up',
 };
 
