@@ -2,6 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { FORBIDDEN } = require("./business-model-truth-patterns");
 
 // Guards against business-model drift. In March 2026 an automated rebrand
 // rewrote the site into an insurance-billing model the practice cannot
@@ -19,16 +20,6 @@ const PAGES = [
     "app/(main)/book/page.tsx",
     "app/(main)/terms/page.tsx",
     "components/layout/Footer.tsx",
-];
-
-const FORBIDDEN = [
-    /accept (most )?(major )?(commercial )?insurance/i,
-    /we accept insurance/i,
-    /insurance accepted/i,
-    /works with your insurance/i,
-    /\$29( per| \/)? ?visit/i,
-    /visits start at \$29/i,
-    /your copay/i,
 ];
 
 function read(rel) {
