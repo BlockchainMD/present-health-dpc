@@ -47,6 +47,42 @@ export const AUTO_RESPONSE_STATUS_LABELS: Record<AutoResponseStatus, string> = {
     UNSUBSCRIBED: "Unsubscribed",
 };
 
+export const AUTO_RESPONSE_SEQUENCE_STATUS_LABELS: Record<AutoResponseSequenceStatus, string> = {
+    ACTIVE: "Active",
+    COMPLETED: "Completed",
+    STOPPED: "Stopped",
+};
+
+export const FOUNDING_MEMBER_NURTURE_SEQUENCE_NAME = "Founding-member nurture sequence";
+
+export const FOUNDING_MEMBER_NURTURE_STEPS = [
+    {
+        step: 1,
+        delayDays: 0,
+        subject: "The three numbers that actually predict heart attacks",
+        bodyTemplate:
+            "Most physicals check total cholesterol and call it a day. The evidence says three numbers matter more: ApoB (the particle count that drives plaque), blood pressure load, and your coronary calcium score (a ~$120 cash CT scan — in a randomized trial, simply seeing it improved people's risk factors for years). I'm Dr. Rouwhorst, a board-certified family physician. Present Health exists to track those three numbers and manage them down — for a flat $99/month, no insurance games. Reply with any question; I answer personally.\n\n— Jonathan Rouwhorst, MD",
+    },
+    {
+        step: 2,
+        delayDays: 3,
+        subject: "The $50/month most heart-health spending wastes",
+        bodyTemplate:
+            "Cleveland Clinic ran a head-to-head trial: six popular \"cholesterol support\" supplements vs placebo vs a low-dose statin. The supplements did nothing. The statin dropped LDL ~35%. We practice from that evidence — medications when warranted, lifestyle changes that are measured rather than preached, and re-testing so you see what's working. That's what $99/month buys: medicine, not theater.",
+        ctaLabel: "Start Membership",
+        ctaPath: "/join",
+    },
+    {
+        step: 3,
+        delayDays: 7,
+        subject: "What founding members get",
+        bodyTemplate:
+            "We're opening with a small founding cohort in Michigan. Founding members get direct messaging with me (not a care-team inbox), a baseline panel ordered in week one, a written risk-reduction plan, and quarterly re-tests on your dashboard. $99/month or $990/year (two months free). HSA-eligible under the 2026 rules.",
+        ctaLabel: "Reserve your spot",
+        ctaPath: "/join",
+    },
+] as const;
+
 const AUTO_RESPONSE_TOKEN_VERSION = 1;
 const OPEN_TRACKING_GIF = Buffer.from("R0lGODlhAQABAPAAAAAAAAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==", "base64");
 
