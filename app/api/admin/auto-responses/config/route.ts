@@ -4,6 +4,7 @@ import type { AutoResponseSource } from "@prisma/client";
 import { requireAdmin } from "@/lib/authz";
 import {
     AUTO_RESPONSE_SOURCES,
+    getFoundingMemberNurtureStats,
     getAutoResponseTemplates,
     upsertAutoResponseTemplates,
 } from "@/lib/auto-response";
@@ -40,8 +41,11 @@ export async function GET() {
     }
 
     try {
-        const templates = await getAutoResponseTemplates();
-        return NextResponse.json({ success: true, templates });
+        const [templates, nurtureSequence] = await Promise.all([
+            getAutoResponseTemplates(),
+            getFoundingMemberNurtureStats(),
+        ]);
+        return NextResponse.json({ success: true, templates, nurtureSequence });
     } catch (error) {
         console.error("[AdminAutoResponseConfigAPI] GET error:", error);
         return NextResponse.json({ success: false, error: "Failed to load templates" }, { status: 500 });
