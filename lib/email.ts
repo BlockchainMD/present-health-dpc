@@ -96,6 +96,14 @@ function resolveProvider() {
     return null;
 }
 
+function emailSendingDisabledForEnvironment() {
+    if (process.env.NODE_ENV === "test") return true;
+    if (process.env.NODE_ENV === "development") {
+        return parseBool(process.env.EMAIL_SEND_IN_DEV) !== true;
+    }
+    return false;
+}
+
 async function sendViaSmtp(options: SendEmailOptions): Promise<SendEmailResult> {
     const transport = getTransport();
     if (!transport) {
@@ -281,6 +289,17 @@ async function sendViaPostmark(options: SendEmailOptions): Promise<SendEmailResu
 }
 
 export async function sendEmail(options: SendEmailOptions): Promise<SendEmailResult> {
+    if (emailSendingDisabledForEnvironment()) {
+        console.warn("[Email] Real email sends are disabled in dev/test.");
+        console.log(`[Email Fallback] To: ${options.to}\nSubject: ${options.subject}\nContent:\n${options.text}`);
+
+        return {
+            ok: false,
+            skipped: true,
+            reason: "Email sends disabled in dev/test.",
+        };
+    }
+
     const provider = resolveProvider();
     if (!provider) {
         // GCP Native Alert Fallback: If no provider is configured, we still want the [LEAD-CAPTURE] 
