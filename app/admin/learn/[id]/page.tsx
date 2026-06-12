@@ -5,7 +5,7 @@ import { LearnArticleEditor } from "@/components/admin/LearnArticleEditor";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 async function getArticle(id: string) {
     try {
@@ -58,4 +58,3 @@ export default async function EditLearnArticlePage({ params }: { params: Params 
         />
     );
 }
-
