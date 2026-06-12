@@ -49,8 +49,8 @@ function sanitizeObject(obj: any): any {
 export const dynamic = 'force-dynamic';
 
 interface PageProps {
-    params: { slug: string } | Promise<{ slug: string }>;
-    searchParams: { [key: string]: string | string[] | undefined };
+    params: Promise<{ slug: string }>;
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export async function generateMetadata({ params }: PageProps) {
@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: PageProps) {
 export default async function LandingPage({ params, searchParams }: PageProps) {
     const { slug } = await params;
     const pick = (value: string | string[] | undefined) => Array.isArray(value) ? value[0] : value;
-    const { gclid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = searchParams;
+    const { gclid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = await searchParams;
     const gclidValue = pick(gclid);
     const utmSource = pick(utm_source);
     const utmMedium = pick(utm_medium);
