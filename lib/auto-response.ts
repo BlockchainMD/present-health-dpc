@@ -2,6 +2,8 @@ import crypto from "node:crypto";
 
 import type {
     AutoResponseEmailLog,
+    AutoResponseNurtureSequence,
+    AutoResponseSequenceStatus,
     AutoResponseSource,
     AutoResponseStatus,
     AutoResponseTemplate,
@@ -10,10 +12,14 @@ import type {
     Prisma,
     WaitlistSignup,
 } from "@prisma/client";
-import { AutoResponseSource as AutoResponseSourceEnum, AutoResponseStatus as AutoResponseStatusEnum } from "@prisma/client";
+import {
+    AutoResponseSequenceStatus as AutoResponseSequenceStatusEnum,
+    AutoResponseSource as AutoResponseSourceEnum,
+    AutoResponseStatus as AutoResponseStatusEnum,
+} from "@prisma/client";
 
 import { prisma } from "@/lib/prisma";
-import { sendEmail } from "@/lib/email";
+import { sendEmail, type SendEmailResult } from "@/lib/email";
 import { absoluteUrl } from "@/lib/site-url";
 import { slugify } from "@/lib/slug";
 import { stateFromNameOrCode, stateSlug } from "@/lib/us-states";
