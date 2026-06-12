@@ -164,6 +164,12 @@ enum AutoResponseStatus {
   UNSUBSCRIBED
 }
 
+enum AutoResponseSequenceStatus {
+  ACTIVE
+  COMPLETED
+  STOPPED
+}
+
 model Article {
   id                    String          @id @default(uuid())
   title                 String
@@ -325,16 +331,21 @@ model AutoResponseEmailLog {
   clickedAt             DateTime?
   isFollowUp            Boolean               @default(false)
   parentEmailId         String?
+  nurtureSequenceId     String?
+  nurtureStep           Int?
   createdAt             DateTime              @default(now())
   updatedAt             DateTime              @updatedAt
   parentEmail           AutoResponseEmailLog? @relation("AutoResponseFollowUps", fields: [parentEmailId], references: [id], onDelete: SetNull)
   followUpEmails        AutoResponseEmailLog[] @relation("AutoResponseFollowUps")
+  nurtureSequence       AutoResponseNurtureSequence? @relation(fields: [nurtureSequenceId], references: [id], onDelete: SetNull)
 
   @@index([status, scheduledFor])
   @@index([source, createdAt(sort: Desc)])
   @@index([recipientEmail, createdAt(sort: Desc)])
   @@index([leadRefType, leadRefId])
   @@index([parentEmailId])
+  @@index([nurtureSequenceId])
+  @@unique([nurtureSequenceId, nurtureStep])
 }
 
 model AutoResponseUnsubscribe {
@@ -344,6 +355,31 @@ model AutoResponseUnsubscribe {
   createdAt DateTime           @default(now())
 
   @@unique([email, source])
+  @@index([email])
+}
+
+model AutoResponseNurtureSequence {
+  id                 String                     @id @default(uuid())
+  email              String                     @unique
+  status             AutoResponseSequenceStatus @default(ACTIVE)
+  step               Int                        @default(1)
+  scheduledAt        DateTime?
+  source             AutoResponseSource
+  leadRefType        String?
+  leadRefId          String?
+  recipientFirstName String?
+  state              String?
+  sourcePage         String?
+  lastEmailLogId     String?
+  completedAt        DateTime?
+  stoppedAt          DateTime?
+  stopReason         String?
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  emailLogs          AutoResponseEmailLog[]
+
+  @@index([status, scheduledAt])
+  @@index([source, createdAt(sort: Desc)])
   @@index([email])
 }
 
