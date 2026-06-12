@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-type SearchParams = { waitlist?: string; waitlist_error?: string; state?: string } | Promise<{ waitlist?: string; waitlist_error?: string; state?: string }>;
+type SearchParams = Promise<{ waitlist?: string; waitlist_error?: string; state?: string }>;
 
 function stateCodeForSlug(slug: string) {
     return US_STATES.find((s) => s.slug === slug)?.code ?? slug.slice(0, 2).toUpperCase();
