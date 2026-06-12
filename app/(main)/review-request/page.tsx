@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     description: "Share your feedback about Present Health on your preferred review platform.",
 };
 
-type SearchParams = { token?: string | string[] } | Promise<{ token?: string | string[] }>;
+type SearchParams = Promise<{ token?: string | string[] }>;
 
 function parseToken(value: string | string[] | undefined) {
     if (Array.isArray(value)) return String(value[0] || "").trim();
