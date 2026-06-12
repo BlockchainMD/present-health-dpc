@@ -1026,31 +1026,69 @@ export async function processAutoResponseLog(logId: string) {
 
     if (await isUnsubscribed(log.recipientEmail, log.source)) {
         await markLogSkipped(log.id, "Recipient unsubscribed", AutoResponseStatusEnum.UNSUBSCRIBED);
+        await stopFoundingMemberNurtureSequenceForEmail(log.recipientEmail, "unsubscribed");
         return { ok: false as const, reason: "Recipient unsubscribed" };
     }
 
-    const template = await getTemplateConfigBySource(log.source);
-    if (!template.enabled) {
-        await markLogSkipped(log.id, "Template disabled", AutoResponseStatusEnum.SKIPPED);
-        return { ok: false as const, reason: "Template disabled" };
+    let template: AutoResponseTemplateConfig | null = null;
+    let nurtureSequence: AutoResponseNurtureSequence | null = null;
+    let rendered: RenderedTemplate;
+
+    if (log.nurtureSequenceId && log.nurtureStep) {
+        nurtureSequence = await prisma.autoResponseNurtureSequence.findUnique({
+            where: { id: log.nurtureSequenceId },
+        });
+
+        if (!nurtureSequence) {
+            await markLogSkipped(log.id, "Nurture sequence not found", AutoResponseStatusEnum.SKIPPED);
+            return { ok: false as const, reason: "Nurture sequence not found" };
+        }
+
+        if (nurtureSequence.status !== AutoResponseSequenceStatusEnum.ACTIVE) {
+            await markLogSkipped(log.id, `Nurture sequence ${nurtureSequence.status.toLowerCase()}`, AutoResponseStatusEnum.SKIPPED);
+            return { ok: false as const, reason: "Nurture sequence not active" };
+        }
+
+        if (nurtureSequence.step !== log.nurtureStep) {
+            await markLogSkipped(log.id, "Nurture sequence step no longer current", AutoResponseStatusEnum.SKIPPED);
+            return { ok: false as const, reason: "Nurture sequence step no longer current" };
+        }
+
+        if (!getFoundingMemberNurtureStep(log.nurtureStep)) {
+            await markLogSkipped(log.id, "Unknown nurture sequence step", AutoResponseStatusEnum.SKIPPED);
+            await stopFoundingMemberNurtureSequenceForEmail(log.recipientEmail, "invalid_step");
+            return { ok: false as const, reason: "Unknown nurture sequence step" };
+        }
+
+        rendered = await renderNurtureEmailContent({
+            sequence: nurtureSequence,
+            stepNumber: log.nurtureStep,
+            logId: log.id,
+        });
+    } else {
+        template = await getTemplateConfigBySource(log.source);
+        if (!template.enabled) {
+            await markLogSkipped(log.id, "Template disabled", AutoResponseStatusEnum.SKIPPED);
+            return { ok: false as const, reason: "Template disabled" };
+        }
+
+        if (log.isFollowUp && !template.followUpEnabled) {
+            await markLogSkipped(log.id, "Follow-up disabled", AutoResponseStatusEnum.SKIPPED);
+            return { ok: false as const, reason: "Follow-up disabled" };
+        }
+
+        const templateData = parseTemplateData(log.templateData);
+        if (!templateData.email) templateData.email = cleanEmail(log.recipientEmail);
+        if (!templateData.firstName) templateData.firstName = clip(log.recipientFirstName, 80);
+
+        rendered = await renderEmailContent({
+            source: log.source,
+            template,
+            data: templateData,
+            logId: log.id,
+            followUp: Boolean(log.isFollowUp),
+        });
     }
-
-    if (log.isFollowUp && !template.followUpEnabled) {
-        await markLogSkipped(log.id, "Follow-up disabled", AutoResponseStatusEnum.SKIPPED);
-        return { ok: false as const, reason: "Follow-up disabled" };
-    }
-
-    const templateData = parseTemplateData(log.templateData);
-    if (!templateData.email) templateData.email = cleanEmail(log.recipientEmail);
-    if (!templateData.firstName) templateData.firstName = clip(log.recipientFirstName, 80);
-
-    const rendered = await renderEmailContent({
-        source: log.source,
-        template,
-        data: templateData,
-        logId: log.id,
-        followUp: Boolean(log.isFollowUp),
-    });
 
     const result = await sendEmail({
         to: log.recipientEmail,
@@ -1078,6 +1116,10 @@ export async function processAutoResponseLog(logId: string) {
             },
         });
 
+        if (mailerReportedHardBounce(result)) {
+            await stopFoundingMemberNurtureSequenceForEmail(log.recipientEmail, "hard_bounce");
+        }
+
         return {
             ok: false as const,
             reason: result.reason,
@@ -1100,7 +1142,11 @@ export async function processAutoResponseLog(logId: string) {
         },
     });
 
-    await scheduleFollowUpIfEnabled(log, template);
+    if (nurtureSequence && log.nurtureStep) {
+        await advanceFoundingMemberNurtureSequenceAfterSend(nurtureSequence, log.nurtureStep, log.id, sentAt);
+    } else if (template) {
+        await scheduleFollowUpIfEnabled(log, template);
+    }
 
     return {
         ok: true as const,
