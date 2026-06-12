@@ -5,7 +5,7 @@ import { addUnifiedLeadNote, getUnifiedLeadDetail } from "@/lib/unified-leads";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 export async function POST(request: NextRequest, { params }: { params: Params }) {
     let session;

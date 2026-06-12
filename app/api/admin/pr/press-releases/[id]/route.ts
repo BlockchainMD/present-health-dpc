@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function parseDateInput(value: unknown) {
     if (value === undefined) return undefined;

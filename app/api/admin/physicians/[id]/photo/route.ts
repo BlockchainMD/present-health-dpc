@@ -6,7 +6,7 @@ import path from "path";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function pickExtension(file: File) {
     const name = (file.name || "").toLowerCase();

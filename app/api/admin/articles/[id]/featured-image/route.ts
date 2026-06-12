@@ -7,7 +7,7 @@ import sharp from "sharp";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function isSupportedImage(file: File) {
     const type = (file.type || "").toLowerCase();

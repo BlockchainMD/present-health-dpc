@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/authz";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 type FaqItem = { question: string; answer: string };
 
 function coerceFaqs(value: unknown): FaqItem[] {

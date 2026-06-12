@@ -15,7 +15,7 @@ import {
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function hashContent(content: string) {
     return crypto.createHash("sha256").update(content).digest("hex");

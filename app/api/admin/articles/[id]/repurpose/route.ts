@@ -11,7 +11,7 @@ import {
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function parseSubjects(value: unknown) {
     if (value === null) return null;

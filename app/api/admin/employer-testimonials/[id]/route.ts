@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/authz";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function coerceSortOrder(value: unknown) {
     const n = typeof value === "number" ? value : typeof value === "string" ? Number.parseInt(value, 10) : NaN;

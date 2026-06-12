@@ -5,7 +5,7 @@ import { draftReviewResponse } from "@/lib/reviews";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 export async function POST(_request: NextRequest, { params }: { params: Params }) {
     let session;

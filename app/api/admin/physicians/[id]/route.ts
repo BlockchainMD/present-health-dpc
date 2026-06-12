@@ -4,7 +4,7 @@ import { requireAdmin } from "@/lib/authz";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 export async function GET(_request: NextRequest, { params }: { params: Params }) {
     try {

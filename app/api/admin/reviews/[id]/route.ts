@@ -7,7 +7,7 @@ import { parseResponseStatus, parseReviewPlatform } from "@/lib/reviews";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function compactWhitespace(value: string) {
     return value.trim().replace(/\s+/g, " ");

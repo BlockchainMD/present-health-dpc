@@ -6,7 +6,7 @@ import { getUnifiedLeadDetail, updateUnifiedLead, updateUnifiedLeadStatus } from
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 function parseTier(value: unknown) {
     const raw = String(value || "").trim().toUpperCase();

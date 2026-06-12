@@ -5,7 +5,7 @@ import { deleteCitationDirectoryRow, updateCitationDirectoryRow } from "@/lib/ci
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 export async function PATCH(request: NextRequest, { params }: { params: Params }) {
     try {

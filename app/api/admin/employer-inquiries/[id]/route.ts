@@ -5,7 +5,7 @@ import { upsertUnifiedLeadFromEmployerInquiry } from "@/lib/unified-leads";
 
 export const runtime = "nodejs";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 const ALLOWED_STATUS = new Set(["NEW", "CONTACTED", "CONVERTED", "CLOSED"]);
 
