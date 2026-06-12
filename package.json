@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "NODE_USE_SYSTEM_CA=0 prisma generate && NODE_USE_SYSTEM_CA=0 next build",
+    "build": "NODE_USE_SYSTEM_CA=0 prisma generate && NODE_USE_SYSTEM_CA=0 next build --webpack",
     "start": "next start",
     "lint": "eslint",
     "test": "NODE_USE_SYSTEM_CA=0 node --test tests/*.test.js",
