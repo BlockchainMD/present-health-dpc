@@ -1,5 +1,3 @@
-import { createHash } from "node:crypto";
-
 import Parser from "rss-parser";
 
 export const HEALTHBOOK_CATEGORIES = [
@@ -1026,7 +1024,17 @@ function formatDateForApi(date: Date) {
 }
 
 function buildHealthbookId(source: string, title: string, url: string) {
-  return createHash("sha1").update(`${source}|${title}|${url}`).digest("hex").slice(0, 16);
+  const input = `${source}|${title}|${url}`;
+  let h1 = 0x811c9dc5;
+  let h2 = 0x01000193;
+
+  for (let i = 0; i < input.length; i += 1) {
+    const code = input.charCodeAt(i);
+    h1 = Math.imul(h1 ^ code, 0x01000193);
+    h2 = Math.imul(h2 ^ code, 0x5bd1e995);
+  }
+
+  return `${(h1 >>> 0).toString(16).padStart(8, "0")}${(h2 >>> 0).toString(16).padStart(8, "0")}`;
 }
 
 function isHealthbookRelevant(text: string) {
