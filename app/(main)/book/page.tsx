@@ -1,330 +1,154 @@
-"use client";
-
-import { useState } from "react";
 import type { Metadata } from "next";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2 } from "lucide-react";
+import { ArrowRight, CheckCircle2, MessageSquareText, Users } from "lucide-react";
 
-type FormData = {
-    hasInsurance: boolean | null;
-    planName: string;
-    memberId: string;
-    firstName: string;
-    lastName: string;
-    dob: string;
-    state: string;
-    phone: string;
-    email: string;
-    visitReason: string;
+import { BookChoiceLink } from "@/components/book/BookChoiceLink";
+import { SINGLE_VISIT_DOLLARS } from "@/lib/pricing";
+
+export const metadata: Metadata = {
+    title: "Start Care | Present Health",
+    description:
+        "Choose how to start with Present Health: ongoing membership or a single-visit request.",
 };
 
-export default function BookPage() {
-    const [step, setStep] = useState<"insurance" | "info" | "reason" | "confirmation">("insurance");
-    const [formData, setFormData] = useState<FormData>({
-        hasInsurance: null,
-        planName: "",
-        memberId: "",
-        firstName: "",
-        lastName: "",
-        dob: "",
-        state: "",
-        phone: "",
-        email: "",
-        visitReason: "",
-    });
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (step === "insurance") {
-            setStep("info");
-        } else if (step === "info") {
-            setStep("reason");
-        } else if (step === "reason") {
-            setStep("confirmation");
+const MEMBERSHIP_PRICE_LINE = "$99/mo individual · $179/mo household · HSA-eligible";
+
+const MEMBERSHIP_POINTS = [
+    "Ongoing founder-clinician primary care",
+    "Messaging-first access with video when clinically appropriate",
+    "Best fit when you want continuity and proactive follow-up",
+];
+
+const SINGLE_VISIT_POINTS = [
+    "One focused concern, no membership required",
+    "Messaging-first review and next steps from the care team",
+    "Good fit if you want help now before deciding on membership",
+];
+
+function buildHrefWithSearchParams(
+    pathname: string,
+    params: Record<string, string | string[] | undefined>
+) {
+    const query = new URLSearchParams();
+
+    for (const [key, value] of Object.entries(params)) {
+        if (typeof value === "string") {
+            query.append(key, value);
+            continue;
         }
-    };
 
-    const visitReasons = [
-        "Blood pressure management",
-        "Diabetes and A1C management",
-        "Weight management",
-        "Thyroid management",
-        "Cholesterol and heart health",
-        "General primary care",
-        "Acute/sick visit",
-        "Other",
-    ];
+        if (Array.isArray(value)) {
+            for (const item of value) {
+                if (typeof item === "string") query.append(key, item);
+            }
+        }
+    }
 
-    const states = [
-        "Michigan",
-        "Arizona",
-        "Florida",
-        "Indiana",
-        "Kentucky",
-        "Minnesota",
-        "North Carolina",
-        "Nebraska",
-        "New Hampshire",
-        "Ohio",
-        "Rhode Island",
-        "Texas",
-        "Utah",
-        "Washington",
-        "Wisconsin",
-    ];
+    const search = query.toString();
+    return search ? `${pathname}?${search}` : pathname;
+}
+
+export default async function BookPage({ searchParams }: { searchParams: SearchParams }) {
+    const params = await searchParams;
+    const joinHref = buildHrefWithSearchParams("/join", params);
 
     return (
-        <div className="min-h-screen bg-background py-24">
-            <div className="container mx-auto px-4 md:px-6 max-w-2xl">
-                <div className="mb-8">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Book a Visit</h1>
-                    <p className="text-lg text-muted-foreground">
-                        Schedule your video visit with a board-certified physician.
+        <div className="min-h-screen bg-background">
+            <div className="container mx-auto max-w-5xl px-4 py-16 md:px-6 md:py-24">
+                <header className="mx-auto max-w-3xl text-center">
+                    <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Start care</p>
+                    <h1 className="mt-3 text-4xl font-bold tracking-tight md:text-5xl">
+                        How do you want to start?
+                    </h1>
+                    <p className="mt-4 text-lg text-muted-foreground">
+                        Choose ongoing membership for direct primary care access, or request help with one focused concern.
                     </p>
-                </div>
+                </header>
 
-                {/* Step Indicator */}
-                <div className="mb-8 flex gap-2">
-                    <Badge variant={step === "insurance" || ["info", "reason", "confirmation"].includes(step) ? "default" : "outline"}>
-                        1. Insurance
-                    </Badge>
-                    <Badge variant={step === "info" || ["reason", "confirmation"].includes(step) ? "default" : "outline"}>
-                        2. Your Info
-                    </Badge>
-                    <Badge variant={step === "reason" || step === "confirmation" ? "default" : "outline"}>
-                        3. Reason
-                    </Badge>
-                    <Badge variant={step === "confirmation" ? "default" : "outline"}>
-                        4. Confirm
-                    </Badge>
-                </div>
-
-                {step === "confirmation" ? (
-                    /* Confirmation Message */
-                    <Card className="border-border/70">
-                        <CardContent className="pt-12 pb-12 text-center">
-                            <div className="flex justify-center mb-6">
-                                <CheckCircle2 className="h-16 w-16 text-emerald-600" />
+                <section className="mt-10 grid gap-4 md:grid-cols-2" aria-label="Choose a care path">
+                    <BookChoiceLink
+                        href={joinHref}
+                        choice="membership"
+                        label="membership"
+                        className="group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        aria-label="Start membership"
+                    >
+                        <article className="flex h-full flex-col rounded-lg border-2 border-primary bg-primary/5 p-6 shadow-sm transition group-hover:-translate-y-0.5 group-hover:shadow-md">
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <span className="inline-flex rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground">
+                                        Primary path
+                                    </span>
+                                    <h2 className="mt-4 text-2xl font-semibold tracking-tight">Membership</h2>
+                                </div>
+                                <Users className="h-7 w-7 text-primary" aria-hidden="true" />
                             </div>
-                            <h2 className="text-3xl font-bold mb-4">Thank you!</h2>
-                            <p className="text-lg text-muted-foreground mb-6">
-                                We've received your booking request. We'll contact you within 1 business day to confirm your appointment and answer any questions.
+
+                            <p className="mt-4 text-lg font-semibold text-foreground">{MEMBERSHIP_PRICE_LINE}</p>
+                            <p className="mt-3 text-sm text-muted-foreground">
+                                Start here for relationship-based care, prevention work, medication support, and ongoing access.
                             </p>
-                            <p className="text-muted-foreground mb-8">
-                                <span className="font-semibold">Booking details:</span>
-                                <br />
-                                {formData.firstName} {formData.lastName}
-                                <br />
-                                {formData.email} | {formData.phone}
+
+                            <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
+                                {MEMBERSHIP_POINTS.map((item) => (
+                                    <li key={item} className="flex gap-2">
+                                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                                        <span>{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <div className="mt-auto pt-6">
+                                <span className="inline-flex h-10 items-center justify-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition group-hover:bg-primary/90">
+                                    Start membership
+                                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                </span>
+                            </div>
+                        </article>
+                    </BookChoiceLink>
+
+                    <BookChoiceLink
+                        href="/visit"
+                        choice="single_visit"
+                        label="single_visit"
+                        className="group block h-full rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+                        aria-label="Request a single visit"
+                    >
+                        <article className="flex h-full flex-col rounded-lg border border-border bg-card p-6 shadow-sm transition group-hover:-translate-y-0.5 group-hover:shadow-md">
+                            <div className="flex items-start justify-between gap-4">
+                                <div>
+                                    <span className="inline-flex rounded-full border border-border bg-background px-3 py-1 text-xs font-semibold text-muted-foreground">
+                                        Secondary path
+                                    </span>
+                                    <h2 className="mt-4 text-2xl font-semibold tracking-tight">Single visit</h2>
+                                </div>
+                                <MessageSquareText className="h-7 w-7 text-emerald-700" aria-hidden="true" />
+                            </div>
+
+                            <p className="mt-4 text-lg font-semibold text-foreground">${SINGLE_VISIT_DOLLARS}/visit request</p>
+                            <p className="mt-3 text-sm text-muted-foreground">
+                                Use this path for one non-emergency issue when you are not ready for ongoing membership.
                             </p>
-                            <p className="text-sm text-muted-foreground">
-                                Look for a confirmation email shortly. If you have questions, reply to the email or contact us at hello@presenthealthmd.com.
-                            </p>
-                        </CardContent>
-                    </Card>
-                ) : (
-                    <form onSubmit={handleSubmit}>
-                        {step === "insurance" && (
-                            <Card className="border-border/70">
-                                <CardHeader>
-                                    <CardTitle>Do you have insurance?</CardTitle>
-                                    <CardDescription>
-                                        Membership is a flat $99/month — we never bill insurance. We only ask so we can route your labs and prescriptions to the lowest-cost option.
-                                    </CardDescription>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="grid gap-3">
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, hasInsurance: true })}
-                                            className={`p-4 border-2 rounded-lg text-left transition-all ${
-                                                formData.hasInsurance === true
-                                                    ? "border-primary bg-primary/5"
-                                                    : "border-border hover:border-muted-foreground/50"
-                                            }`}
-                                        >
-                                            <div className="font-semibold">Yes, I have insurance</div>
-                                            <div className="text-sm text-muted-foreground">Helps us route labs and pharmacy efficiently</div>
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={() => setFormData({ ...formData, hasInsurance: false })}
-                                            className={`p-4 border-2 rounded-lg text-left transition-all ${
-                                                formData.hasInsurance === false
-                                                    ? "border-primary bg-primary/5"
-                                                    : "border-border hover:border-muted-foreground/50"
-                                            }`}
-                                        >
-                                            <div className="font-semibold">No insurance</div>
-                                            <div className="text-sm text-muted-foreground">No problem — membership covers your care</div>
-                                        </button>
-                                    </div>
 
-                                    {formData.hasInsurance === true && (
-                                        <div className="space-y-3 pt-4 border-t">
-                                            <div>
-                                                <label className="block text-sm font-medium mb-1">Insurance Plan Name</label>
-                                                <input
-                                                    type="text"
-                                                    value={formData.planName}
-                                                    onChange={(e) => setFormData({ ...formData, planName: e.target.value })}
-                                                    placeholder="e.g., Blue Cross Blue Shield"
-                                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                                />
-                                            </div>
-                                            <div>
-                                                <label className="block text-sm font-medium mb-1">Member ID</label>
-                                                <input
-                                                    type="text"
-                                                    value={formData.memberId}
-                                                    onChange={(e) => setFormData({ ...formData, memberId: e.target.value })}
-                                                    placeholder="Your member ID"
-                                                    className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                                />
-                                            </div>
-                                        </div>
-                                    )}
+                            <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
+                                {SINGLE_VISIT_POINTS.map((item) => (
+                                    <li key={item} className="flex gap-2">
+                                        <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-700" aria-hidden="true" />
+                                        <span>{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
 
-                                    <Button type="submit" size="lg" className="w-full" disabled={formData.hasInsurance === null}>
-                                        Continue
-                                    </Button>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {step === "info" && (
-                            <Card className="border-border/70">
-                                <CardHeader>
-                                    <CardTitle>Your Information</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">First Name</label>
-                                            <input
-                                                type="text"
-                                                value={formData.firstName}
-                                                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                                                placeholder="First name"
-                                                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Last Name</label>
-                                            <input
-                                                type="text"
-                                                value={formData.lastName}
-                                                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                                                placeholder="Last name"
-                                                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">Date of Birth</label>
-                                        <input
-                                            type="date"
-                                            value={formData.dob}
-                                            onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                                            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                        />
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium mb-1">State</label>
-                                        <select
-                                            value={formData.state}
-                                            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
-                                            className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                        >
-                                            <option value="">Select a state</option>
-                                            {states.map((st) => (
-                                                <option key={st} value={st}>
-                                                    {st}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Phone</label>
-                                            <input
-                                                type="tel"
-                                                value={formData.phone}
-                                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                                placeholder="(555) 000-0000"
-                                                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium mb-1">Email</label>
-                                            <input
-                                                type="email"
-                                                value={formData.email}
-                                                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                                placeholder="you@example.com"
-                                                className="w-full px-3 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="flex gap-3 pt-4">
-                                        <Button type="button" variant="outline" size="lg" className="flex-1" onClick={() => setStep("insurance")}>
-                                            Back
-                                        </Button>
-                                        <Button
-                                            type="submit"
-                                            size="lg"
-                                            className="flex-1"
-                                            disabled={!formData.firstName || !formData.lastName || !formData.dob || !formData.state || !formData.phone || !formData.email}
-                                        >
-                                            Continue
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-
-                        {step === "reason" && (
-                            <Card className="border-border/70">
-                                <CardHeader>
-                                    <CardTitle>What's the reason for your visit?</CardTitle>
-                                </CardHeader>
-                                <CardContent className="space-y-4">
-                                    <div className="grid gap-2">
-                                        {visitReasons.map((reason) => (
-                                            <button
-                                                key={reason}
-                                                type="button"
-                                                onClick={() => setFormData({ ...formData, visitReason: reason })}
-                                                className={`p-3 border-2 rounded-lg text-left transition-all ${
-                                                    formData.visitReason === reason
-                                                        ? "border-primary bg-primary/5"
-                                                        : "border-border hover:border-muted-foreground/50"
-                                                }`}
-                                            >
-                                                {reason}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    <div className="flex gap-3 pt-4">
-                                        <Button type="button" variant="outline" size="lg" className="flex-1" onClick={() => setStep("info")}>
-                                            Back
-                                        </Button>
-                                        <Button type="submit" size="lg" className="flex-1" disabled={!formData.visitReason}>
-                                            Continue
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        )}
-                    </form>
-                )}
+                            <div className="mt-auto pt-6">
+                                <span className="inline-flex h-10 items-center justify-center gap-2 rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground transition group-hover:bg-muted">
+                                    Request a single visit
+                                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                                </span>
+                            </div>
+                        </article>
+                    </BookChoiceLink>
+                </section>
             </div>
         </div>
     );
