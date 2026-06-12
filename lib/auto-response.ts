@@ -1335,11 +1335,16 @@ export async function processDueAutoResponses(limit = 25) {
         results.push({ id: row.id, ok: Boolean(result.ok), reason: "reason" in result ? result.reason : undefined });
     }
 
+    const nurtureSequences = await processDueFoundingMemberNurtureSequences(safeLimit);
+    const logSent = results.filter((x) => x.ok).length;
+    const logFailed = results.filter((x) => !x.ok).length;
+
     return {
-        attempted: due.length,
-        sent: results.filter((x) => x.ok).length,
-        failed: results.filter((x) => !x.ok).length,
+        attempted: due.length + nurtureSequences.attempted,
+        sent: logSent + nurtureSequences.sent,
+        failed: logFailed + nurtureSequences.failed,
         results,
+        nurtureSequences,
     };
 }
 
