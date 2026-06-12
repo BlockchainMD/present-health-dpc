@@ -75,7 +75,7 @@ const CLUSTER_META: Record<string, { label: string; description: string; longDes
   },
 };
 
-type ClusterParams = { cluster: string } | Promise<{ cluster: string }>;
+type ClusterParams = Promise<{ cluster: string }>;
 
 export async function generateMetadata({ params }: { params: ClusterParams }): Promise<Metadata> {
   const { cluster } = await params;
