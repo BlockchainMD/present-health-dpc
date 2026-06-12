@@ -165,7 +165,7 @@ export default async function LandingPage({ params, searchParams }: PageProps) {
         content.pricing = defaultPricing;
     }
 
-    const joinUrl = `/join?runId=${runId}${gclid ? `&gclid=${gclid}` : ''}`;
+    const joinUrl = `/join?runId=${runId}${gclidValue ? `&gclid=${encodeURIComponent(gclidValue)}` : ''}`;
 
     return (
         <div className="min-h-screen bg-background flex flex-col">
