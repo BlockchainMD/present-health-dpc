@@ -5,7 +5,7 @@ import { StateEditor } from "@/components/admin/StateEditor";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type Params = { id: string } | Promise<{ id: string }>;
+type Params = Promise<{ id: string }>;
 
 async function getState(id: string) {
     try {
@@ -40,4 +40,3 @@ export default async function EditStatePage({ params }: { params: Params }) {
         />
     );
 }
-
