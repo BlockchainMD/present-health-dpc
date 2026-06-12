@@ -1699,12 +1699,86 @@ export async function listAutoResponseLogs(params?: {
             openedAt: true,
             clickedAt: true,
             isFollowUp: true,
+            nurtureStep: true,
             createdAt: true,
             updatedAt: true,
         },
     });
 
     return logs;
+}
+
+export async function getFoundingMemberNurtureStats() {
+    const [active, completed, stopped] = await Promise.all([
+        prisma.autoResponseNurtureSequence.count({ where: { status: AutoResponseSequenceStatusEnum.ACTIVE } }),
+        prisma.autoResponseNurtureSequence.count({ where: { status: AutoResponseSequenceStatusEnum.COMPLETED } }),
+        prisma.autoResponseNurtureSequence.count({ where: { status: AutoResponseSequenceStatusEnum.STOPPED } }),
+    ]);
+
+    const stepCounts = await Promise.all(
+        FOUNDING_MEMBER_NURTURE_STEPS.map(async (step) => {
+            const [activeAtStep, pending, sent, failed, skipped, unsubscribed] = await Promise.all([
+                prisma.autoResponseNurtureSequence.count({
+                    where: {
+                        status: AutoResponseSequenceStatusEnum.ACTIVE,
+                        step: step.step,
+                    },
+                }),
+                prisma.autoResponseEmailLog.count({
+                    where: {
+                        nurtureStep: step.step,
+                        status: AutoResponseStatusEnum.PENDING,
+                    },
+                }),
+                prisma.autoResponseEmailLog.count({
+                    where: {
+                        nurtureStep: step.step,
+                        status: AutoResponseStatusEnum.SENT,
+                    },
+                }),
+                prisma.autoResponseEmailLog.count({
+                    where: {
+                        nurtureStep: step.step,
+                        status: AutoResponseStatusEnum.FAILED,
+                    },
+                }),
+                prisma.autoResponseEmailLog.count({
+                    where: {
+                        nurtureStep: step.step,
+                        status: AutoResponseStatusEnum.SKIPPED,
+                    },
+                }),
+                prisma.autoResponseEmailLog.count({
+                    where: {
+                        nurtureStep: step.step,
+                        status: AutoResponseStatusEnum.UNSUBSCRIBED,
+                    },
+                }),
+            ]);
+
+            return {
+                step: step.step,
+                delayDays: step.delayDays,
+                subject: step.subject,
+                activeAtStep,
+                pending,
+                sent,
+                failed,
+                skipped,
+                unsubscribed,
+            };
+        })
+    );
+
+    return {
+        name: FOUNDING_MEMBER_NURTURE_SEQUENCE_NAME,
+        statusCounts: {
+            active,
+            completed,
+            stopped,
+        },
+        stepCounts,
+    };
 }
 
 export function parseUnsubscribeToken(token: string) {
@@ -1739,6 +1813,8 @@ export async function unsubscribeFromToken(token: string) {
             createdAt: new Date(),
         },
     });
+
+    await stopFoundingMemberNurtureSequenceForEmail(email, "unsubscribed");
 
     await prisma.autoResponseEmailLog.updateMany({
         where: {
