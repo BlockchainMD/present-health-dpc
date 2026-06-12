@@ -1,0 +1,68 @@
+{
+  "name": "message-test-001-exp001-prescreen",
+  "question": "How likely would you be to actually sign up and pay for this? Answer honestly as yourself, including any hesitations.",
+  "concepts": [
+    {
+      "id": "A-artifact-99",
+      "headline": "Know your heart risk. Then actually lower it.",
+      "pitch": "A board-certified physician tracks your ApoB, blood pressure, and coronary calcium score — and works with you to bring them down. Video visits and direct messaging. No insurance needed.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "B-family-99",
+      "headline": "Heart disease runs in your family. It doesn't have to run in you.",
+      "pitch": "If a parent or sibling had a heart attack, your risk is real — and manageable. A board-certified physician baselines your numbers and manages them down with you, by video and text.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "C-antiinsurance-99",
+      "headline": "Serious heart prevention. No insurance games.",
+      "pitch": "No copays, no claims, no 15-minute rushed visits. One flat price for a physician who actually tracks your heart numbers and answers your messages.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "D-glp1-aftercare-99",
+      "headline": "Your weight-loss program ended. Your health gains don't have to.",
+      "pitch": "Research shows blood pressure and cholesterol improvements fade within 1-2 years of stopping. A board-certified physician tracks your numbers and protects the progress you paid for.",
+      "priceLine": "$99/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "E-artifact-79",
+      "headline": "Know your heart risk. Then actually lower it.",
+      "pitch": "A board-certified physician tracks your ApoB, blood pressure, and coronary calcium score — and works with you to bring them down. Video visits and direct messaging. No insurance needed.",
+      "priceLine": "$79/month, cancel anytime, HSA-eligible"
+    },
+    {
+      "id": "F-artifact-129",
+      "headline": "Know your heart risk. Then actually lower it.",
+      "pitch": "A board-certified physician tracks your ApoB, blood pressure, and coronary calcium score — and works with you to bring them down. Video visits and direct messaging. No insurance needed.",
+      "priceLine": "$129/month, cancel anytime, HSA-eligible"
+    }
+  ],
+  "personas": [
+    {
+      "id": "scan-shock-m52",
+      "description": "52-year-old male engineering manager in Troy, Michigan. Household income $145k, employer PPO insurance with high deductible. Just got a coronary calcium score of 280 from a $75 hospital screening promotion; his PCP said 'we'll keep an eye on it' and offered a statin with no follow-up plan. Analytical, reads studies, frustrated by 12-minute appointments. Has an HSA with $9k in it."
+    },
+    {
+      "id": "family-history-f44",
+      "description": "44-year-old female elementary school teacher in Grand Rapids, Michigan. Household income $98k, decent insurance through the district. Her father died of a heart attack at 58 and her older brother just got a stent at 49. She is scared but busy, skeptical of anything that feels like a wellness fad, and watches spending carefully."
+    },
+    {
+      "id": "glp1-orphan-f38",
+      "description": "38-year-old female HR coordinator in Warren, Michigan. Income $72k. Lost 48 pounds on compounded semaglutide from a telehealth company that just sent her a transition notice; branded versions cost $349/month which she cannot afford. Worried about regaining weight and her blood pressure creeping back up. Already used to paying ~$200/month for the old program."
+    },
+    {
+      "id": "uninsured-contractor-m41",
+      "description": "41-year-old male self-employed flooring contractor in Lansing, Michigan. Income varies $60-90k, no health insurance, hasn't seen a doctor in 6 years. Smokes occasionally, knows his blood pressure was high at a pharmacy machine. Price-sensitive, distrusts the medical system, but his wife is pushing him to get checked."
+    },
+    {
+      "id": "optimizer-m35",
+      "description": "35-year-old male software developer in Ann Arbor, Michigan. Income $165k, excellent insurance, listens to longevity podcasts, already pays $365/year for a Function Health membership and wears a Whoop. Wants ApoB optimization and someone qualified to interpret his data; allergic to anything that feels dumbed-down."
+    },
+    {
+      "id": "budget-skeptic-f58",
+      "description": "58-year-old female retail worker in Flint, Michigan. Household income $52k, insured through Marketplace bronze plan with $7k deductible. On lisinopril from an urgent care visit, no regular doctor. $99/month feels like a lot; she'd need to be convinced it replaces costs she's already paying."
+    }
+  ]
+}
