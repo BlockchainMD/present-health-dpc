@@ -1155,6 +1155,168 @@ export async function processAutoResponseLog(logId: string) {
     };
 }
 
+async function advanceFoundingMemberNurtureSequenceAfterSend(
+    sequence: AutoResponseNurtureSequence,
+    sentStep: number,
+    logId: string,
+    sentAt: Date
+) {
+    const transition = getFoundingMemberNurtureTransition({
+        currentStep: sentStep,
+        startedAt: sequence.createdAt,
+        sentAt,
+    });
+
+    if (transition.status === AutoResponseSequenceStatusEnum.COMPLETED) {
+        await prisma.autoResponseNurtureSequence.updateMany({
+            where: {
+                id: sequence.id,
+                status: AutoResponseSequenceStatusEnum.ACTIVE,
+                step: sentStep,
+            },
+            data: {
+                status: AutoResponseSequenceStatusEnum.COMPLETED,
+                step: transition.step,
+                scheduledAt: null,
+                completedAt: sentAt,
+                lastEmailLogId: logId,
+            },
+        });
+        return;
+    }
+
+    if (transition.status === AutoResponseSequenceStatusEnum.STOPPED) {
+        await prisma.autoResponseNurtureSequence.updateMany({
+            where: {
+                id: sequence.id,
+                status: AutoResponseSequenceStatusEnum.ACTIVE,
+                step: sentStep,
+            },
+            data: {
+                status: AutoResponseSequenceStatusEnum.STOPPED,
+                scheduledAt: null,
+                stoppedAt: sentAt,
+                stopReason: "invalid_step",
+                lastEmailLogId: logId,
+            },
+        });
+        return;
+    }
+
+    await prisma.autoResponseNurtureSequence.updateMany({
+        where: {
+            id: sequence.id,
+            status: AutoResponseSequenceStatusEnum.ACTIVE,
+            step: sentStep,
+        },
+        data: {
+            status: AutoResponseSequenceStatusEnum.ACTIVE,
+            step: transition.step,
+            scheduledAt: transition.scheduledAt,
+            lastEmailLogId: logId,
+        },
+    });
+}
+
+async function getOrCreateNurtureStepLog(sequence: AutoResponseNurtureSequence) {
+    const existing = await prisma.autoResponseEmailLog.findUnique({
+        where: {
+            nurtureSequenceId_nurtureStep: {
+                nurtureSequenceId: sequence.id,
+                nurtureStep: sequence.step,
+            },
+        },
+    });
+
+    if (existing) return existing;
+
+    return prisma.autoResponseEmailLog.create({
+        data: {
+            source: sequence.source,
+            status: AutoResponseStatusEnum.PENDING,
+            leadRefType: sequence.leadRefType,
+            leadRefId: sequence.leadRefId,
+            recipientEmail: sequence.email,
+            recipientFirstName: sequence.recipientFirstName,
+            templateData: nurtureSequenceTemplateData(sequence) as Prisma.InputJsonValue,
+            scheduledFor: sequence.scheduledAt || new Date(),
+            isFollowUp: sequence.step > 1,
+            nurtureSequenceId: sequence.id,
+            nurtureStep: sequence.step,
+        },
+    });
+}
+
+export async function processFoundingMemberNurtureSequence(sequenceId: string) {
+    const sequence = await prisma.autoResponseNurtureSequence.findUnique({ where: { id: sequenceId } });
+    if (!sequence) return { ok: false as const, reason: "Sequence not found" };
+    if (sequence.status !== AutoResponseSequenceStatusEnum.ACTIVE) {
+        return { ok: false as const, reason: "Sequence not active" };
+    }
+
+    if (sequence.scheduledAt && sequence.scheduledAt.getTime() > Date.now()) {
+        return { ok: false as const, reason: "Sequence not due yet" };
+    }
+
+    if (await hasActiveMembership(sequence.email)) {
+        await stopFoundingMemberNurtureSequenceForEmail(sequence.email, "registered_member");
+        return { ok: false as const, reason: "Recipient is already a member" };
+    }
+
+    if (await isUnsubscribed(sequence.email, sequence.source)) {
+        await stopFoundingMemberNurtureSequenceForEmail(sequence.email, "unsubscribed");
+        return { ok: false as const, reason: "Recipient unsubscribed" };
+    }
+
+    const step = getFoundingMemberNurtureStep(sequence.step);
+    if (!step) {
+        await stopFoundingMemberNurtureSequenceForEmail(sequence.email, "invalid_step");
+        return { ok: false as const, reason: "Unknown nurture sequence step" };
+    }
+
+    const log = await getOrCreateNurtureStepLog(sequence);
+    if (log.status === AutoResponseStatusEnum.SENT) {
+        await advanceFoundingMemberNurtureSequenceAfterSend(sequence, sequence.step, log.id, log.sentAt || new Date());
+        return { ok: true as const, alreadySent: true as const, id: log.id };
+    }
+
+    if (log.status !== AutoResponseStatusEnum.PENDING) {
+        return { ok: false as const, reason: `Step already ${log.status.toLowerCase()}`, id: log.id };
+    }
+
+    const result = await processAutoResponseLog(log.id);
+    return {
+        ...result,
+        id: log.id,
+    };
+}
+
+export async function processDueFoundingMemberNurtureSequences(limit = 25) {
+    const safeLimit = clamp(limit, 25, 1, 200);
+    const due = await prisma.autoResponseNurtureSequence.findMany({
+        where: {
+            status: AutoResponseSequenceStatusEnum.ACTIVE,
+            OR: [{ scheduledAt: null }, { scheduledAt: { lte: new Date() } }],
+        },
+        orderBy: [{ scheduledAt: "asc" }, { createdAt: "asc" }],
+        take: safeLimit,
+        select: { id: true },
+    });
+
+    const results: Array<{ id: string; ok: boolean; reason?: string }> = [];
+    for (const row of due) {
+        const result = await processFoundingMemberNurtureSequence(row.id);
+        results.push({ id: row.id, ok: Boolean(result.ok), reason: "reason" in result ? result.reason : undefined });
+    }
+
+    return {
+        attempted: due.length,
+        sent: results.filter((x) => x.ok).length,
+        failed: results.filter((x) => !x.ok).length,
+        results,
+    };
+}
+
 export async function processDueAutoResponses(limit = 25) {
     const safeLimit = clamp(limit, 25, 1, 200);
     const due = await prisma.autoResponseEmailLog.findMany({
