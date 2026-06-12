@@ -50,8 +50,29 @@ type LogItem = {
     openedAt: string | null;
     clickedAt: string | null;
     isFollowUp: boolean;
+    nurtureStep: number | null;
     createdAt: string;
     updatedAt: string;
+};
+
+type NurtureStats = {
+    name: string;
+    statusCounts: {
+        active: number;
+        completed: number;
+        stopped: number;
+    };
+    stepCounts: Array<{
+        step: number;
+        delayDays: number;
+        subject: string;
+        activeAtStep: number;
+        pending: number;
+        sent: number;
+        failed: number;
+        skipped: number;
+        unsubscribed: number;
+    }>;
 };
 
 const SOURCE_OPTIONS: Array<{ value: Source; label: string; description: string }> = [
@@ -123,6 +144,7 @@ function formatDate(value: string | null | undefined) {
 export function AutoResponseManager() {
     const [templates, setTemplates] = useState<TemplateConfig[]>([]);
     const [logs, setLogs] = useState<LogItem[]>([]);
+    const [nurtureStats, setNurtureStats] = useState<NurtureStats | null>(null);
     const [loading, setLoading] = useState(true);
     const [logLoading, setLogLoading] = useState(false);
     const [saving, setSaving] = useState(false);
@@ -161,6 +183,7 @@ export function AutoResponseManager() {
             throw new Error(data?.error || "Failed to load auto-response templates");
         }
         setTemplates(data.templates as TemplateConfig[]);
+        setNurtureStats(data.nurtureSequence && typeof data.nurtureSequence === "object" ? data.nurtureSequence as NurtureStats : null);
     }
 
     async function loadLogs() {
@@ -395,6 +418,66 @@ export function AutoResponseManager() {
                 </CardContent>
             </Card>
 
+            {nurtureStats ? (
+                <Card className="border-border/60">
+                    <CardHeader>
+                        <CardTitle>{nurtureStats.name}</CardTitle>
+                        <CardDescription>
+                            Three-step founding-member sequence queued from waitlist, campaign, and chatbot leads.
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div className="grid gap-3 sm:grid-cols-3">
+                            <div className="rounded-md border border-border bg-muted/10 p-3">
+                                <div className="text-xs text-muted-foreground">Active</div>
+                                <div className="text-2xl font-semibold">{nurtureStats.statusCounts.active}</div>
+                            </div>
+                            <div className="rounded-md border border-border bg-muted/10 p-3">
+                                <div className="text-xs text-muted-foreground">Completed</div>
+                                <div className="text-2xl font-semibold">{nurtureStats.statusCounts.completed}</div>
+                            </div>
+                            <div className="rounded-md border border-border bg-muted/10 p-3">
+                                <div className="text-xs text-muted-foreground">Stopped</div>
+                                <div className="text-2xl font-semibold">{nurtureStats.statusCounts.stopped}</div>
+                            </div>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                                <thead>
+                                    <tr className="border-b border-border text-left text-muted-foreground">
+                                        <th className="py-2 pr-4 font-medium">Step</th>
+                                        <th className="py-2 pr-4 font-medium">Subject</th>
+                                        <th className="py-2 pr-4 font-medium">Active</th>
+                                        <th className="py-2 pr-4 font-medium">Pending</th>
+                                        <th className="py-2 pr-4 font-medium">Sent</th>
+                                        <th className="py-2 pr-4 font-medium">Skipped/Stopped</th>
+                                        <th className="py-2 pr-4 font-medium">Failed</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {nurtureStats.stepCounts.map((step) => (
+                                        <tr key={step.step} className="border-b border-border/60 align-top">
+                                            <td className="py-3 pr-4 whitespace-nowrap">
+                                                <div className="font-medium">Email {step.step}</div>
+                                                <div className="text-xs text-muted-foreground">
+                                                    {step.delayDays === 0 ? "Immediate" : `Day ${step.delayDays}`}
+                                                </div>
+                                            </td>
+                                            <td className="py-3 pr-4 max-w-[360px]">{step.subject}</td>
+                                            <td className="py-3 pr-4">{step.activeAtStep}</td>
+                                            <td className="py-3 pr-4">{step.pending}</td>
+                                            <td className="py-3 pr-4">{step.sent}</td>
+                                            <td className="py-3 pr-4">{step.skipped + step.unsubscribed}</td>
+                                            <td className="py-3 pr-4">{step.failed}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </CardContent>
+                </Card>
+            ) : null}
+
             <div className="grid gap-6">
                 {SOURCE_OPTIONS.map((option) => {
                     const template = templatesBySource.get(option.value);
@@ -617,7 +700,11 @@ export function AutoResponseManager() {
                                                 <td className="py-3 pr-4 whitespace-nowrap">{formatDate(log.createdAt)}</td>
                                                 <td className="py-3 pr-4">
                                                     <div className="font-medium">{label}</div>
-                                                    {log.isFollowUp ? (
+                                                    {log.nurtureStep ? (
+                                                        <div className="text-[11px] text-muted-foreground">
+                                                            Nurture step {log.nurtureStep}
+                                                        </div>
+                                                    ) : log.isFollowUp ? (
                                                         <div className="text-[11px] text-muted-foreground">Follow-up</div>
                                                     ) : null}
                                                 </td>
