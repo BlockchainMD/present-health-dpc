@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { UnifiedLeadMembershipTier } from "@prisma/client";
 import { getOrCreateAttributionSession } from "@/lib/attribution";
 import { recordConversionEvent } from "@/lib/conversion";
+import { stopFoundingMemberNurtureSequenceForEmail } from "@/lib/auto-response";
 import { normalizeBillingCadence, normalizeCoverageType } from "@/lib/pricing";
 import { resolveServedState } from "@/lib/state-availability";
 import { upsertUnifiedLeadFromCampaignLead, upsertUnifiedLeadFromWebsiteRegistration } from "@/lib/unified-leads";
@@ -164,6 +165,8 @@ export async function POST(req: Request) {
             },
         });
         console.log("User created:", user.id);
+
+        await stopFoundingMemberNurtureSequenceForEmail(email, "registered_member");
 
         const unifiedLeadId = "leadId" in unifiedLeadResult ? unifiedLeadResult.leadId : null;
 
