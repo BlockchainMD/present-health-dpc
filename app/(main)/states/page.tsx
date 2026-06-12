@@ -13,7 +13,7 @@ import { buildStatesHubSchemas } from "@/lib/schema";
 
 export const metadata: Metadata = {
     title: "States We Serve | Present Health",
-    description: "Present Health is currently accepting patients in Michigan, with plans to expand to additional states. Virtual primary care with insurance accepted.",
+    description: "Present Health is currently accepting patients in Michigan, with plans to expand to additional states. Virtual primary care with flat-fee membership pricing.",
     alternates: {
         canonical: absoluteUrl("/states"),
     },
@@ -73,7 +73,7 @@ export default async function StatesHubPage({ searchParams }: { searchParams: Se
                                         {state.name}
                                     </CardTitle>
                                     <p className="mt-1 text-sm text-muted-foreground">
-                                        Virtual primary care — insurance accepted.
+                                        Virtual primary care with flat-fee membership pricing.
                                     </p>
                                 </div>
                                 <div className="shrink-0 rounded-xl border border-border bg-muted/30 px-3 py-2 text-sm font-semibold tracking-wide">
