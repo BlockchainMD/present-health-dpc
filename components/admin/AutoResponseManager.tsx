@@ -289,7 +289,7 @@ export function AutoResponseManager() {
                 type: "success",
                 message: `Queue processed: ${data?.result?.sent ?? 0} sent, ${data?.result?.failed ?? 0} failed.`,
             });
-            await loadLogs();
+            await Promise.all([loadLogs(), loadTemplates()]);
         } catch (error) {
             setStatus({ type: "error", message: messageFromError(error, "Failed to process queue") });
         } finally {
