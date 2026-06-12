@@ -27,3 +27,4 @@
 - Autosync can keep watching the retired DPC folder after a strategy shift -> reinstall `com.presenthealth.autosync` with `--repo /Users/jonathanrouwhorst/presenthealthmd --branch master`.
 - Repointing autosync can commit local Codex config -> ignore `/.codex/` and untrack any `.codex` files before leaving autosync running.
 - Strategy memos can over-scope launches while COI and founder capacity are unresolved -> make written COI, Michigan-only scope, real EHR, malpractice, and no-PHI marketing-site boundaries the launch gates before patient operations.
+- Next 16 build can fail after tests pass on stale route props -> type App Router `params` and `searchParams` as promises in pages and route handlers.
