@@ -1,0 +1,1206 @@
+{
+  "summary": [
+    {
+      "concept": "H1-runs-in-family",
+      "n": 18,
+      "meanPI": 3.454,
+      "top2box": 42.7
+    },
+    {
+      "concept": "H2-fathers-future",
+      "n": 18,
+      "meanPI": 3.413,
+      "top2box": 43.6
+    },
+    {
+      "concept": "H3-different-story",
+      "n": 18,
+      "meanPI": 3.404,
+      "top2box": 40.8
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "n": 18,
+      "meanPI": 3.396,
+      "top2box": 43.4
+    },
+    {
+      "concept": "H5-your-kids",
+      "n": 18,
+      "meanPI": 3.386,
+      "top2box": 42.2
+    }
+  ],
+  "rows": [
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d be pretty likely to sign up, like a 7–8/10, because I’m anxious about my blood pressure creeping back up and I don’t want to regain after coming off compounded semaglutide. $99/month feels reasonable compared to the $349 branded meds and even what I was paying before, and I like the idea of tracking ApoB and having direct messaging. My hesitation is whether the coronary calcium score is actually included or if that’s an extra out-of-pocket test, and I’d want to know if they’ll also help with weight maintenance (not just labs) since that’s my biggest fear right now.",
+      "dist": [
+        0.015326256113167933,
+        0.05371894729924042,
+        0.29769356831182076,
+        0.4252737211833773,
+        0.20798750709239366
+      ],
+      "mean": 3.7568772758425886
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "family-history-f44",
+      "text": "I’d say I’m moderately likely—maybe a 6 or 7 out of 10—because the family history piece hits really close to home and I like that it’s a real physician, not a wellness influencer. My hesitation is the $99/month on top of what I already pay for insurance through the district, and I’d want to know what the coronary calcium scan costs and whether I’d end up paying extra for labs/meds. Also, “manages them down” sounds good, but I’d need to be sure it’s practical for someone busy and that they’re not just selling supplements or generic advice I could get from my primary care doctor.",
+      "dist": [
+        0.022690309525138147,
+        0.08518829240890498,
+        0.5342646851523287,
+        0.23029300160899793,
+        0.12756371130463012
+      ],
+      "mean": 3.354851512759077
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "family-history-f44",
+      "text": "I’d be moderately likely, like a 6 or 7 out of 10, because the family history part hits close to home and I don’t want to end up like my dad or brother. My hesitation is the “no insurance needed” piece—$99/month adds up fast on a teacher budget, and I’d want to know what’s included (especially the coronary calcium scan cost) and whether they’d coordinate with my regular doctor. I’m also a little wary of anything that feels like a wellness program in disguise, but if it’s truly physician-led with clear lab/scan pricing and real follow-up, I’d seriously consider it.",
+      "dist": [
+        0.024204004038277056,
+        0.08042353619570912,
+        0.38158036987893945,
+        0.3318234039098737,
+        0.18196868597720073
+      ],
+      "mean": 3.5669292315920123
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "family-history-f44",
+      "text": "I’d be somewhat likely, maybe a 6 or 7 out of 10, just because heart stuff really freaks me out with my dad and my brother, and I like that it’s a real physician and not some wellness program. The $99/month adds up, though, and I’d want to know what’s actually included (labs, the coronary calcium scan, meds, follow-ups) and whether they’ll coordinate with my primary care so I’m not paying twice through my district insurance. I also worry about getting pushed into a bunch of extra tests or supplements, and I’d need it to be genuinely convenient since I’m busy during the school year.",
+      "dist": [
+        0.03316793634624429,
+        0.11146658665691446,
+        0.4155107627216159,
+        0.2569048993176823,
+        0.18294981495754306
+      ],
+      "mean": 3.4450020698833654
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "scan-shock-m52",
+      "text": "I’d say moderately likely—maybe a 6 or 7 out of 10—because with a calcium score of 280 I’m not thrilled with “we’ll keep an eye on it,” and I’d pay to get a real plan and tighter follow-up than my 12‑minute PCP visits. $99/month is in the “annoying but doable” range, and I have HSA money, but I’d hesitate until I knew exactly what “manages them down” means (meds? statin/ezetimibe/PCSK9? BP targets?) and whether labs/imaging are extra. I’d also want to know the physician’s credentials, response times on messaging, and how they coordinate with local testing in Michigan—otherwise it risks feeling like a subscription for advice I can already get, just faster.",
+      "dist": [
+        0.019154424836016544,
+        0.07322227619331549,
+        0.41973392847662705,
+        0.29809425339878726,
+        0.1897951170952537
+      ],
+      "mean": 3.566153361723946
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "scan-shock-m52",
+      "text": "I’d say I’m moderately likely—maybe a 6–7 out of 10—because my calcium score is 280 and “we’ll keep an eye on it” doesn’t feel like a plan. I like the idea of actually tracking ApoB and blood pressure with someone who’ll adjust meds and follow up without me begging for another 12‑minute appointment, and $99/month is reasonable if it’s truly hands-on and HSA-eligible. My hesitation is whether it’s real medical management (statins, BP meds, labs ordered, action thresholds) versus generic coaching, and whether they’ll coordinate with my local PCP and handle prescriptions and imaging orders in Michigan. I’d also want to know what’s included—how often labs, how quickly messaging replies, and if the $99 is on top of lab costs or if they’re bundled.",
+      "dist": [
+        0.010099305433006292,
+        0.05596425654009067,
+        0.48270340186099936,
+        0.24334015751525923,
+        0.20789287865064437
+      ],
+      "mean": 3.582963047410444
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "scan-shock-m52",
+      "text": "I’d say I’m moderately likely—maybe a 6 or 7 out of 10—because my calcium score is 280 and “we’ll keep an eye on it” isn’t a plan, and I’m tired of 12-minute visits. The $99/month and HSA-eligible part helps a lot, and I like the idea of tracking ApoB and having direct messaging instead of waiting weeks. My hesitation is whether this is real medical management (meds, targets, follow-up intervals, coordination with labs/imaging) or just coaching with nice dashboards, and I’d want to know who the physician is and what the protocol is if my numbers don’t improve. Also, I’d want clarity on whether labs/imaging are included or out-of-pocket on top, because with a high deductible that can add up fast.",
+      "dist": [
+        0.007426214982207758,
+        0.05201919150779556,
+        0.6084164551839987,
+        0.22986429501686204,
+        0.10227384330913605
+      ],
+      "mean": 3.3675403601629235
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say moderately likely—maybe a 6 or 7 out of 10—because $99/month is way more doable than the $349 I’m staring at now, and I’m genuinely worried my blood pressure is creeping back up if I regain. I like that it’s focused on actual numbers (ApoB, BP, calcium score) and that it’s physician-led with messaging, since I don’t have time to chase appointments. My hesitation is whether that price really includes the labs/scans or if I’m going to get hit with extra costs for the calcium score, and also whether they’d help me with weight management meds or it’s more “education” than actual treatment. If it felt like real ongoing management and not a bait-and-switch on testing costs, I’d probably try it.",
+      "dist": [
+        0.030398723032711277,
+        0.07647783245344703,
+        0.4546478271085549,
+        0.28474116175588704,
+        0.1537344556493998
+      ],
+      "mean": 3.4549347945358173
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’m kind of on the fence—like a 5 or 6 out of 10. The “no insurance needed” and cancel-anytime part helps, and I know my blood pressure’s been running high, so it hits close to home. But $99/month is real money when work is slow, and I’m skeptical it won’t turn into “you need more tests/meds” and a bunch of extra costs. If my wife stayed on me and they were upfront about total costs (especially that coronary calcium scan), I’d be more likely.",
+      "dist": [
+        0.029784279723481348,
+        0.07567091869302356,
+        0.6543991130567255,
+        0.15054243320863053,
+        0.08960325531813901
+      ],
+      "mean": 3.1945094657049227
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’m kind of on the fence, but I’d say maybe a 5 or 6 out of 10 likely. The idea of getting my blood pressure and that ApoB thing checked without dealing with insurance sounds good, and my wife’s been on me about it, but $99/month adds up fast when work’s slow. I also don’t love the “managed by video and messaging” part—I’d want to know what the coronary calcium scan actually costs on top of that and whether they’re just going to push meds right away.",
+      "dist": [
+        0.02471337963572292,
+        0.09443562134983119,
+        0.6067550090186346,
+        0.21022456596578443,
+        0.0638714240300269
+      ],
+      "mean": 3.1941050334045613
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "uninsured-contractor-m41",
+      "text": "Maybe a 6/10. I like the no-insurance, video/message thing since I’m busy and I know my blood pressure’s been high at those pharmacy machines, and my wife’s been on me to get checked. But $99 a month feels steep when work is up and down, and I’m a little skeptical it turns into “pay us forever” plus extra costs for the calcium scan and labs that aren’t really included. If they were very upfront about total costs and it’s not a bunch of upsells, I’d consider trying it for a couple months.",
+      "dist": [
+        0.05806422641940316,
+        0.12433870034650757,
+        0.520205389313051,
+        0.2257043706983419,
+        0.07168731322269643
+      ],
+      "mean": 3.128611843958421
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably a “maybe, but I’m hesitant” — like 4 out of 10 likely. $99/month is a lot on my budget, especially with a $7,000 deductible plan, and I’m already paying for meds like lisinopril when I have to go to urgent care. The coronary calcium scan and ApoB sound useful, but I’d need to know what the extra tests cost and whether this actually replaces me paying for urgent care visits and random bills, otherwise it feels like just another monthly expense.",
+      "dist": [
+        0.013589513353581325,
+        0.09976445598708765,
+        0.7210313349871357,
+        0.1296898088674819,
+        0.03592488680471352
+      ],
+      "mean": 3.074596099782659
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because the focus on ApoB + BP + CAC is exactly the kind of outcomes-oriented stuff I care about, and async messaging + video is convenient. My hesitation is whether “manages them down with you” is real (i.e., actually willing to prescribe/titrate statins/ezetimibe/PCSK9 as appropriate, and not just lifestyle platitudes), and whether the physician is genuinely lipidology-savvy versus generic telehealth. Also, $99/mo is fine, but I’d want to know what’s included in that (repeat labs cadence, CAC ordering, interpretation depth) and how it compares to what I already get from Function + my excellent insurance.",
+      "dist": [
+        0.020502479346172338,
+        0.08152538016567562,
+        0.3036757914506448,
+        0.3402255184889841,
+        0.25407083054852303
+      ],
+      "mean": 3.7258368407280096
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "optimizer-m35",
+      "text": "I’d say moderately likely — maybe a 6–7/10 — because ApoB + BP + CAC with actual physician management is exactly the kind of measurable, outcomes-tied stuff I care about. My hesitation is whether it’s truly rigorous (e.g., targets, meds when appropriate, lab cadence, side-effect monitoring) or just “lifestyle coaching” with a cardiology-ish veneer, and whether the physician is actually accessible by async messaging in a meaningful way. Also, at $99/mo I’d want to know what’s included vs add-ons (CAC cost, labs, statins/ezetimibe/PCSK9 prescriptions, referrals), since I already pay for Function and have excellent insurance, so the value has to be interpretation + ongoing optimization, not just ordering tests.",
+      "dist": [
+        0.02319532608460028,
+        0.08409662392144958,
+        0.34630172321060326,
+        0.34923974924103685,
+        0.19716657754231007
+      ],
+      "mean": 3.6130856282350066
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "optimizer-m35",
+      "text": "I’d say moderately likely—maybe a 6–7/10—because the focus on ApoB + BP + CAC and ongoing management is exactly what I care about, and $99/month is reasonable if the physician is legit and responsive. My hesitation is I already pay for Function Health and have good insurance, so I’d need clarity on what’s actually different here: do they prescribe statins/ezetimibe/PCSK9 when indicated, how aggressive are targets, and is the interpretation nuanced (Lp(a), particle metrics, secondary causes) versus generic “eat better”? I’d also want to know how CAC is handled (ordering, cost, frequency) and whether “direct messaging” means meaningful access or 48-hour canned replies. If it’s real medical management with competent lipidology-level thinking, I’d probably try it for a few months; if it’s coaching with a physician badge, I’d skip.",
+      "dist": [
+        0.02588048725040347,
+        0.07390412015120165,
+        0.37692248800289846,
+        0.3266407997829899,
+        0.19665210481250653
+      ],
+      "mean": 3.594279914755994
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably “maybe,” but I’m not signing up on the spot. $99 a month feels like a lot on my income, especially with a $7k deductible already hanging over me, and I’d need to see that it truly replaces other costs (labs, the coronary calcium scan, any meds) and not just adds another bill. I’m on lisinopril from urgent care and don’t really have a regular doctor, so the video/messages part is appealing, but I’d worry about hidden fees and whether I can actually get those tests done locally in Flint without it turning into hundreds extra. If it clearly included the tests or gave a real upfront estimate and could save me urgent-care visits, I’d be more likely.",
+      "dist": [
+        0.022099114284426687,
+        0.06703073091564815,
+        0.542702592319459,
+        0.220806411026748,
+        0.14736115145371803
+      ],
+      "mean": 3.4042997544496822
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d be pretty likely to sign up, like a 7–8/10, because I’m already nervous about my blood pressure creeping back up and I have family history stuff in the back of my mind. $99/month feels way more doable than $349 for branded meds, and I like the idea of having actual numbers like ApoB and calcium score instead of guessing. My hesitations are: does that price include the labs/scans or am I going to get hit with big add-on costs, and are they actually going to help with weight/GLP-1 transition or is it more “here are your results, good luck.” If it’s legit ongoing management and transparent on costs, I’d probably try it.",
+      "dist": [
+        0.01867097033812893,
+        0.03574795578818116,
+        0.2867610461626672,
+        0.45367326635557564,
+        0.20514676135544718
+      ],
+      "mean": 3.7908768926020313
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "scan-shock-m52",
+      "text": "I’m moderately likely—probably a 6–7/10—because my calcium score is 280 and “we’ll keep an eye on it” isn’t a plan, and I’m tired of 12‑minute visits. $99/month is in the range I’d pay out of my HSA if it actually includes real targets (ApoB goals, BP control) and medication management with follow‑up, not just advice. My hesitations are: what exactly is included (labs cost extra? statin/ezetimibe prescriptions? how fast do they respond by message?), and whether they’ll be aggressive and evidence-based versus overly salesy. I’d also want to know if they coordinate with my PCP and if they’ll push a bunch of extra testing/supplements that drive the cost up.",
+      "dist": [
+        0.019591889913500814,
+        0.114498290550656,
+        0.5978634095631018,
+        0.18795013284431478,
+        0.0800962771284266
+      ],
+      "mean": 3.1944606167235103
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "scan-shock-m52",
+      "text": "I’d say moderately likely—maybe a 6–7 out of 10. The calcium score piece hits home for me (280 and my PCP basically shrugged), and I like the idea of actually tracking ApoB and BP with someone who will respond between visits instead of a 12‑minute drive-by.\n\nMy hesitations are: I want to know what “manages them down” really means (statin/ezetimibe/PCSK9? lifestyle coaching? both) and whether they’ll coordinate with my existing PCP and order labs/imaging locally without a bunch of friction. Also $99/month is fine with my HSA, but I’d need to be convinced it’s not just generic messaging and that I’m actually getting a physician-led plan with clear targets and follow-up.",
+      "dist": [
+        0.012579138154614653,
+        0.05357292086759912,
+        0.4118725480095006,
+        0.2941789290595018,
+        0.22779646390878372
+      ],
+      "mean": 3.6710406597002407
+    },
+    {
+      "concept": "H1-runs-in-family",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably a “maybe, but I’d need more info” — like 4 or 5 out of 10. The idea of a real doctor by video/messages sounds good because I don’t really have a regular doctor, but $99 a month is a lot on my income, especially with a $7k deductible plan already. I’d also want to know what the ApoB test and coronary calcium scan actually cost on top of the $99, and if they help set those up locally in Flint, because if I’m paying that plus extra lab/imaging bills, I’d likely pass.",
+      "dist": [
+        0.037697392739661856,
+        0.08279324223911563,
+        0.5212739583732587,
+        0.19980157884936206,
+        0.1584338277986016
+      ],
+      "mean": 3.3584812067281256
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "family-history-f44",
+      "text": "I’m moderately likely, mostly because the family history angle hits a nerve for me and I’ve been thinking a lot about heart risk since my brother’s stent. But $99/month out of pocket gives me pause on a teacher budget, and I’d want to know exactly what’s included (especially the coronary calcium scan cost) and whether they’ll coordinate with my regular doctor. I’m also a little skeptical of anything that feels like a “wellness program,” but if it’s truly a board-certified physician with clear goals and real follow-up, I could see myself trying it for a few months and canceling if it’s not worth it.",
+      "dist": [
+        0.026494878060939107,
+        0.0774844693530618,
+        0.5870936056925222,
+        0.2100502275948614,
+        0.09887681929861539
+      ],
+      "mean": 3.2773296407171517
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "scan-shock-m52",
+      "text": "I’d say I’m moderately likely—maybe a 7/10—because my calcium score of 280 has me uneasy and “we’ll keep an eye on it” doesn’t feel like a plan, especially with these rushed 12‑minute visits. The idea of someone actually tracking ApoB and BP and adjusting meds/lifestyle with real follow-up, plus async messaging, is what I wish primary care did, and I can cover $99/mo from my HSA.\n\nMy hesitations: I’d want to know what “manages them down” really means (statins? ezetimibe? BP meds? lifestyle coaching?) and whether they’ll coordinate with my PCP and order labs/imaging in Michigan without a bunch of hoops. Also I’d want to verify the HSA eligibility and see some proof this isn’t just a generic telehealth subscription with limited access to the actual physician.",
+      "dist": [
+        0.015987416050620602,
+        0.08384029756348564,
+        0.5025272037929761,
+        0.24078937217864477,
+        0.1568557104142729
+      ],
+      "mean": 3.438685663342464
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "family-history-f44",
+      "text": "I’d be pretty interested because the headline hits close to home for me, and having a doctor actually track ApoB, blood pressure, and a calcium score feels more concrete than a lot of “wellness” stuff. That said, $99/month is not nothing on a teacher budget, and I’d want to know what the coronary calcium scan itself costs and whether they’re going to push supplements or extra tests. I’m maybe a 6 or 7 out of 10 likely—if it’s truly physician-led, transparent on total costs, and not a salesy program, I could see myself doing it.",
+      "dist": [
+        0.03142524960498342,
+        0.043198043686381235,
+        0.2188787810528724,
+        0.37585594428728414,
+        0.33064198136847867
+      ],
+      "mean": 3.9310913641278926
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say moderately likely, like a 6–7 out of 10. The $99/month is way more doable than $349, and I’m already worried my blood pressure will creep back up if I can’t stay on semaglutide, so having a doctor actually tracking ApoB/BP sounds reassuring. My hesitation is I’d want to know what the coronary calcium scan costs and whether this turns into a bunch of extra add-ons, and I’m also not sure if they’d help me with weight maintenance or just heart numbers. The headline hits a nerve, but I’d need specifics before I commit.",
+      "dist": [
+        0.026217022884082244,
+        0.08476545929383898,
+        0.4650291420494574,
+        0.2993454849015,
+        0.12464289087112129
+      ],
+      "mean": 3.4114317615817384
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say I’m moderately likely—maybe a 6 or 7 out of 10. The $99/month feels doable compared to the $349 I’m being quoted for branded semaglutide, and I like the idea of actually tracking ApoB and blood pressure since mine starts creeping up when my weight does. My hesitation is the coronary calcium scan and labs—if those end up being expensive out of pocket, it could push this from “affordable” to “another bill,” and I’d also want to know if they’ll help coordinate meds in a realistic way, not just tell me to “eat better” on video.",
+      "dist": [
+        0.014193182275710398,
+        0.09085765028587893,
+        0.5544195547198116,
+        0.27005930937133715,
+        0.07047030334726186
+      ],
+      "mean": 3.2917559012285613
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "uninsured-contractor-m41",
+      "text": "Maybe a 5 or 6 out of 10. The “no insurance” and video/message thing is appealing since I’m busy and I know my blood pressure’s been high, plus my wife’s been on me to get checked. But $99 a month feels steep when work is slow, and I’m skeptical it doesn’t turn into more costs for tests like the calcium scan or labs that I’ll get stuck paying on top of that. Also, I don’t love the whole medical system vibe—if it’s just another subscription that doesn’t actually fix anything, I’d probably cancel.",
+      "dist": [
+        0.09026651999958063,
+        0.222220813212624,
+        0.47994187872831195,
+        0.15515240112252937,
+        0.05241838693695408
+      ],
+      "mean": 2.8572353217846524
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d be somewhat likely, like a 6–7/10, mostly because the $99/month is way more doable than $349 and I’m nervous about my blood pressure creeping back up if I can’t stay on the semaglutide. I like that it’s not just “generic wellness” and they’re tracking real numbers like ApoB and coronary calcium, but I’d want to know what the tests cost on top of the membership and whether meds are included or I’m still paying a lot out of pocket. The headline hits, but it also feels a little fear-based, and I’d need to be sure it’s not just another subscription that doesn’t actually help me manage weight and BP long-term.",
+      "dist": [
+        0.030752385888815882,
+        0.09255780048168163,
+        0.5121694791097309,
+        0.2597925962888998,
+        0.10472773823087184
+      ],
+      "mean": 3.31518550049133
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "family-history-f44",
+      "text": "I’d be somewhat likely, like a 6–7 out of 10, because the family history angle hits me hard and I’d rather get ahead of it than wait until something happens. The tests they mention (ApoB and coronary calcium) sound more real/medical than a wellness fad, but I’m still wary of paying $99/month on top of my district insurance and I’d want to know what the baseline tests actually cost and whether they’re pushing meds right away. I’d also need to be sure it’s not just “advice” over video—like, can they order labs locally, coordinate with my regular doctor, and is messaging actually responsive when I’m busy during the school day?",
+      "dist": [
+        0.025251209175886954,
+        0.05977871930109736,
+        0.4102445179354443,
+        0.28165697693814623,
+        0.22306857664942514
+      ],
+      "mean": 3.617512992584125
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’d say I’m maybe a 5 or 6 out of 10 likely. The heart attack angle hits home and I know my blood pressure’s been high on those pharmacy machines, and doing it by video with no insurance sounds convenient. But $99/month adds up fast when work is slow, and I’m skeptical it’ll turn into a bunch of extra tests and add-on costs (like the calcium scan) that I end up paying out of pocket anyway. If they were really clear upfront on total costs and it felt like I could actually talk to the doc without getting the runaround, I’d be more willing—my wife would probably push me to do it.",
+      "dist": [
+        0.04740906762956604,
+        0.126789958223129,
+        0.38667999924151664,
+        0.2993258712052512,
+        0.13979510370053705
+      ],
+      "mean": 3.3573079851240637
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’d say I’m maybe a 5 or 6 out of 10 to sign up. The heart attack angle definitely hits because my blood pressure’s been high on those pharmacy machines and my wife’s on me to get checked, and I like the idea of video visits since I’m always on jobs. But $99 a month is real money when work is slow, and I’m skeptical it won’t turn into “now you need these extra tests and meds” that cost a bunch more, especially without insurance. If they were super upfront on total costs (labs, calcium scan, meds) and it’s easy to cancel, I’d be more likely.",
+      "dist": [
+        0.07230894102449315,
+        0.14870360116404482,
+        0.44002758850274404,
+        0.2486953916732849,
+        0.0902644776354332
+      ],
+      "mean": 3.1359028637311206
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably not very likely right away—maybe a 3 or 4 out of 10. $99/month feels like a lot on my budget, especially since I already have a marketplace plan (even if the deductible is huge) and I’m already on lisinopril from urgent care. I’d need to know what the coronary calcium scan and labs actually cost on top of the $99, and whether this would replace other doctor visits/med costs or just be another bill.",
+      "dist": [
+        0.10796421265691171,
+        0.31683149185335113,
+        0.15581814897141924,
+        0.2981692748481488,
+        0.12121687167016909
+      ],
+      "mean": 3.0078431010213125
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely (maybe a 6–7/10) because ApoB + BP + CAC with actual physician management is exactly the kind of “risk control loop” I want, and $99/month is reasonable if it’s truly proactive and data-driven. My hesitations: CAC isn’t something you “manage down” (it’s more about risk stratification and preventing progression), so that line feels a bit marketing-y, and I’d want specifics on how aggressively they’ll treat ApoB (statin vs ezetimibe vs PCSK9, targets, follow-up cadence). I’d also need to know who the physician is, how responsive messaging really is, whether they’ll interpret labs in a nuanced way (ApoB/LDL-P, Lp(a), triglyceride context), and if they coordinate prescriptions cleanly across state lines. If it’s basically a lightweight telehealth wrapper with generic advice, I’d pass—but if it’s legit prevention medicine with clear targets and tight iteration, I’d sign up.",
+      "dist": [
+        0.033006214506746956,
+        0.09070599659054202,
+        0.26400231655729234,
+        0.3945616462954374,
+        0.2177238260499812
+      ],
+      "mean": 3.673290872791364
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably a “maybe, but I’d hesitate” — like a 4 or 5 out of 10. The heart attack angle hits home, but $99/month feels like a lot on my income, especially with a bronze plan and a $7k deductible, and I’d need to know what tests like ApoB and a calcium score actually cost on top of that. If it really replaced urgent care visits and helped me stay on top of my blood pressure meds without extra bills, I could be talked into it, but I’d want very clear total pricing and whether they can prescribe/refill my lisinopril.",
+      "dist": [
+        0.040810666749720004,
+        0.11323892780793787,
+        0.4790091491058639,
+        0.23363097140288328,
+        0.13331028493359484
+      ],
+      "mean": 3.3053912799626946
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably a “maybe, but I’d need proof,” not an automatic yes. The heart attack line gets my attention because that runs in families, but $99/month feels like a lot on my income—especially when I’ve already got a bronze plan and a big deductible, so I’m always trying not to add another bill. I’d want to know what the tests actually cost (ApoB and the coronary calcium scan especially), whether they help me get meds like my lisinopril refilled, and if it’s really replacing urgent care visits or surprise bills instead of just being an extra subscription.",
+      "dist": [
+        0.0307530077780599,
+        0.07205103712411907,
+        0.5677564008197857,
+        0.18044037664356927,
+        0.14899917763446607
+      ],
+      "mean": 3.3448816792322624
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "optimizer-m35",
+      "text": "I’d be pretty likely—maybe a 7/10—because ApoB + BP + CAC is exactly the kind of risk model I care about, and async messaging with a board-certified physician is appealing. My hesitation is whether it’s truly aggressive/competent on ApoB optimization (targets, Lp(a) handling, statin/ezetimibe/PCSK9 comfort, lifestyle specifics) versus generic “heart health” coaching. I’d also want to know what’s included in the $99 (labs/CAC cost, frequency of follow-ups, turnaround time, continuity with the same physician) since I already pay for Function and don’t want redundant, dumbed-down guidance.",
+      "dist": [
+        0.021019435481354695,
+        0.06434403718396406,
+        0.27354453404306306,
+        0.3168722386120415,
+        0.32421975467957675
+      ],
+      "mean": 3.858928839824522
+    },
+    {
+      "concept": "H2-fathers-future",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because ApoB + BP + CAC with actual clinician-led management is exactly the kind of risk-reduction stack I care about, and $99/mo is reasonable if it’s truly hands-on. My hesitation is whether “board-certified physician” means you get a real preventive cardiology/lipid expert who will treat to specific targets (ApoB, LDL-P, Lp(a) handling, statin/ezetimibe/PCSK9 discussion) versus generic lifestyle coaching and dumbed-down messaging. I’d also want to know what’s included in the $99 (CAC cost? lab frequency? meds? response times in messaging), and whether they’ll coordinate with my PCP and accept my existing labs since I already pay for Function Health and track stuff with Whoop. The “your father’s heart attack” framing feels a little salesy, but if the clinical rigor is there, I’d still consider it.",
+      "dist": [
+        0.040496263655813235,
+        0.08179584194359019,
+        0.22686933909285306,
+        0.3924532552380069,
+        0.25838530006973665
+      ],
+      "mean": 3.7464354861222633
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "scan-shock-m52",
+      "text": "Probably a 6–7 out of 10. The calcium score of 280 has me uneasy, and I’m not thrilled with “we’ll keep an eye on it” in a 12‑minute visit, so having someone actually track ApoB/BP and adjust a plan with messaging sounds worth paying for—especially if it’s HSA‑eligible. My hesitation is whether this is real medical management (labs, prescriptions, clear targets like ApoB <60–70) or just coaching, and I’d want to know who orders the labs and what they cost on top of the $99/month with my high‑deductible PPO. If it’s legit, evidence-based, and responsive, I’d try it for a few months and reassess.",
+      "dist": [
+        0.021608332184291285,
+        0.10293806899974903,
+        0.5171768420697443,
+        0.23446047508538856,
+        0.1238162816608269
+      ],
+      "mean": 3.3359383050387112
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "scan-shock-m52",
+      "text": "I’d say moderately likely—maybe a 6 or 7 out of 10—because my calcium score is 280 and my PCP basically shrugged, and I’m tired of 12‑minute “we’ll watch it” visits. The $99/month and HSA-eligible part helps, and I like the focus on ApoB and actually managing numbers down with async messaging. My hesitation is I’d want to know exactly what “manage down” means (statins? BP meds? lifestyle coaching?) and whether they’ll coordinate with my local doc for prescriptions and follow-up labs without turning into another subscription that just orders tests and tells me to eat better.",
+      "dist": [
+        0.019770427889286783,
+        0.07823824172351493,
+        0.4925311299854145,
+        0.28864647626556666,
+        0.12081372413621717
+      ],
+      "mean": 3.4124948270359123
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "scan-shock-m52",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because my calcium score is 280 and “we’ll keep an eye on it” isn’t really a plan, especially with 12‑minute PCP visits. I like that it’s focused on ApoB/BP/CAC and that it’s asynchronous/video; that fits my schedule and I’ve got HSA funds, so $99/month isn’t crazy.\n\nMy hesitations: I’d want to know exactly what “manages them down” means (statin/ezetimibe/PCSK9 access, BP meds, follow-up labs cadence) and whether they’ll coordinate with my PCP so I don’t end up with conflicting advice. Also, CAC doesn’t really go down, so if the marketing is implying that, it makes me a little wary—I’d need to see credibility, outcomes, and how aggressive they are about targets like ApoB <60–70.",
+      "dist": [
+        0.021860190801635173,
+        0.09257211569207448,
+        0.5367971435678617,
+        0.23156867040623969,
+        0.11720187953218897
+      ],
+      "mean": 3.3296799321752726
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "family-history-f44",
+      "text": "I’d say I’m moderately likely, like a 6/10, because the family history part hits really close to home and I like that it’s run by an actual physician, not a “wellness coach.” My hesitation is the $99/month on top of what I already pay for insurance through the district—plus I’m not sure how much the coronary calcium scan itself costs and whether I’d end up with extra bills. I’d need to know it’s practical (clear plan, not just more tests), and that it won’t turn into an endless subscription I forget to cancel when school gets crazy.",
+      "dist": [
+        0.013876787512572486,
+        0.06391907119312669,
+        0.5894426476449292,
+        0.2348405566992177,
+        0.09792093695015389
+      ],
+      "mean": 3.339009784381253
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "family-history-f44",
+      "text": "I’d say I’m moderately likely—maybe a 6 or 7 out of 10—because the family history part really hits home for me, and I like that it’s physician-led and not some “wellness” program. The big hesitation is cost: $99 a month adds up, and I already have insurance through the district, so I’d need to understand what I’m not getting through my regular doctor and whether tests like the coronary calcium scan are extra. Also, I’m busy and a little skeptical about ongoing memberships, so I’d want to know how much direct support I’d actually get and if I can truly cancel without hassle.",
+      "dist": [
+        0.017872856880458882,
+        0.0817843125454057,
+        0.6198372619301487,
+        0.22228415156068268,
+        0.05822141708330414
+      ],
+      "mean": 3.221196959420968
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d be pretty likely—like a 7–8/10—because the $99/month is way easier to swallow than $349, and I’m genuinely worried about my blood pressure creeping back up if I regain after coming off compounded semaglutide. I like that it’s a real doctor and that they’re tracking ApoB and coronary calcium, not just weight, but I’d want to know what’s included vs extra (does the calcium scan cost more, labs through what lab, any surprise fees). My hesitation is I don’t want to sign up and then find out it’s mostly “advice” without actual treatment options if my numbers are off, or that messaging is slow.",
+      "dist": [
+        0.030063071192831522,
+        0.10522201835925961,
+        0.44739031368147003,
+        0.2464089234266057,
+        0.17091567333983324
+      ],
+      "mean": 3.42289210936135
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "family-history-f44",
+      "text": "I’d say I’m moderately likely, like a 6 or 7 out of 10, because with my dad and my brother it definitely hits close to home and I’d like someone to take it seriously and track real numbers. My hesitation is the $99/month on top of what I already pay for insurance through the district—I’d need to know what’s actually included (especially the coronary calcium scan cost) and whether they’ll coordinate with my primary care so it’s not duplicating care. I’m also a little wary of anything that feels like a subscription “wellness” thing, but the board-certified physician and concrete tests make it feel more legitimate. Cancel anytime and HSA-eligible helps, but I’d probably try it only if the upfront testing and total costs are very clear.",
+      "dist": [
+        0.012465518370112715,
+        0.05534147527326874,
+        0.5274482895757611,
+        0.282070139330022,
+        0.12267457745083543
+      ],
+      "mean": 3.4471467822181987
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d be pretty likely to sign up, like a 7–8/10, mostly because I’m nervous about my blood pressure creeping back up and I don’t want to undo the progress I made after losing weight. $99/month feels doable compared to the $349/month branded option, and I like that it’s cancel anytime and HSA-eligible. My hesitation is the coronary calcium score part—if that’s an extra out-of-pocket test and not included, I’d want to know the total cost upfront and whether they actually help with weight maintenance too, not just “numbers.”",
+      "dist": [
+        0.02239803230399516,
+        0.06874508010364197,
+        0.40325227640521544,
+        0.39863939757658495,
+        0.10696521361056247
+      ],
+      "mean": 3.4990286800860773
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’d say I’m maybe a 5/10 likely. I like the “no insurance needed” and that it’s video/messages since I’m always on jobs, and I know my blood pressure’s been high at those pharmacy machines. But $99/month adds up, I’m skeptical it won’t turn into “now you need more tests/meds” and surprise costs, and I’d want to know what the coronary calcium scan actually costs near Lansing before I commit.",
+      "dist": [
+        0.02907097204092661,
+        0.09278665322082963,
+        0.4997985173159871,
+        0.24361490018875498,
+        0.13472895723350162
+      ],
+      "mean": 3.362144217353076
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’d say I’m kind of on the fence—maybe a 5 or 6 out of 10. I like the “no insurance needed” and cancel-anytime part, and my wife would be happy I’m at least doing something, but $99/month adds up when work’s slow. I’d also want to know what the coronary calcium scan actually costs on top of that and whether they’re just going to push meds right away, because I don’t really trust the system to not upsell me.",
+      "dist": [
+        0.029868197140040048,
+        0.07555361764613089,
+        0.6678611701766167,
+        0.14813718876199508,
+        0.07857982627521728
+      ],
+      "mean": 3.1700068293862187
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’d say maybe like a 5/10—I’m interested because I know my blood pressure’s been high and heart stuff runs in my family, and I like the idea of doing it by video without dealing with insurance. But $99/month adds up fast when work is slow, and I’m skeptical it won’t turn into “we found something” and then I’m on the hook for a bunch of extra tests and bills. The coronary calcium score part sounds useful, but I’d want to know what that costs on top and if they’re just going to push meds right away. If my wife kept on me and they were really straightforward on total costs, I might do it.",
+      "dist": [
+        0.020339411151216614,
+        0.06288419886010353,
+        0.5166070418438564,
+        0.31053797092480234,
+        0.08963137722002124
+      ],
+      "mean": 3.3862377042023084
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because it’s hitting the right markers (ApoB + CAC + BP) and I’m already paying for lab-heavy stuff and tracking with Whoop. My hesitation is whether “manages them down” is real, evidence-based lipid/BP management with actual targets and medication options (including statins/ezetimibe/PCSK9 if warranted), or just generic lifestyle coaching dressed up as precision care. I’d also want to know if the $99/month includes the CAC scan and labs or if that’s extra, and whether I’m getting a consistent physician who will interpret results at a high level (risk stratification, secondary causes, Lp(a), etc.) rather than dumbed-down messaging.",
+      "dist": [
+        0.015336669526125805,
+        0.06081657900702114,
+        0.4751128730944296,
+        0.28863772072786653,
+        0.16009615764455687
+      ],
+      "mean": 3.5173401179577075
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "optimizer-m35",
+      "text": "I’d say moderately likely (maybe a 6–7/10). ApoB + BP + CAC with an actual board‑cert physician and async messaging is exactly the kind of risk-management I’m looking for, and $99/mo is reasonable if they’ll do real titration and not just “eat less saturated fat” vibes.  \n\nMy hesitation is whether the doctor is truly lipid/cardiometabolic-savvy (ApoB targets, Lp(a), statin/ezetimibe/PCSK9 discussions, interpretation nuance around CAC=0, etc.) and whether they’ll coordinate prescriptions and labs smoothly—otherwise it’s redundant with what I can already self-direct via Function/PCP. I’d want to see sample care plans, turnaround times for messaging, and how aggressively they’ll actually manage to targets before committing.",
+      "dist": [
+        0.026322765201393615,
+        0.08367080326570488,
+        0.24454563632972143,
+        0.40774028349048663,
+        0.23772051171269337
+      ],
+      "mean": 3.7468649732473813
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably only “maybe,” and honestly I’d lean not very likely unless I was really scared by a recent test or something. $99/month feels like a lot on my income, and I already have a bronze plan with a huge deductible, so I’d need to see that it actually replaces other costs (like urgent care visits, labs, meds) and not just adds another bill. I do like the idea of messaging a real doctor since I don’t have a regular one, but I’d worry about what the ApoB and calcium scan cost on top of the $99 and whether they’d try to upsell me. If they could show me clear total costs up front and that they can manage my blood pressure meds too, I’d consider it more.",
+      "dist": [
+        0.04264319463657423,
+        0.10925141457597595,
+        0.3829296812929729,
+        0.2491853659084037,
+        0.21599034358607322
+      ],
+      "mean": 3.486628249231426
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably not very likely right away—maybe a 3/10. $99 a month is a lot for me on top of what I already pay, and I’d need to be sure it’s actually replacing costs I’m already stuck with (like urgent care visits or paying out of pocket for meds and labs). The coronary calcium scan and ApoB sound useful, but I’d worry those tests aren’t included and I’d still get hit with big extra bills, so I’d need clear pricing and proof it’ll really save me money and keep me out of trouble.",
+      "dist": [
+        0.12055109709107983,
+        0.26764571471718923,
+        0.21015680821471322,
+        0.233439915654641,
+        0.16820646432237674
+      ],
+      "mean": 3.0611049354000452
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably a “maybe, but I’d need a lot more info” for me. $99/month feels like a lot on my income, especially since I already have insurance (even if the deductible is awful), and I’m already on lisinopril from urgent care—so I’d need to see how this actually replaces costs I’m paying now, not just adds another bill. I do like the idea of messaging and video since I don’t really have a regular doctor, but I’d want to know what’s included (do they pay for the ApoB lab and calcium scan, or is that extra?) before I’d sign up.",
+      "dist": [
+        0.03458745355577163,
+        0.07802929059277143,
+        0.49429239707990824,
+        0.18129447033713342,
+        0.21179638843441528
+      ],
+      "mean": 3.4576830495016493
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say moderately likely—maybe a 7/10—because I’m honestly worried my blood pressure is creeping back up and heart disease runs in my family, and $99/month feels doable compared to the $349 I’m seeing for branded meds. I like the idea of having a doctor track ApoB and blood pressure and actually manage it with me over messaging, not just a one-off visit. My hesitation is the coronary calcium score cost/logistics (is that included or am I paying extra somewhere?) and whether this is actually going to help with weight regain if I can’t stay on semaglutide. Also I’d want to know who’s ordering labs/imaging and what the total monthly “real” cost ends up being.",
+      "dist": [
+        0.012501556254708144,
+        0.05592345327269403,
+        0.5106019447234638,
+        0.2744728509310868,
+        0.1465001948180472
+      ],
+      "mean": 3.4865466747850706
+    },
+    {
+      "concept": "H3-different-story",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because ApoB + BP + CAC is the right framing and I’m already paying for lab-heavy stuff, and I do want qualified interpretation beyond “your LDL is fine.” My hesitations are (1) whether the “board-certified physician” is actually lipid/cardiometabolic-savvy or just generic primary care, and (2) whether $99/mo buys real protocol-driven optimization (meds, titration, targets, follow-up cadence) versus a one-time review plus vague lifestyle advice. Also, CAC isn’t something you “manage down,” so that wording makes me wonder how scientifically precise the program is. If they were explicit about ApoB targets, how they handle statins/ezetimibe/PCSK9, and what ongoing monitoring looks like, I’d be a lot closer to yes.",
+      "dist": [
+        0.01363791326293137,
+        0.051171482518147994,
+        0.4337768838548366,
+        0.33525058469932784,
+        0.1661631356647561
+      ],
+      "mean": 3.589129546984829
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "scan-shock-m52",
+      "text": "I’d be moderately likely—maybe a 6 or 7 out of 10—because my calcium score is already 280 and “we’ll keep an eye on it” in a 12‑minute visit doesn’t feel like a plan. $99/month is not crazy, especially if it’s truly HSA-eligible and I can cancel anytime, but I’d want to know what “manages them down” actually means (statin/ezetimibe/PCSK9? BP meds? lifestyle coaching?) and whether the doc will order and interpret labs in a way that’s actually evidence-based. I’m also a little skeptical about paying out of pocket and then still getting hit with separate lab/imaging costs, and I’d want clarity on responsiveness—direct messaging only matters if I’m not waiting days for a reply.",
+      "dist": [
+        0.024528178695497192,
+        0.12742426195077702,
+        0.47280027536073194,
+        0.24981043146250761,
+        0.12543685253048614
+      ],
+      "mean": 3.3242035171817084
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "scan-shock-m52",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because $99/month is in the “worth trying” range if it actually gets me a real plan and follow-up instead of a 12‑minute “we’ll watch it.” The hook for me is someone taking my ApoB and calcium score seriously and being accessible by message, and HSA‑eligible helps since I’ve got money sitting there. My hesitation is I’d want to know exactly who the physician is, what the protocol is (statins, BP targets, repeat labs/CT timing), and whether they’ll coordinate with my local PCP—otherwise it risks being a subscription with a lot of vague advice. Also, I’d want to see some evidence they can move ApoB/BP meaningfully and not just sell reassurance.",
+      "dist": [
+        0.0433532445472692,
+        0.08220259189851756,
+        0.30413307088590613,
+        0.33784829244913167,
+        0.23246280021917543
+      ],
+      "mean": 3.6338648118944263
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "family-history-f44",
+      "text": "I’d be pretty interested—probably a 7/10—because with my dad and my brother, the “inherited risk” line hits home, and I like that it’s run by an actual board-certified physician and not some wellness influencer thing. My hesitation is the ongoing $99/month on top of what I already pay through the district insurance, and I’d want to know what the coronary calcium scan costs and whether they help coordinate it locally. I’d also need to be convinced it’s not just tests and generic advice, but real follow-up and medication management if that’s what I need.",
+      "dist": [
+        0.01599035198027773,
+        0.044849468538614774,
+        0.3667360429600876,
+        0.3222436119890094,
+        0.2501805245320106
+      ],
+      "mean": 3.7457744885538604
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "scan-shock-m52",
+      "text": "I’d say I’m moderately likely—maybe a 6 or 7 out of 10—because my calcium score is 280 and “we’ll keep an eye on it” doesn’t feel like a plan. The idea of actually tracking ApoB and having real follow-up via messaging is appealing, and $99/month is reasonable if it’s a legit board-certified physician who will adjust meds and not just give generic lifestyle advice. My hesitations are whether they’ll coordinate with my PCP, whether they can prescribe and order labs/imaging cleanly in Michigan, and whether it turns into a subscription where I’m paying for access but still doing all the legwork. If it’s truly HSA-eligible and they show a clear protocol and outcomes, I could see myself trying it for a few months.",
+      "dist": [
+        0.013472830879259514,
+        0.05722986782120673,
+        0.4999468235184531,
+        0.2974303720321549,
+        0.13192010574892565
+      ],
+      "mean": 3.4770950539502805
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "family-history-f44",
+      "text": "I’d be somewhat likely, maybe a 6 or 7 out of 10, just because my dad died of a heart attack at 58 and my brother having a stent at 49 really freaks me out. I like that it’s a real board-certified physician and not some “wellness coach,” and the ApoB + calcium score angle feels more concrete than generic advice. My hesitations are the $99/month on top of what I already pay through the district, and whether the tests (especially the coronary calcium scan) are extra costs and a hassle to schedule around teaching. I’d probably want to see very clearly what’s included, how often I’d actually interact with the doctor, and if they’d coordinate with my regular primary care so it doesn’t turn into another thing to manage.",
+      "dist": [
+        0.042648410619201126,
+        0.11682587329383157,
+        0.4183472026149125,
+        0.25442038928151,
+        0.16775812419054487
+      ],
+      "mean": 3.387813943130366
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "family-history-f44",
+      "text": "I’d say I’m moderately likely, maybe a 6 or 7 out of 10, mostly because my family history makes this feel very real and not like a wellness fad. I like that it’s a board-certified physician and they’re using concrete numbers like ApoB and a calcium score, but I’d want to know what the coronary calcium scan costs and where I’d get it, because $99/month can add up fast on a teacher budget. I’m also a little hesitant about “no insurance needed” since I already have district insurance—so I’d need to be convinced this isn’t something my primary care doctor could just do with a couple visits. If the messaging actually saves me time and the total costs are clear upfront, I could see myself trying it for a few months.",
+      "dist": [
+        0.021460010279757948,
+        0.06135772508798973,
+        0.4686909049140165,
+        0.2859423689648424,
+        0.1625489907533934
+      ],
+      "mean": 3.5067626048241234
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say I’m moderately likely—like a 6 or 7 out of 10—because $99/month feels doable compared to the $349/month I’m staring at now, and I’m genuinely worried about my blood pressure creeping back up if I regain. I like the idea of a real doctor tracking ApoB and BP and having messaging, but I’d hesitate until I know what’s actually included (are the labs and coronary calcium scan extra, and how much?) and whether they’ll help with weight maintenance/GLP-1 options or it’s more just “monitoring.” Cancel anytime and HSA-eligible definitely helps, but I’d want clarity on total out-of-pocket cost in the first couple months before I commit.",
+      "dist": [
+        0.013401039351076754,
+        0.05538903656207619,
+        0.539779424253998,
+        0.2887381790755553,
+        0.10269232075729366
+      ],
+      "mean": 3.4119317053259133
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say moderately likely—like a 6 or 7 out of 10—because the $99/month is way easier to swallow than $349, and I’m genuinely worried about my blood pressure creeping back up if I regain. I like that it’s a real physician and they’re tracking ApoB and BP, but I’d want to know what “manages them down” actually includes (meds? prescriptions? lab costs extra? calcium score imaging costs extra?). Also, I’d need to be sure it’s not just a monitoring/subscription thing if I’m still stuck paying a lot out-of-pocket for anything meaningful.",
+      "dist": [
+        0.024239228520862785,
+        0.10337265457791525,
+        0.3915510946951711,
+        0.3295558772166449,
+        0.15128114498940595
+      ],
+      "mean": 3.4802670555758155
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say I’m moderately likely—like a 7/10—because the price is way more doable than $349/month and I’m genuinely anxious about regain and my blood pressure creeping back up. I like that it’s a real board-certified physician and that they’re tracking ApoB and blood pressure, not just handing out meds. My hesitation is the coronary calcium scan part—am I paying extra for that and how much—and also whether this actually includes access to GLP-1s or it’s more “coaching” without the meds I probably need to stay on track.",
+      "dist": [
+        0.014825871736123077,
+        0.06452875296347409,
+        0.6103550787682612,
+        0.22634057014417508,
+        0.08394972638796658
+      ],
+      "mean": 3.3000595264843886
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "uninsured-contractor-m41",
+      "text": "Maybe like a 5/10. I like the idea of doing it by video and texting and not dealing with insurance, and the $99/month isn’t insane, but it still feels like one more subscription and I’m always skeptical the system’s gonna upsell me into a bunch of extra tests. The coronary calcium score part sounds good but also makes me wonder what that costs on top and if I’m gonna get hit with surprise bills—if it’s truly straightforward pricing and actually helps me get my blood pressure under control, my wife could probably talk me into it.",
+      "dist": [
+        0.019208640593631546,
+        0.0772688899610744,
+        0.4984221712841131,
+        0.3250372081765583,
+        0.08006308998462267
+      ],
+      "mean": 3.3694772169974665
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’m maybe a 5/10 on actually signing up. The “no insurance” and video part is appealing since I’m busy and I know my blood pressure’s been high, but $99/month is still real money when work is slow and I don’t totally trust subscription healthcare stuff. Also the coronary calcium scan sounds like it could turn into extra out-of-pocket costs, so I’d want to know the full price of the tests up front and whether they’re going to push meds right away. If my wife kept on me and they were clear and straight about costs, I’d consider it.",
+      "dist": [
+        0.041165337594728124,
+        0.10593663301346075,
+        0.5238283564200302,
+        0.2793922531614975,
+        0.0496774198102833
+      ],
+      "mean": 3.190479784579147
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably not very likely right now—maybe a 3/10. I’m already paying for my Marketplace plan with a huge deductible, and $99 a month feels like a lot unless I can clearly see it replacing other costs (like urgent care visits, labs, meds) instead of adding on. The coronary calcium score and ApoB sound useful, but I’d want to know what those tests cost on top of the $99 and whether they can actually prescribe and manage my blood pressure meds without me having to find a regular doctor.",
+      "dist": [
+        0.07173723909240405,
+        0.29517908518664865,
+        0.25021777782559534,
+        0.2645988007860705,
+        0.11826709710928146
+      ],
+      "mean": 3.062479431633177
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’m kind of on the fence—maybe a 5 or 6 out of 10. I like the idea of video and messaging and “no insurance needed,” because I don’t have coverage and I’m not trying to deal with a bunch of office visits, and I know my blood pressure’s been high before. But $99 a month adds up, and I’m skeptical it won’t turn into “you need this test” or “here’s another fee,” plus I’m not sure how useful it is without someone actually checking me in person. If my wife keeps on me and they’re upfront about total costs (especially the calcium scan), I might try it for a month or two.",
+      "dist": [
+        0.02867698632822681,
+        0.06795314339156494,
+        0.7079937475540563,
+        0.12935502211340333,
+        0.06602110061274868
+      ],
+      "mean": 3.1360901072908822
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely (maybe 6–7/10) because the stack is exactly what I care about—ApoB plus BP plus CAC, and having a board-certified physician who’ll actually manage to targets instead of just “educate.” My hesitation is whether this is real, qualified interpretation with clear protocols (statins/ezetimibe/PCSK9 decision-making, secondary markers, repeat cadence) or just a lightweight telehealth check-in wrapped in good copy. Also, I already pay for Function and I have great insurance, so I’d need to see what I’m getting beyond labs I can already obtain—especially around actionable follow-up and messaging responsiveness at $99/month.",
+      "dist": [
+        0.016218520813137825,
+        0.06755151340696695,
+        0.33666874345524817,
+        0.30123524994514744,
+        0.2783259723794995
+      ],
+      "mean": 3.7578986396709038
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because it’s hitting the exact trio I care about (ApoB, BP, CAC) and “manage them down” implies actual follow-up, which most PCPs don’t do well. My hesitation is whether this is real lipidology-level care or just a generic cardiometabolic telehealth script; I’d want to know who the “board-certified physician” is (cardiology? internal med?), how aggressive they’ll be on ApoB targets, and what the messaging access actually looks like. Also, CAC isn’t something you “manage down,” so that wording makes me a little suspicious about the sophistication of the program.",
+      "dist": [
+        0.03476152636807058,
+        0.11676580091631417,
+        0.39073611001069786,
+        0.31554464988856756,
+        0.14219191281634988
+      ],
+      "mean": 3.4136396218688123
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because the focus on ApoB plus CAC and BP is exactly the kind of risk-management stack I care about, and async messaging with an actual board-certified physician is appealing. My hesitation is I already pay for Function Health and I can get CAC/BP labs pretty easily, so I’d need to see that this isn’t just “nice dashboard + generic statin talk” but real, guideline-literate optimization with clear targets, medication options, and follow-up cadence. $99/month is reasonable, but I’d want to know the physician’s specialty (preventive cardio vs random FM), how aggressive they’ll be on ApoB goals, and whether they’ll actually prescribe/manage meds and interpret trends rather than just report numbers.",
+      "dist": [
+        0.0266835444321481,
+        0.06705598086379941,
+        0.2540534944861506,
+        0.35903634277221014,
+        0.2931706374456918
+      ],
+      "mean": 3.824954547935498
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably not very likely right away—maybe a 3 or 4 out of 10. $99/month is a lot on my income when I already pay for insurance, and with a $7k deductible I’m used to paying out of pocket anyway, so I’d need to see that it actually replaces other costs (urgent care visits, labs, blood pressure meds) instead of being “another bill.” Also, coronary calcium scans and ApoB tests sound expensive—if those aren’t included or clearly priced, I’d worry I’d sign up and still get hit with extra charges.",
+      "dist": [
+        0.1310437980284819,
+        0.38414911314172223,
+        0.207053661255581,
+        0.18722565090706023,
+        0.09052777666715447
+      ],
+      "mean": 2.7220444950426828
+    },
+    {
+      "concept": "H4-inherited-risk",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably not very likely, at least not right away. $99 a month is a lot for me on top of my bronze plan and a $7k deductible, and I’d need to be really sure it’s replacing stuff I’m already paying for (like urgent care, labs, meds) and not just “extra.” I like the idea of a real doctor and messaging, but I’d want to know what the calcium score/test and bloodwork actually cost on top of the $99, and whether they can just take over my lisinopril and refills without me having to keep going to urgent care.",
+      "dist": [
+        0.09954411214776344,
+        0.1938938133320381,
+        0.18215808055946675,
+        0.26401262712335594,
+        0.26039136683737574
+      ],
+      "mean": 3.3918133231705423
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "scan-shock-m52",
+      "text": "I’d be moderately likely—maybe a 6–7 out of 10—because with a calcium score of 280 I don’t love “we’ll keep an eye on it,” and I’m willing to pay for someone to actually manage risk factors instead of squeezing it into a 12‑minute visit. The $99/month and HSA‑eligible part helps, and I like the idea of ApoB plus messaging accountability.\n\nMy hesitations: I’d want to know exactly what “manages them down” means (statin/ezetimibe/PCSK9 access? BP meds? lifestyle coaching?) and whether they’ll coordinate labs/imaging locally without surprise costs. Also, I’d need to trust it’s not just a subscription content play—show me outcomes, cadence, and who I’m actually talking to (board‑certified in what, and how responsive).",
+      "dist": [
+        0.027277112270440163,
+        0.07882063874554655,
+        0.3872944966488563,
+        0.28187444724192356,
+        0.22473330509323347
+      ],
+      "mean": 3.5979661941419634
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "family-history-f44",
+      "text": "I’d be moderately likely—maybe a 6 or 7 out of 10—because the heart attack/stent stuff in my family makes this feel very real, and I like that it’s a real physician and not a “wellness coach.” My hesitations are the $99/month on top of what I already pay for insurance through the district, and I’d need to know what’s actually included (like does the coronary calcium scan cost extra, labs, meds, etc.). Also, I’m busy and I’ve seen a lot of health programs overpromise, so I’d want clear proof it’s legit and that they’ll coordinate with my primary doctor.",
+      "dist": [
+        0.0381279701531772,
+        0.09965060604842228,
+        0.36617173399239833,
+        0.3016224381690973,
+        0.19442725163690494
+      ],
+      "mean": 3.5145703950881306
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "scan-shock-m52",
+      "text": "I’d be moderately likely—maybe a 6 or 7 out of 10—because my calcium score is 280 and “we’ll keep an eye on it” isn’t a plan, and I’m tired of 12‑minute visits. The $99/month and HSA-eligible part makes it easier to justify, especially if it includes real follow-up and med adjustments based on ApoB/BP and not just generic lifestyle advice.\n\nMy hesitations: I’d want to know exactly what “manages them down” means (statins/ezetimibe/PCSK9 access, BP meds, targets, how often labs are rechecked), and whether they’ll coordinate with my local PCP and order tests in-network so I’m not paying cash for everything. Also, the parent/kids headline feels a little emotionally pushy—I’d sign up for clear protocols and responsiveness, not marketing.",
+      "dist": [
+        0.02151108997200417,
+        0.10130717185419098,
+        0.4349245164395873,
+        0.3057564238836483,
+        0.1365007978505693
+      ],
+      "mean": 3.434428667786588
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "family-history-f44",
+      "text": "I’d say I’m moderately likely, like a 6/10, mostly because the family history hits close to home and I don’t want to be blindsided like my dad. That said, $99/month adds up and I’d want to know what the “coronary calcium score” costs on top of that and whether any of it can run through my district insurance instead of being totally out-of-pocket. I’m also a little skeptical of these concierge-style programs—if it’s mostly messaging and generic advice, I won’t stick with it—but if it’s truly a real physician tracking labs and numbers with a clear plan, I’d seriously consider it.",
+      "dist": [
+        0.025284074336319455,
+        0.08070017367190102,
+        0.36796808187530655,
+        0.37792093527658965,
+        0.14812673483988334
+      ],
+      "mean": 3.5429060826118164
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "family-history-f44",
+      "text": "I’d say I’m moderately likely—maybe a 6 or 7 out of 10—because the headline hits close to home with my dad and now my brother, and I like that it’s an actual physician and not some “wellness” program. But $99/month adds up, and I’d want to know what tests cost on top of that (especially the coronary calcium scan) and whether they’ll coordinate with my regular doctor instead of duplicating things. Also, “no insurance needed” makes me wonder if I’m paying for something my district insurance would already cover, so I’d probably pause and do some homework before committing.",
+      "dist": [
+        0.016911015315545917,
+        0.09148696084829332,
+        0.6014291032984912,
+        0.21409945540611128,
+        0.07607346513155819
+      ],
+      "mean": 3.2409373941898427
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d be pretty likely to sign up, like a 7–8/10, because the $99/month is way more doable than $349 and I’m honestly nervous about regaining and my blood pressure creeping up again. I like that it’s a real physician and they’re tracking concrete stuff like ApoB and BP, not just “eat better,” and video + messaging fits my schedule. My hesitations are: what does the coronary calcium scan actually cost (and can I even get it easily), and will they help with meds/weight management too or is it mostly just monitoring and advice. If it ends up being a bunch of add-on fees or they can’t prescribe anything helpful, I’d probably cancel.",
+      "dist": [
+        0.044436063849448086,
+        0.10630364672685876,
+        0.40208959919883763,
+        0.3285688800236267,
+        0.11860181020122876
+      ],
+      "mean": 3.370596726000329
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d say I’m moderately likely—like a 7/10—because the $99/month is a lot more doable than $349 and I’m genuinely nervous my blood pressure and weight will creep back up now that my semaglutide situation is changing. I like the idea of a real physician tracking ApoB and BP with messaging, but I’d hesitate until I knew what’s actually included (labs and coronary calcium scan costs can add up) and whether they’ll help me with a realistic plan for the GLP-1 transition, not just tell me to eat better. The headline is a little guilt-trippy, but the cancel-anytime/HSA part makes it easier to try.",
+      "dist": [
+        0.01535843721677644,
+        0.07247801973060976,
+        0.562719246757018,
+        0.27235983237308775,
+        0.07708446392250798
+      ],
+      "mean": 3.3233338660539413
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "scan-shock-m52",
+      "text": "I’m moderately likely—maybe a 6–7/10—because a CAC of 280 is not “we’ll keep an eye on it” territory, and I’d pay $99/month to get someone actually tracking ApoB/BP and adjusting a plan with real follow-up instead of a 12‑minute visit. The HSA-eligible part helps since I’ve got money sitting there, and the cancel-anytime reduces the risk.\n\nMy hesitations: I’d want to know what “manages them down” concretely means (statin + ezetimibe/PCSK9? BP meds? lifestyle coaching?) and whether they’ll order labs/imaging locally and interpret them, or if I’m stuck coordinating everything. Also, CAC doesn’t go down, so I’d be skeptical of marketing that implies it will—what I care about is lowering risk markers (ApoB, LDL-P) and making sure we’re not missing something. If I can message a physician directly and get evidence-based targets and medication titration, I’d probably try it for a few months.",
+      "dist": [
+        0.020876344249296897,
+        0.06915821532347627,
+        0.47009741872679833,
+        0.2898772379632639,
+        0.14999078373716446
+      ],
+      "mean": 3.4789479016155225
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’d say I’m maybe a 5/10 likely. The idea of doing it by video and messaging sounds convenient, and I know my blood pressure’s been high when I’ve checked it at the pharmacy, so I probably should get on top of it. But $99/month is a lot when work is up and down, and I’m skeptical it won’t turn into “now you need these extra tests/meds” and the real cost snowballs, so I’d need to know exactly what’s included and what the add-on costs are.",
+      "dist": [
+        0.02524031926150109,
+        0.06934038654038897,
+        0.45271552471527554,
+        0.2327731771221656,
+        0.21993059236066878
+      ],
+      "mean": 3.552813336780112
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’m maybe a 4 or 5 out of 10 to sign up. The idea of doing it by video/text and not needing insurance is appealing, and my wife would like me to get checked since I know my blood pressure’s been high on those pharmacy machines. But $99/month feels steep when work is slow, and I’m a little skeptical of subscriptions and “manage it down” promises—plus I’d want to know what the coronary calcium scan actually costs on top of that and whether they’re just going to push meds right away.",
+      "dist": [
+        0.0414503298971144,
+        0.1226719069499746,
+        0.4833767061802756,
+        0.28784331008859376,
+        0.06465774688404155
+      ],
+      "mean": 3.2115862371124733
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "glp1-orphan-f38",
+      "text": "I’d be pretty likely to sign up, like a 7 or 8 out of 10, mostly because $99/month feels doable compared to $349 and I’m nervous about my blood pressure creeping back up if I regain. I like that it’s a real board-certified doctor and they’re tracking concrete stuff like ApoB and calcium score, not just “eat better,” and the messaging support sounds helpful. My hesitation is what “manages them down” actually means—are they prescribing meds and ordering the tests, and will I get hit with extra costs for labs/imaging on top of the $99? Also, it doesn’t directly solve the semaglutide transition, so I’d need to know if they can help with weight maintenance too, not just heart numbers.",
+      "dist": [
+        0.016802492614013884,
+        0.04580838053690635,
+        0.4062377942213645,
+        0.33421739744372836,
+        0.19693393518398689
+      ],
+      "mean": 3.648671902046768
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "uninsured-contractor-m41",
+      "text": "I’d say I’m maybe a 5 or 6 out of 10 to sign up. The “no insurance needed” and cancel anytime helps, and my wife would like the video/messaging thing, but $99 a month is still a lot when work is slow and I don’t totally trust these membership doctor deals. I also don’t love the idea of getting a bunch of tests and then being told I need expensive meds or more scans, but the calcium score and blood pressure piece does hit home since I know mine’s been high.",
+      "dist": [
+        0.06860152447209841,
+        0.14784088667159265,
+        0.5016785905425363,
+        0.2167729235829056,
+        0.06510607473086708
+      ],
+      "mean": 3.0619411374288505
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably a “maybe,” but I’m not likely to sign up right away—$99 a month feels like a lot on my budget, especially with groceries and everything going up. I do like the idea of a real doctor and messaging since I don’t have a regular doctor and I’m just on lisinopril from urgent care, but I’d need to know what’s actually included (like the coronary calcium scan and labs) and what I’d still have to pay out of pocket. If it truly replaces office visits and helps me avoid bigger costs later, I’d consider it, but I’m skeptical it won’t turn into extra bills on top of the $99.",
+      "dist": [
+        0.027888073856024067,
+        0.09348671440044454,
+        0.5981774210076967,
+        0.18946677150848587,
+        0.09098101922734894
+      ],
+      "mean": 3.2221659478506917
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "optimizer-m35",
+      "text": "I’d be moderately likely—maybe a 6–7/10—because the focus on ApoB plus BP and CAC is exactly the risk stack I care about, and having a real physician to interpret and manage it beats the generic “wellness” stuff. My hesitations are: what’s the actual protocol/targets (ApoB goal, statin/ezetimibe/PCSK9 willingness, BP med approach), and how tight is the follow-up cadence—messaging access can be super variable in these programs. Also, the parent/kids framing feels a bit manipulative; I’d want to see outcomes, physician credentials, and whether they’ll coordinate with labs/imaging locally in Ann Arbor without a bunch of friction.",
+      "dist": [
+        0.023261553048568376,
+        0.0962914618415838,
+        0.3956138821738785,
+        0.3259676665735609,
+        0.15886543636240852
+      ],
+      "mean": 3.5008839713596576
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "optimizer-m35",
+      "text": "Probably a 6/10 for me—I’m already paying for Function Health and I have excellent insurance, so I’d need a clear reason this isn’t just “another membership” with nicer copy. The ApoB + BP + CAC focus is exactly what I care about, and I like the idea of actual management + async messaging, but I’d want to know who the physician is, what the protocol looks like (statins/ezetimibe/PCSK9, BP meds, targets), and whether they’ll interpret results in a non-hand-wavy way. Also, $99/mo is fine if it’s truly longitudinal care and not a once-a-quarter check-in; otherwise I’d just run CAC through insurance and keep using my current labs.",
+      "dist": [
+        0.026520157378172305,
+        0.0744556298887374,
+        0.3710209889158222,
+        0.26750910140853634,
+        0.2604941224087317
+      ],
+      "mean": 3.661001401580917
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "optimizer-m35",
+      "text": "I’d say moderately likely—maybe a 6–7/10—because the focus on ApoB plus CAC and actual physician-led management is exactly what I’m trying to optimize, and $99/month is in the ballpark if the quality is real. My main hesitation is whether it’s truly “qualified interpretation” (i.e., aggressive, evidence-based lipid/ApoB targets, willingness to use statins/ezetimibe/PCSK9 appropriately) versus generic lifestyle coaching with fancy language. I’d also want clarity on who the physician is (lipidology/cardiology experience?), how often we’re actually checking labs, and whether the CAC scan is included or just “managed” once I go get it elsewhere. If it feels like a thin layer over standard telehealth with slow messaging and vague guidance, I’d bounce pretty fast despite the cancel-anytime.",
+      "dist": [
+        0.06558994002820485,
+        0.1550866054961737,
+        0.42897852594140584,
+        0.2130570889473143,
+        0.13728783958690138
+      ],
+      "mean": 3.201366282568534
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably not very likely right away—maybe a 3 or 4 out of 10. I’m 58, I work retail, and $99/month is a lot on top of everything, especially when I already have a bronze plan with a $7k deductible and I’m just taking lisinopril from an urgent-care visit. I’d need to be sure this actually replaces costs I’m already paying (like visits, labs, meds) and that the coronary calcium scan and ApoB testing aren’t going to turn into more out-of-pocket bills I can’t predict. If they could show clear pricing for all the tests and what I’d realistically spend in a year versus my current setup, I’d consider it more.",
+      "dist": [
+        0.06883940060415408,
+        0.2137724746703636,
+        0.22272783006062574,
+        0.3245708155988428,
+        0.17008947906601385
+      ],
+      "mean": 3.313298497852199
+    },
+    {
+      "concept": "H5-your-kids",
+      "persona": "budget-skeptic-f58",
+      "text": "Probably not very likely right away—maybe a 3 out of 10. $99 a month is a lot for me on top of what I already pay, and I’ve already got a $7,000 deductible bronze plan, so I’d need to know it’s truly replacing other costs (urgent care visits, labs, meds) and not just “extra.” I also don’t even know what ApoB is, and the coronary calcium scan sounds like it could turn into more expensive testing, so I’d want very clear pricing and whether they help me get the scan/labs affordable in Flint before I’d commit.",
+      "dist": [
+        0.08072412101094065,
+        0.22807292605511814,
+        0.34575922052754393,
+        0.22835025041137472,
+        0.11709348199502245
+      ],
+      "mean": 3.07301604632442
+    }
+  ]
+}
