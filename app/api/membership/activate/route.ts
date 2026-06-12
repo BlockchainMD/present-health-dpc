@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
+import { stopFoundingMemberNurtureSequenceForEmail } from "@/lib/auto-response";
 import { recordConversionEvent } from "@/lib/conversion";
 import { parseMemberActivationToken } from "@/lib/member-activation";
 import { normalizeCoverageType } from "@/lib/pricing";
@@ -81,6 +82,8 @@ export async function POST(req: Request) {
                 leadId: campaignLeadId,
             },
         });
+
+        await stopFoundingMemberNurtureSequenceForEmail(email, "registered_member");
 
         await recordConversionEvent({
             type: "REGISTERED",
