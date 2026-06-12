@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-type SearchParamsInput = Record<string, string | string[] | undefined> | Promise<Record<string, string | string[] | undefined>>;
+type SearchParamsInput = Promise<Record<string, string | string[] | undefined>>;
 
 function firstParam(value: string | string[] | undefined) {
     if (Array.isArray(value)) return value[0] || "";
@@ -234,4 +234,3 @@ export default async function AdminChatbotLogsPage({ searchParams }: { searchPar
         </div>
     );
 }
-
