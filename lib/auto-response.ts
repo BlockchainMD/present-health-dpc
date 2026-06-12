@@ -741,6 +741,78 @@ async function renderEmailContent(options: {
     };
 }
 
+async function renderNurtureEmailContent(options: {
+    sequence: AutoResponseNurtureSequence;
+    stepNumber: number;
+    logId: string | null;
+}): Promise<RenderedTemplate> {
+    const step = getFoundingMemberNurtureStep(options.stepNumber);
+    if (!step) {
+        throw new Error(`Unknown nurture sequence step: ${options.stepNumber}`);
+    }
+
+    const context = await buildTemplateContext({
+        source: options.sequence.source,
+        data: nurtureSequenceTemplateData(options.sequence),
+        logId: options.logId,
+    });
+
+    const bodyCore = renderTemplateString(step.bodyTemplate, context).trim();
+    const ctaUrl = "ctaPath" in step && step.ctaPath ? trackedClickUrl(options.logId, absoluteUrl(step.ctaPath)) : "";
+    const bodyTextCore =
+        "ctaLabel" in step && step.ctaLabel && ctaUrl
+            ? `${bodyCore}\n\n${step.ctaLabel}: ${ctaUrl}`
+            : bodyCore;
+
+    const footerLines = [
+        "",
+        "---",
+        "This email is for marketing and enrollment information only.",
+        "This message does not provide medical advice.",
+        `Unsubscribe: ${context.unsubscribe_url}`,
+        `Present Health`,
+        context.physical_address,
+    ];
+
+    const bodyText = `${bodyTextCore}\n${footerLines.join("\n")}`.trim();
+    const footerHtml = [
+        '<hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0 12px 0;"/>',
+        '<div style="font-size:12px;line-height:1.6;color:#4b5563;">',
+        "<div>This email is for marketing and enrollment information only.</div>",
+        "<div>This message does not provide medical advice.</div>",
+        `<div><a href="${escapeHtml(context.unsubscribe_url)}" target="_blank" rel="noopener noreferrer">Unsubscribe</a></div>`,
+        `<div>Present Health<br/>${escapeHtml(context.physical_address)}</div>`,
+        "</div>",
+    ].join("");
+
+    const ctaHtml =
+        "ctaLabel" in step && step.ctaLabel && ctaUrl
+            ? [
+                  '<p style="margin:20px 0 12px 0;">',
+                  `<a href="${escapeHtml(ctaUrl)}" target="_blank" rel="noopener noreferrer" style="display:inline-block;background:#0f766e;color:#ffffff;text-decoration:none;font-weight:700;border-radius:6px;padding:10px 14px;">${escapeHtml(step.ctaLabel)} →</a>`,
+                  "</p>",
+              ].join("")
+            : "";
+
+    const trackingPixel = options.logId
+        ? `<img src="${escapeHtml(trackedOpenUrl(options.logId))}" alt="" width="1" height="1" style="display:block;border:0;width:1px;height:1px;" />`
+        : "";
+
+    return {
+        subject: step.subject,
+        bodyText,
+        bodyHtml: [
+            '<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#111827;">',
+            textToHtml(bodyCore),
+            ctaHtml,
+            footerHtml,
+            trackingPixel,
+            "</div>",
+        ].join(""),
+        unsubscribeUrl: context.unsubscribe_url,
+    };
+}
+
 function normalizeTemplateData(input: {
     firstName?: string | null;
     email: string;
@@ -829,6 +901,77 @@ async function isUnsubscribed(email: string, source: AutoResponseSource) {
     });
 
     return Boolean(existing?.id);
+}
+
+async function hasActiveMembership(email: string) {
+    const normalizedEmail = cleanEmail(email);
+    if (!normalizedEmail) return false;
+
+    const user = await prisma.user.findFirst({
+        where: {
+            email: normalizedEmail,
+            subscriptionStatus: {
+                in: ["active", "trialing"],
+            },
+        },
+        select: { id: true },
+    });
+
+    return Boolean(user?.id);
+}
+
+function mailerReportedHardBounce(result: SendEmailResult) {
+    if (result.ok || result.skipped) return false;
+    const reason = String(result.reason || "").toLowerCase();
+    return /hard bounce|bounced|invalid recipient|recipient address rejected|recipient rejected|suppression|suppressed|address does not exist|mailbox unavailable/.test(
+        reason
+    );
+}
+
+export async function stopFoundingMemberNurtureSequenceForEmail(emailRaw: string, reasonRaw = "suppressed") {
+    const email = cleanEmail(emailRaw);
+    if (!email) {
+        return { ok: false as const, stopped: 0, reason: "Invalid email" };
+    }
+
+    const reason = clip(reasonRaw, 120) || "suppressed";
+    const activeSequences = await prisma.autoResponseNurtureSequence.findMany({
+        where: {
+            email,
+            status: AutoResponseSequenceStatusEnum.ACTIVE,
+        },
+        select: { id: true },
+    });
+
+    if (!activeSequences.length) {
+        return { ok: true as const, stopped: 0 };
+    }
+
+    const ids = activeSequences.map((sequence) => sequence.id);
+    const now = new Date();
+
+    await prisma.autoResponseNurtureSequence.updateMany({
+        where: { id: { in: ids } },
+        data: {
+            status: AutoResponseSequenceStatusEnum.STOPPED,
+            scheduledAt: null,
+            stoppedAt: now,
+            stopReason: reason,
+        },
+    });
+
+    await prisma.autoResponseEmailLog.updateMany({
+        where: {
+            nurtureSequenceId: { in: ids },
+            status: AutoResponseStatusEnum.PENDING,
+        },
+        data: {
+            status: sequenceStopStatus(reason),
+            errorMessage: `Nurture sequence stopped: ${reason}`,
+        },
+    });
+
+    return { ok: true as const, stopped: ids.length };
 }
 
 async function scheduleFollowUpIfEnabled(log: AutoResponseEmailLog, template: AutoResponseTemplateConfig) {
