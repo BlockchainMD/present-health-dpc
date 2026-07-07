@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-    Heart,
-    Activity,
-    Pill,
     CheckCircle2,
     ArrowRight,
-    Clock,
+    Dna,
+    Gauge,
+    Scale,
+    Wallet,
 } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
@@ -111,17 +111,17 @@ function HeroSection() {
                     <Badge className="mb-5 border border-white/12 bg-white/10 text-white hover:bg-white/10">
                         Founding memberships — Michigan
                     </Badge>
-                    <h1 className="max-w-2xl text-4xl font-bold tracking-tight text-white md:text-6xl">
+                    <h1 className="max-w-2xl text-balance text-4xl font-bold tracking-tight text-white md:text-6xl">
                         Know your heart risk. Then actually lower it.
                     </h1>
                     <p className="mt-5 max-w-2xl text-lg text-slate-200 md:text-xl">
                         A board-certified physician tracks your ApoB, blood pressure, and coronary calcium score — and works with you to bring them down. $99/month. No insurance needed. HSA-eligible.
                     </p>
                     <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                        <Button asChild size="lg" className="h-12 px-8 text-base font-semibold text-slate-950 hover:bg-slate-100">
+                        <Button asChild size="lg" className="h-12 px-8 text-base font-semibold bg-white text-slate-950 hover:bg-slate-100">
                             <Link href="/join">Start Membership</Link>
                         </Button>
-                        <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base font-semibold text-slate-950 border-white hover:bg-white/10">
+                        <Button asChild size="lg" variant="outline" className="h-12 px-8 text-base font-semibold border-white/50 bg-transparent text-white hover:bg-white/10 hover:text-white">
                             <Link href="/how-it-works">How it works</Link>
                         </Button>
                     </div>
@@ -168,9 +168,9 @@ function ConditionCard({ slug, name, description }: ConditionCardProps) {
 
 function ConditionsSection() {
     return (
-        <section className="w-full py-24 md:py-32 bg-background">
+        <section className="w-full py-16 md:py-24 bg-background">
             <div className="container px-4 md:px-6 mx-auto max-w-6xl">
-                <div className="text-center mb-16 max-w-3xl mx-auto">
+                <div className="text-center mb-12 max-w-3xl mx-auto">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Prevention first. Full primary care included.</h2>
                     <p className="text-xl text-muted-foreground mt-4">
                         Cardiovascular risk is the focus — and your membership covers comprehensive chronic disease
@@ -195,21 +195,25 @@ function ConditionsSection() {
 const STARTING_POINTS = [
     {
         href: "/family-history",
+        icon: Dna,
         title: "Heart disease runs in your family",
         description: "A parent's heart attack or a sibling's stent is a signal, not a sentence. Here's what to actually check.",
     },
     {
         href: "/calcium-score",
+        icon: Gauge,
         title: "Your calcium score came back high",
         description: "You have the number — now you need the plan. What a nonzero CAC score means and what to do next.",
     },
     {
         href: "/after-weight-loss",
+        icon: Scale,
         title: "Your weight-loss program ended",
         description: "Blood pressure and cholesterol gains can quietly reverse. Physician-led maintenance protects them.",
     },
     {
         href: "/hsa",
+        icon: Wallet,
         title: "Paying with your HSA",
         description: "As of 2026, qualifying DPC memberships are HSA-eligible. How the new rules work with our pricing.",
     },
@@ -217,9 +221,9 @@ const STARTING_POINTS = [
 
 function StartingPointsSection() {
     return (
-        <section className="w-full py-24 md:py-32 bg-background border-b border-border">
+        <section className="w-full py-16 md:py-24 bg-background border-b border-border">
             <div className="container px-4 md:px-6 mx-auto max-w-6xl">
-                <div className="text-center mb-16 max-w-3xl mx-auto">
+                <div className="text-center mb-12 max-w-3xl mx-auto">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Start where you are</h2>
                     <p className="text-xl text-muted-foreground mt-4">
                         Most members come to us at a specific moment. Find yours.
@@ -230,6 +234,9 @@ function StartingPointsSection() {
                         <Link key={item.href} href={item.href}>
                             <Card className="flex h-full flex-col border-border/70 bg-card hover:shadow-md transition-shadow cursor-pointer">
                                 <CardHeader>
+                                    <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+                                        <item.icon className="h-5 w-5" aria-hidden="true" />
+                                    </div>
                                     <CardTitle className="text-lg">{item.title}</CardTitle>
                                 </CardHeader>
                                 <CardContent className="flex-grow">
@@ -275,9 +282,9 @@ function HowItWorksSection() {
     ];
 
     return (
-        <section className="bg-slate-50 py-24 md:py-32 border-y border-border">
+        <section className="bg-slate-50 py-16 md:py-24 border-y border-border">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="mx-auto mb-16 max-w-3xl text-center">
+                <div className="mx-auto mb-12 max-w-3xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl">How it works</h2>
                     <p className="text-lg text-muted-foreground mt-4">
                         Simple, straightforward process from joining to ongoing care.
@@ -322,9 +329,9 @@ function DifferentiatorSection() {
     ];
 
     return (
-        <section className="bg-background py-24 md:py-32">
+        <section className="bg-background py-16 md:py-24">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="mx-auto mb-16 max-w-3xl text-center">
+                <div className="mx-auto mb-12 max-w-3xl text-center">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl">What makes us different</h2>
                 </div>
                 <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-2">
@@ -370,9 +377,9 @@ function ScenarioCard({ title, patientMessage, patientAttachmentLabel, clinician
 
 function ScenarioExamplesSection() {
     return (
-        <section className="w-full py-24 md:py-32 bg-slate-50 border-y border-border">
+        <section className="w-full py-16 md:py-24 bg-slate-50 border-y border-border">
             <div className="container px-4 md:px-6 mx-auto max-w-6xl">
-                <div className="text-center mb-16 max-w-3xl mx-auto">
+                <div className="text-center mb-12 max-w-3xl mx-auto">
                     <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Real care, real examples</h2>
                     <p className="text-xl text-muted-foreground mt-4">
                         Here's how virtual primary care works in practice.
@@ -436,7 +443,7 @@ function FaqItem({ question, body }: FaqItemProps) {
 
 function FAQSection() {
     return (
-        <section className="bg-slate-50 py-24 border-t border-border">
+        <section className="bg-slate-50 py-16 md:py-20 border-t border-border">
             <div className="container px-4 md:px-6 mx-auto max-w-4xl">
                 <h2 className="text-3xl font-bold text-center mb-12">Frequently Asked Questions</h2>
                 <Accordion type="single" collapsible className="w-full rounded-xl border border-border bg-background px-4 md:px-6">

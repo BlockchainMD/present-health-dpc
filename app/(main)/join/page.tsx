@@ -55,7 +55,7 @@ export default function JoinPage() {
 
             <header className="max-w-3xl">
                 <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Founding memberships — Michigan</p>
-                <h1 className="mt-3 text-4xl md:text-5xl font-bold tracking-tight">Know your numbers. Then watch them improve.</h1>
+                <h1 className="mt-3 text-balance text-4xl md:text-5xl font-bold tracking-tight">Know your numbers. Then watch them improve.</h1>
                 <p className="mt-4 text-lg text-muted-foreground">
                     A board-certified physician baselines your ApoB, blood pressure, and calcium-score status — then
                     builds and manages a plan to bring your risk down. Choose the membership that fits, or start with a
@@ -125,7 +125,7 @@ export default function JoinPage() {
                             <span className="ml-1 text-lg font-normal text-muted-foreground">/month</span>
                         </div>
                         <p className="mt-1 text-sm text-muted-foreground">
-                            Or ${HOUSEHOLD_ANNUAL_DOLLARS}/year and save ${HOUSEHOLD_ANNUAL_SAVINGS_DOLLARS} — two months free.
+                            Or ${HOUSEHOLD_ANNUAL_DOLLARS.toLocaleString()}/year and save ${HOUSEHOLD_ANNUAL_SAVINGS_DOLLARS} — two months free.
                         </p>
                     </div>
 
@@ -152,7 +152,7 @@ export default function JoinPage() {
 
                 <div className="rounded-xl border border-border p-4 flex h-full flex-col">
                     <div>
-                        <div className="text-sm font-semibold uppercase tracking-[0.18em] text-emerald-700">One issue right now</div>
+                        <div className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">One issue right now</div>
                         <h2 className="mt-3 text-2xl font-semibold">Single Visit</h2>
                         <p className="mt-2 text-sm text-muted-foreground">
                             A lower-friction way to raise your hand, tell us what is going on, and get a response from the team.
@@ -170,7 +170,7 @@ export default function JoinPage() {
                     <ul className="mt-6 space-y-3 text-sm text-muted-foreground">
                         {SINGLE_VISIT_FEATURES.map((item) => (
                             <li key={item} className="flex gap-2">
-                                <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-emerald-600" />
+                                <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" />
                                 <span>{item}</span>
                             </li>
                         ))}

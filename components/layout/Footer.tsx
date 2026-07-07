@@ -13,6 +13,7 @@ export function Footer() {
                                     src="/logo-transparent.png"
                                     alt="Present Health Logo"
                                     fill
+                                    sizes="40px"
                                     className="object-contain"
                                 />
                             </div>

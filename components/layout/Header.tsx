@@ -62,6 +62,7 @@ export function Header() {
                             src="/logo-transparent.png"
                             alt="Present Health Logo"
                             fill
+                            sizes="48px"
                             className="object-contain"
                         />
                     </div>
