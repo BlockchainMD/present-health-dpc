@@ -9,6 +9,12 @@ export async function GET() {
         "User-agent: *",
         "Allow: /",
         "Disallow: /admin",
+        "Disallow: /register",
+        "Disallow: /activate",
+        "Disallow: /login",
+        "Disallow: /dashboard",
+        "Disallow: /setup-account",
+        "Disallow: /review-request",
         "",
         `Sitemap: ${absoluteUrl("/sitemap.xml")}`,
     ].join("\n");

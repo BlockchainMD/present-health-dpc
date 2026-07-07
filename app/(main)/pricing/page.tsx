@@ -4,10 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
+import { buildPricingSchemas } from "@/lib/schema";
 import { CheckCircle2 } from "lucide-react";
 
 export const metadata: Metadata = {
-    title: "Pricing | Present Health",
+    title: "Pricing — $99/mo Individual, $179/mo Household | Present Health",
     description:
         "One flat price: $99/month individual, $179/month household. No insurance needed, no copays, HSA-eligible.",
 };
@@ -21,7 +22,7 @@ export default function PricingPage() {
         "Care coordination and specialist referrals",
     ];
 
-    const insuranceBillingSteps = [
+    const billingSteps = [
         {
             step: "1",
             title: "Join online",
@@ -41,6 +42,7 @@ export default function PricingPage() {
 
     return (
         <div className="min-h-screen bg-background">
+            <SchemaBlocks blocks={buildPricingSchemas()} idPrefix="pricing" />
             <div className="container mx-auto px-4 md:px-6 py-24 max-w-5xl">
                 {/* Hero */}
                 <div className="text-center mb-16 max-w-3xl mx-auto">
@@ -64,12 +66,15 @@ export default function PricingPage() {
                             <div>
                                 <div className="text-3xl font-bold">$99/month</div>
                                 <p className="text-muted-foreground text-sm mt-1">
-                                    Visits, messaging, your prevention plan, and ongoing management — all included
+                                    Visits, messaging, your prevention plan, and ongoing management — all included.
+                                    Or $990/year (two months free).
                                 </p>
                             </div>
                             <div className="bg-slate-50 rounded p-4">
                                 <p className="text-sm text-muted-foreground">
-                                    HSA-eligible under the 2026 rules for direct primary care memberships. Cancel anytime.
+                                    HSA-eligible under the{" "}
+                                    <Link href="/hsa" className="text-primary underline underline-offset-4">2026 rules for direct primary care</Link>{" "}
+                                    memberships. Cancel anytime.
                                 </p>
                             </div>
                             <Button asChild size="lg" className="w-full">
@@ -88,12 +93,15 @@ export default function PricingPage() {
                             <div>
                                 <div className="text-3xl font-bold">$179/month</div>
                                 <p className="text-muted-foreground text-sm mt-1">
-                                    Both members get full physician access and their own prevention plans
+                                    Both members get full physician access and their own prevention plans.
+                                    Or $1,790/year (two months free).
                                 </p>
                             </div>
                             <div className="bg-slate-50 rounded p-4">
                                 <p className="text-sm text-muted-foreground">
-                                    Under the $300/month family HSA limit for direct primary care. Cancel anytime.
+                                    Under the{" "}
+                                    <Link href="/hsa" className="text-primary underline underline-offset-4">$300/month household HSA limit</Link>{" "}
+                                    for direct primary care. Cancel anytime.
                                 </p>
                             </div>
                             <Button asChild size="lg" className="w-full" variant="outline">
@@ -120,7 +128,7 @@ export default function PricingPage() {
                 <section className="mb-16 max-w-3xl mx-auto">
                     <h2 className="text-2xl font-bold mb-6">How billing works</h2>
                     <div className="grid md:grid-cols-3 gap-6">
-                        {insuranceBillingSteps.map((item) => (
+                        {billingSteps.map((item) => (
                             <div key={item.step}>
                                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-white font-bold mb-4">
                                     {item.step}
@@ -151,7 +159,7 @@ export default function PricingPage() {
                 {/* CTA */}
                 <div className="text-center mb-8">
                     <Button asChild size="lg" className="px-8 h-12">
-                        <Link href="/book">Get started</Link>
+                        <Link href="/join">Get started</Link>
                     </Button>
                 </div>
             </div>

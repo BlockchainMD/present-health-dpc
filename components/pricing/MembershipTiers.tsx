@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import {
-    EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS,
     MEMBERSHIP_ANNUAL_DOLLARS,
     MEMBERSHIP_ANNUAL_SAVINGS_DOLLARS,
     MEMBERSHIP_MONTHLY_DOLLARS,
@@ -164,19 +163,6 @@ export function MembershipTiers() {
                 </div>
 
                 <div className="max-w-4xl mx-auto mt-10 space-y-6">
-                    <Card className="border-border/60">
-                        <CardContent className="pt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <p className="font-semibold text-foreground">
-                                    Offering this to your team? ${EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS}/employee/month.
-                                </p>
-                            </div>
-                            <Button asChild variant="outline">
-                                <Link href="/for-employers">Learn More</Link>
-                            </Button>
-                        </CardContent>
-                    </Card>
-
                     <Card className="border-border/60">
                         <CardHeader>
                             <CardTitle className="text-2xl">How $99/month compares</CardTitle>

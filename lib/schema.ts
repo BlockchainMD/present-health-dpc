@@ -2,7 +2,7 @@ import type { Article, Physician, State } from "@prisma/client";
 import { absoluteUrl } from "@/lib/site-url";
 import { markdownToPlainText } from "@/lib/markdown-plain";
 import {
-    EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS,
+    HOUSEHOLD_MONTHLY_DOLLARS,
     MEMBERSHIP_ANNUAL_DOLLARS,
     MEMBERSHIP_MONTHLY_DOLLARS,
     SINGLE_VISIT_DOLLARS,
@@ -391,9 +391,9 @@ export function buildPricingSchemas(): SchemaBlock[] {
         {
             "@context": "https://schema.org",
             "@type": "Service",
-            name: "Present Health Membership",
+            name: "Present Health Individual Membership",
             description:
-                "Messaging-first primary care membership with secure messaging, video when clinically appropriate, and no per-visit fees.",
+                "Physician-led heart-health prevention membership: baseline labs, a written risk-reduction plan, secure messaging, video when clinically appropriate, and no per-visit fees.",
             provider: {
                 "@type": "MedicalBusiness",
                 name: "Present Health",
@@ -450,8 +450,8 @@ export function buildPricingSchemas(): SchemaBlock[] {
         {
         "@context": "https://schema.org",
         "@type": "Service",
-        name: "Present Health Employer / Group Membership",
-        description: `Employer groups at $${EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS}/employee/month.`,
+        name: "Present Health Household Membership",
+        description: "Heart-health prevention membership for two adults in the same household — each with their own baseline labs and prevention plan.",
         provider: {
             "@type": "MedicalBusiness",
             name: "Present Health",
@@ -459,13 +459,13 @@ export function buildPricingSchemas(): SchemaBlock[] {
         offers: {
             "@type": "Offer",
             priceCurrency: "USD",
-            price: String(EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS),
-            url: absoluteUrl("/for-employers"),
+            price: String(HOUSEHOLD_MONTHLY_DOLLARS),
+            url: absoluteUrl("/pricing"),
             priceSpecification: {
                 "@type": "UnitPriceSpecification",
                 priceCurrency: "USD",
-                price: String(EMPLOYER_PER_EMPLOYEE_MONTHLY_DOLLARS),
-                unitText: "employee / month",
+                price: String(HOUSEHOLD_MONTHLY_DOLLARS),
+                unitText: "month",
             },
         },
         },

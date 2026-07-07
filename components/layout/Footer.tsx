@@ -5,7 +5,7 @@ export function Footer() {
     return (
         <footer className="bg-muted/30 border-t border-border py-12 mt-auto">
             <div className="container mx-auto px-4 md:px-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-8">
                     <div className="md:col-span-1">
                         <Link href="/" className="flex items-center gap-3 mb-4">
                             <div className="relative h-10 w-10">
@@ -33,8 +33,20 @@ export function Footer() {
                             <li><Link href="/pricing" className="hover:text-primary transition-colors">Pricing</Link></li>
                             <li><Link href="/our-physicians" className="hover:text-primary transition-colors">Our Physicians</Link></li>
                             <li><Link href="/states" className="hover:text-primary transition-colors">States</Link></li>
-                            <li><Link href="/book" className="hover:text-primary transition-colors">Get started</Link></li>
+                            <li><Link href="/join" className="hover:text-primary transition-colors">Join</Link></li>
                             <li><Link href="/about" className="hover:text-primary transition-colors">About</Link></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-foreground">Guides</h3>
+                        <ul className="space-y-3 text-sm text-muted-foreground">
+                            <li><Link href="/family-history" className="hover:text-primary transition-colors">Family History of Heart Disease</Link></li>
+                            <li><Link href="/calcium-score" className="hover:text-primary transition-colors">High Calcium Score</Link></li>
+                            <li><Link href="/after-weight-loss" className="hover:text-primary transition-colors">After Your Weight-Loss Program</Link></li>
+                            <li><Link href="/hsa" className="hover:text-primary transition-colors">HSA & the 2026 DPC Rules</Link></li>
+                            <li><Link href="/compare" className="hover:text-primary transition-colors">Compare Your Options</Link></li>
+                            <li><Link href="/learn" className="hover:text-primary transition-colors">Learn</Link></li>
                         </ul>
                     </div>
 

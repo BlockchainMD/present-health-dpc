@@ -50,11 +50,6 @@ export default async function StatesHubPage({ searchParams }: { searchParams: Se
                     Present Health is currently accepting patients in Michigan, with plans to expand to additional states.
                 </p>
 
-                {states.length !== 15 ? (
-                    <p className="mt-3 text-sm text-muted-foreground">
-                        Active states currently listed: <span className="font-medium text-foreground">{states.length}</span>. You can toggle states in the admin panel.
-                    </p>
-                ) : null}
             </header>
 
             <section className="mt-12">

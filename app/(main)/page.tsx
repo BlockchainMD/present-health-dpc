@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { HeroBackgroundMedia } from "@/components/home/HeroBackgroundMedia";
-import { US_STATES as STATES } from "@/lib/us-states";
 import { SchemaBlocks } from "@/components/seo/SchemaBlocks";
 import { buildHomepageSchemas } from "@/lib/schema";
 
@@ -71,9 +70,19 @@ type ConditionCardProps = {
 
 const CONDITIONS: ConditionCardProps[] = [
     {
+        slug: "cholesterol",
+        name: "Cholesterol & Heart Health",
+        description: "ApoB-based cardiovascular risk assessment, statin management, and calcium-score follow-up.",
+    },
+    {
         slug: "blood-pressure",
         name: "Blood Pressure Management",
-        description: "Regular monitoring and medication management for hypertension.",
+        description: "Home-reading trends, medication titration, and real follow-through on hypertension.",
+    },
+    {
+        slug: "weight-management",
+        name: "Weight & Metabolic Health",
+        description: "Evidence-based weight management — including protecting your gains after a GLP-1 program ends.",
     },
     {
         slug: "diabetes",
@@ -81,24 +90,14 @@ const CONDITIONS: ConditionCardProps[] = [
         description: "Comprehensive diabetes and prediabetes care with lab tracking.",
     },
     {
-        slug: "weight-management",
-        name: "Weight Management",
-        description: "Evidence-based weight management including GLP-1 support.",
-    },
-    {
         slug: "thyroid",
         name: "Thyroid Management",
         description: "Thyroid condition monitoring and medication optimization.",
     },
     {
-        slug: "cholesterol",
-        name: "Cholesterol & Heart Health",
-        description: "Cardiovascular risk assessment and cholesterol management.",
-    },
-    {
         slug: "general-primary-care",
         name: "General Primary Care",
-        description: "Full-spectrum primary care for acute and chronic conditions.",
+        description: "Full-spectrum primary care for acute and chronic conditions — included in the same membership.",
     },
 ];
 
@@ -137,7 +136,7 @@ function HeroSection() {
                         </div>
                         <div className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-2 backdrop-blur-sm">
                             <CheckCircle2 className="h-4 w-4 text-emerald-300" />
-                            Licensed across {STATES.length} states
+                            Michigan-based, physician-owned
                         </div>
                     </div>
                 </div>
@@ -172,9 +171,10 @@ function ConditionsSection() {
         <section className="w-full py-24 md:py-32 bg-background">
             <div className="container px-4 md:px-6 mx-auto max-w-6xl">
                 <div className="text-center mb-16 max-w-3xl mx-auto">
-                    <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Conditions we treat</h2>
+                    <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Prevention first. Full primary care included.</h2>
                     <p className="text-xl text-muted-foreground mt-4">
-                        Comprehensive chronic disease management and primary care through video visits.
+                        Cardiovascular risk is the focus — and your membership covers comprehensive chronic disease
+                        management and everyday primary care too.
                     </p>
                 </div>
                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -185,6 +185,64 @@ function ConditionsSection() {
                             name={condition.name}
                             description={condition.description}
                         />
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+
+const STARTING_POINTS = [
+    {
+        href: "/family-history",
+        title: "Heart disease runs in your family",
+        description: "A parent's heart attack or a sibling's stent is a signal, not a sentence. Here's what to actually check.",
+    },
+    {
+        href: "/calcium-score",
+        title: "Your calcium score came back high",
+        description: "You have the number — now you need the plan. What a nonzero CAC score means and what to do next.",
+    },
+    {
+        href: "/after-weight-loss",
+        title: "Your weight-loss program ended",
+        description: "Blood pressure and cholesterol gains can quietly reverse. Physician-led maintenance protects them.",
+    },
+    {
+        href: "/hsa",
+        title: "Paying with your HSA",
+        description: "As of 2026, qualifying DPC memberships are HSA-eligible. How the new rules work with our pricing.",
+    },
+];
+
+function StartingPointsSection() {
+    return (
+        <section className="w-full py-24 md:py-32 bg-background border-b border-border">
+            <div className="container px-4 md:px-6 mx-auto max-w-6xl">
+                <div className="text-center mb-16 max-w-3xl mx-auto">
+                    <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Start where you are</h2>
+                    <p className="text-xl text-muted-foreground mt-4">
+                        Most members come to us at a specific moment. Find yours.
+                    </p>
+                </div>
+                <div className="grid gap-6 sm:grid-cols-2">
+                    {STARTING_POINTS.map((item) => (
+                        <Link key={item.href} href={item.href}>
+                            <Card className="flex h-full flex-col border-border/70 bg-card hover:shadow-md transition-shadow cursor-pointer">
+                                <CardHeader>
+                                    <CardTitle className="text-lg">{item.title}</CardTitle>
+                                </CardHeader>
+                                <CardContent className="flex-grow">
+                                    <p className="text-sm text-muted-foreground">{item.description}</p>
+                                </CardContent>
+                                <CardContent className="pt-0">
+                                    <div className="flex items-center gap-2 text-primary text-sm font-medium">
+                                        Read more
+                                        <ArrowRight className="h-4 w-4" />
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </Link>
                     ))}
                 </div>
             </div>
@@ -445,6 +503,7 @@ export default function HomePage() {
         <>
             <SchemaBlocks blocks={schemaBlocks} idPrefix="home" />
             <HeroSection />
+            <StartingPointsSection />
             <ConditionsSection />
             <HowItWorksSection />
             <DifferentiatorSection />

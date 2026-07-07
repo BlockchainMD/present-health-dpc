@@ -7,7 +7,7 @@ import { AssessmentWidget } from '@/components/assessment/AssessmentWidget';
 export const revalidate = false;
 
 export const metadata: Metadata = {
-  title: 'Free Health Assessment | Present Health DPC',
+  title: 'Free Health Assessment | Present Health',
   description:
     'Take our 2-minute health assessment and get personalized insights on the topics that matter most to your health — from sleep and heart health to mental wellness and prevention.',
   alternates: { canonical: 'https://presenthealthmd.com/assess' },
@@ -27,7 +27,7 @@ const CLUSTERS = [
   { slug: 'womens_health', label: "Women's Health", description: 'Hormones, menstrual health, menopause, pregnancy', icon: '🌸' },
   { slug: 'mens_health', label: "Men's Health", description: 'Testosterone, prostate health, sexual wellness', icon: '💪' },
   { slug: 'longevity', label: 'Longevity', description: 'Healthspan, biomarkers, aging well, chronic disease prevention', icon: '🌟' },
-  { slug: 'preventive', label: 'General Assessment', description: 'Not sure where to start? Take the full assessment', icon: '📋' },
+  
 ];
 
 export default function AssessHubPage() {
@@ -56,7 +56,7 @@ export default function AssessHubPage() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {CLUSTERS.map((c) => (
             <Link key={`${c.slug}-${c.label}`} href={`/assess/${c.slug}`}>
-              <Card className="h-full border-border/60 hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer">
+              <Card className="h-full border-border/60 hover:border-primary/40 hover:shadow-md transition-all cursor-pointer">
                 <CardHeader className="pb-2">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl" aria-hidden="true">{c.icon}</span>
@@ -78,9 +78,9 @@ export default function AssessHubPage() {
           Want a doctor who actually has time for you?
         </h2>
         <p className="text-muted-foreground mb-6 max-w-xl mx-auto">
-          Present Health DPC offers telehealth-first Direct Primary Care with same-day appointments, transparent flat-fee pricing, and direct physician access.
+          Present Health offers telehealth-first direct primary care with same-week appointments, transparent flat-fee pricing, and direct physician access.
         </p>
-        <Button size="lg" asChild className="bg-emerald-600 hover:bg-emerald-700 text-white">
+        <Button size="lg" asChild className="">
           <Link href="/join">Join Present Health</Link>
         </Button>
       </div>

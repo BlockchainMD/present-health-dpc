@@ -32,7 +32,7 @@ export default function HowItWorksPage() {
         {
             number: "3",
             title: "Video visit with physician",
-            description: "Connect with a board-certified physician for your appointment. We have laptops, phones, and video ready.",
+            description: "Connect with a board-certified physician by video. Your numbers become a written, personalized risk-reduction plan.",
         },
         {
             number: "4",
@@ -115,7 +115,17 @@ export default function HowItWorksPage() {
                         <CardTitle>What You Can Treat With Us</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="grid gap-6 md:grid-cols-3">
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                            <div>
+                                <div className="font-semibold text-foreground mb-2">Heart-Health Prevention</div>
+                                <div className="text-sm text-muted-foreground space-y-1">
+                                    <p>• ApoB and lipid management</p>
+                                    <p>• Calcium-score follow-up</p>
+                                    <p>• Blood pressure control</p>
+                                    <p>• Family-history risk workups</p>
+                                    <p>• Post-weight-loss maintenance</p>
+                                </div>
+                            </div>
                             <div>
                                 <div className="font-semibold text-foreground mb-2">Acute Care</div>
                                 <div className="text-sm text-muted-foreground space-y-1">
