@@ -14,7 +14,10 @@ test("homepage hero uses the dedicated background video layer", () => {
   assert.match(pageSource, /HeroBackgroundMedia/);
   assert.match(pageSource, /Start Membership/);
   assert.match(pageSource, /Board-certified physician-led care/);
-  assert.match(pageSource, /Licensed across \{STATES\.length\} states/);
+  // The hero must NOT render the raw US_STATES count as a licensure claim
+  // (pre-July-2026 it said "Licensed across 52 states" — false; Michigan-first).
+  assert.doesNotMatch(pageSource, /Licensed across \{STATES\.length\} states/);
+  assert.match(pageSource, /Michigan-based, physician-owned/);
 });
 
 test("hero background media stays poster-first with desktop-only motion", () => {

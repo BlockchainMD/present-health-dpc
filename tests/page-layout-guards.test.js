@@ -9,13 +9,14 @@ function readSource(relativePath) {
 
 test('/join plan cards keep CTA buttons bottom-aligned when card content differs', () => {
   const source = readSource('app/(main)/join/page.tsx');
-  const cardPattern = /rounded-xl border border-border p-4 flex h-full flex-col/g;
+  // Three cards: highlighted Individual (border-primary) + Household + Single Visit.
+  const cardPattern = /rounded-xl border(?:-2 border-primary| border-border) p-4 flex h-full flex-col/g;
   const cardMatches = source.match(cardPattern) || [];
-  const bottomAnchorPattern = /className="mt-auto pt-3"/g;
+  const bottomAnchorPattern = /className="mt-auto pt-6"/g;
   const bottomAnchorMatches = source.match(bottomAnchorPattern) || [];
 
-  assert.equal(cardMatches.length, 2, 'expected both join plan cards to use flex-column full-height layout');
-  assert.equal(bottomAnchorMatches.length, 2, 'expected both join plan cards to anchor CTA area at the bottom');
+  assert.equal(cardMatches.length, 3, 'expected all three join plan cards to use flex-column full-height layout');
+  assert.equal(bottomAnchorMatches.length, 3, 'expected all three join plan cards to anchor CTA area at the bottom');
 });
 
 test('campaign LP pricing cards keep CTA footer aligned for generated tier content', () => {
