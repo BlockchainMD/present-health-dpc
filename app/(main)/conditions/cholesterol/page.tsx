@@ -103,9 +103,16 @@ export default function CholesterolPage() {
                     </div>
                 </section>
 
+                <p className="text-sm text-muted-foreground text-center mb-6">
+                    Deeper guides:{" "}
+                    <Link href="/family-history" className="text-primary underline underline-offset-4">heart disease in your family</Link>{" "}
+                    and{" "}
+                    <Link href="/calcium-score" className="text-primary underline underline-offset-4">what a high calcium score means</Link>.
+                </p>
+
                 <div className="text-center">
                     <Button asChild size="lg" className="px-8 h-12">
-                        <Link href="/book">Get started</Link>
+                        <Link href="/join">Get started</Link>
                     </Button>
                 </div>
             </div>
