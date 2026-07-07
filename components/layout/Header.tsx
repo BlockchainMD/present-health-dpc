@@ -41,6 +41,7 @@ export function Header() {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 10);
         };
+        handleScroll(); // sync on mount — pages can load mid-scroll (refresh, back-nav, anchors)
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
