@@ -105,7 +105,7 @@ function HeroSection() {
     return (
         <section className="relative isolate overflow-hidden bg-slate-950 pt-24 pb-20 text-white md:pt-28 md:pb-24">
             <HeroBackgroundMedia />
-            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#f6f2ea]" />
+            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-[#FDFBF7]" />
             <div className="container relative z-10 mx-auto px-4 md:px-6">
                 <div className="max-w-3xl py-10 md:py-14 lg:max-w-2xl">
                     <Badge className="mb-5 border border-white/12 bg-white/10 text-white hover:bg-white/10">
