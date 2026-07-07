@@ -83,6 +83,13 @@ export default function HsaPage() {
                     so we do not make that claim. This page is general information, not tax advice.
                 </p>
 
+                <p className="text-sm">
+                    Related reading:{" "}
+                    <Link href="/pricing" className="text-primary underline underline-offset-4">full membership pricing</Link>,{" "}
+                    <Link href="/family-history" className="text-primary underline underline-offset-4">heart disease in your family</Link>, and{" "}
+                    <Link href="/calcium-score" className="text-primary underline underline-offset-4">what to do about a high calcium score</Link>.
+                </p>
+
                 <div className="pt-6 text-center">
                     <Button asChild size="lg" className="h-12 px-8">
                         <Link href="/join">Start Membership — $99/month</Link>

@@ -81,6 +81,13 @@ export default function CalciumScorePage() {
                     $50–$150 cash. We&apos;re happy to point you to transparent-price imaging near you — ask after you
                     join, or <Link href="/visit" className="underline">request a single visit</Link>.
                 </p>
+
+                <p className="text-sm">
+                    Related reading:{" "}
+                    <Link href="/family-history" className="text-primary underline underline-offset-4">what a family history of heart disease means for you</Link>{" "}
+                    and{" "}
+                    <Link href="/hsa" className="text-primary underline underline-offset-4">how to pay for membership with your HSA</Link>.
+                </p>
             </section>
         </div>
     );

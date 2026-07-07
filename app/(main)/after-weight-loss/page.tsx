@@ -77,6 +77,13 @@ export default function AfterWeightLossPage() {
                     or drug manufacturer; our only incentive is your numbers.
                 </p>
 
+                <p className="text-sm">
+                    Related reading:{" "}
+                    <Link href="/family-history" className="text-primary underline underline-offset-4">heart disease in your family</Link>,{" "}
+                    <Link href="/hsa" className="text-primary underline underline-offset-4">paying with your HSA</Link>, and{" "}
+                    <Link href="/pricing" className="text-primary underline underline-offset-4">full pricing</Link>.
+                </p>
+
                 <div className="pt-4 text-center">
                     <Button asChild size="lg" className="h-12 px-8">
                         <Link href="/join">Start Membership</Link>

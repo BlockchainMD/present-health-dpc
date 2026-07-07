@@ -80,7 +80,11 @@ export default function FamilyHistoryPage() {
                     <Link href="/calcium-score" className="text-primary underline underline-offset-4">
                         calcium score guide
                     </Link>{" "}
-                    walks through it.
+                    walks through it. And if you&apos;re weighing options, see{" "}
+                    <Link href="/compare" className="text-primary underline underline-offset-4">
+                        how Present Health compares
+                    </Link>{" "}
+                    to concierge medicine, One Medical, and lab-testing subscriptions.
                 </p>
 
                 <h2 className="text-2xl font-bold text-foreground">What physician-led prevention looks like</h2>
