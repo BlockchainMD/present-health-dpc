@@ -117,7 +117,10 @@ export async function POST(req: Request) {
                 select: { id: true, email: true, name: true, leadId: true, attributionSessionId: true }
             });
 
-            const membershipTier = UnifiedLeadMembershipTier.INDIVIDUAL;
+            const membershipTier =
+                plan === "couple" ? UnifiedLeadMembershipTier.COUPLE :
+                plan === "family" ? UnifiedLeadMembershipTier.FAMILY :
+                UnifiedLeadMembershipTier.INDIVIDUAL;
             const monthlyRate = MEMBERSHIP_TIERS[plan].monthlyDollars;
 
             await prisma.user.update({

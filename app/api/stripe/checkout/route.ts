@@ -5,12 +5,18 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { getOrCreateAttributionSession } from "@/lib/attribution";
 import { recordConversionEvent } from "@/lib/conversion";
-import { MEMBERSHIP_ANNUAL_DOLLARS, MEMBERSHIP_TIERS, normalizeBillingCadence, normalizeCoverageType } from "@/lib/pricing";
+import { MEMBERSHIP_TIERS, normalizeBillingCadence, normalizeCoverageType, type CoverageType } from "@/lib/pricing";
 import { prisma } from "@/lib/prisma";
 import { absoluteUrl } from "@/lib/site-url";
 import { resolveServedState } from "@/lib/state-availability";
 import { stripe } from "@/lib/stripe";
 import { upsertUnifiedLeadFromCampaignLead, upsertUnifiedLeadFromWebsiteRegistration } from "@/lib/unified-leads";
+
+const MEMBERSHIP_TIER_ENUM: Record<CoverageType, UnifiedLeadMembershipTier> = {
+    individual: UnifiedLeadMembershipTier.INDIVIDUAL,
+    couple: UnifiedLeadMembershipTier.COUPLE,
+    family: UnifiedLeadMembershipTier.FAMILY,
+};
 
 function cleanString(value: unknown) {
     return typeof value === "string" ? value.trim() : "";
@@ -52,7 +58,7 @@ export async function POST(req: Request) {
 
         const attributionSessionId = await getOrCreateAttributionSession(req);
         const tier = MEMBERSHIP_TIERS[plan];
-        const unitAmount = (billing === "annual" ? MEMBERSHIP_ANNUAL_DOLLARS : tier.monthlyDollars) * 100;
+        const unitAmount = (billing === "annual" ? tier.annualDollars : tier.monthlyDollars) * 100;
         const productName = `${tier.name} Membership (${billing === "annual" ? "Annual" : "Monthly"})`;
 
         if (hasGuestIdentity) {
@@ -138,7 +144,7 @@ export async function POST(req: Request) {
                         state: servedState.name,
                         sourcePage: "/register",
                         sourceRecordId: `register:${email}`,
-                        membershipTier: UnifiedLeadMembershipTier.INDIVIDUAL,
+                        membershipTier: MEMBERSHIP_TIER_ENUM[plan],
                         monthlyMembershipRate: tier.monthlyDollars,
                         sourceMeta: {
                             plan,

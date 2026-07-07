@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import {
-    MEMBERSHIP_ANNUAL_DOLLARS,
     MEMBERSHIP_TIERS,
     normalizeBillingCadence,
     normalizeCoverageType,
@@ -31,7 +30,7 @@ function RegisterForm() {
     const billingCadence = normalizeBillingCadence(billing);
     const planName = MEMBERSHIP_TIERS[planKey].name;
     const price = billingCadence === "annual"
-        ? `$${MEMBERSHIP_ANNUAL_DOLLARS}/year`
+        ? `$${MEMBERSHIP_TIERS[planKey].annualDollars}/year`
         : `$${MEMBERSHIP_TIERS[planKey].monthlyDollars}/mo`;
     const fallbackStateOptions = useMemo(
         () => US_STATES.map((state) => ({ name: state.name, slug: state.slug })),
