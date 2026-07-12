@@ -29,6 +29,7 @@ export const STATIC_PUBLIC_PATHS = [
     "/calcium-score",
     "/after-weight-loss",
     "/family-history",
+    "/michigan",
     "/conditions",
     "/our-physicians",
     "/states",
@@ -188,6 +189,14 @@ export async function buildSitemapEntries() {
         {
             path: "/family-history",
             loc: absoluteUrl("/family-history"),
+            lastmod: siteLastmod,
+            changefreq: "monthly",
+            priority: 0.9,
+            type: "static",
+        },
+        {
+            path: "/michigan",
+            loc: absoluteUrl("/michigan"),
             lastmod: siteLastmod,
             changefreq: "monthly",
             priority: 0.9,

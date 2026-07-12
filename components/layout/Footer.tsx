@@ -43,6 +43,7 @@ export function Footer() {
                         <h3 className="font-semibold mb-4 text-sm uppercase tracking-wider text-foreground">Guides</h3>
                         <ul className="space-y-3 text-sm text-muted-foreground">
                             <li><Link href="/family-history" className="hover:text-primary transition-colors">Family History of Heart Disease</Link></li>
+                            <li><Link href="/michigan" className="hover:text-primary transition-colors">Prevention Care in Michigan</Link></li>
                             <li><Link href="/calcium-score" className="hover:text-primary transition-colors">High Calcium Score</Link></li>
                             <li><Link href="/after-weight-loss" className="hover:text-primary transition-colors">After Your Weight-Loss Program</Link></li>
                             <li><Link href="/hsa" className="hover:text-primary transition-colors">HSA & the 2026 DPC Rules</Link></li>

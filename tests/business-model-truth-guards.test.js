@@ -26,6 +26,7 @@ const PAGES = [
     "app/(main)/calcium-score/page.tsx",
     "app/(main)/after-weight-loss/page.tsx",
     "app/(main)/family-history/page.tsx",
+    "app/(main)/michigan/page.tsx",
     "app/(main)/states/page.tsx",
     "app/(main)/conditions/page.tsx",
     "app/(main)/terms/page.tsx",
