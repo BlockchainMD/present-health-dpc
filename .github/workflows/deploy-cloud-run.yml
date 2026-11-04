@@ -2,6 +2,8 @@ name: Deploy Cloud Run
 
 on:
   push:
+    branches:
+      - master
   workflow_dispatch:
 
 concurrency:
